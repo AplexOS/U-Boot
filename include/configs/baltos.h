@@ -19,6 +19,12 @@
 #include <linux/sizes.h>
 #include <configs/ti_am335x_common.h>
 
+#define CONFIG_ENV_IS_NOWHERE // John
+#define CONFIG_DISPLAY_CPUINFO // John
+#define CONFIG_HSMMC2_8BIT // John
+#define CONFIG_SBC7109 // John
+#define CONFIG_SUPPORT_EMMC_BOOT // John
+
 #define MACH_TYPE_TIAM335EVM		3589	/* Until the next sync */
 #define CONFIG_MACH_TYPE		MACH_TYPE_TIAM335EVM
 #define CONFIG_BOARD_LATE_INIT
