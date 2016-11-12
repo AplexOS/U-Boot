@@ -389,6 +389,8 @@ int board_late_init(void)
 	char model[4];
 
 	/* get production data */
+	// John remove setting system model name.
+	/*
 	if (read_eeprom(&header)) {
 		strcpy(model, "211");
 	} else {
@@ -399,6 +401,7 @@ int board_late_init(void)
 		}
 	}
 	setenv("board_name", model);
+	*/
 #endif
 
 	return 0;
@@ -514,6 +517,17 @@ int board_eth_init(bd_t *bis)
 			AR8051_DEBUG_RGMII_CLK_DLY_REG);
 	miiphy_write(devname, 0x7, AR8051_PHY_DEBUG_DATA_REG,
 			AR8051_RGMII_TX_CLK_DLY);
+#endif
+#if defined(CONFIG_USB_ETHER) && \
+	(!defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_USBETH_SUPPORT))
+	if (is_valid_ethaddr(mac_addr))
+		eth_setenv_enetaddr("usbnet_devaddr", mac_addr);
+
+	rv = usb_eth_initialize(bis);
+	if (rv < 0)
+		printf("Error %d registering USB_ETHER\n", rv);
+	else
+		n += rv;
 #endif
 	return n;
 }
