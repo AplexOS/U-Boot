@@ -153,6 +153,35 @@ static struct emif_regs ddr3_baltos_emif_reg_data = {
 	.emif_ddr_phy_ctlr_1 = MT41K256M16HA125E_EMIF_READ_LATENCY,
 };
 
+
+static const struct ddr_data ddr3_sbc7109_data = {
+	.datardsratio0 = MT41K256M8DA125_RD_DQS,
+	.datawdsratio0 = MT41K256M8DA125_WR_DQS,
+	.datafwsratio0 = MT41K256M8DA125_PHY_FIFO_WE,
+	.datawrsratio0 = MT41K256M8DA125_PHY_WR_DATA,
+};
+
+static const struct cmd_control ddr3_sbc7109_cmd_ctrl_data = {
+	.cmd0csratio = MT41K256M8DA125_RATIO,
+	.cmd0iclkout = MT41K256M8DA125_INVERT_CLKOUT,
+
+	.cmd1csratio = MT41K256M8DA125_RATIO,
+	.cmd1iclkout = MT41K256M8DA125_INVERT_CLKOUT,
+
+	.cmd2csratio = MT41K256M8DA125_RATIO,
+	.cmd2iclkout = MT41K256M8DA125_INVERT_CLKOUT,
+};
+
+static struct emif_regs ddr3_sbc7109_emif_reg_data = {
+	.sdram_config = MT41K256M8DA125_EMIF_SDCFG,
+	.ref_ctrl = MT41K256M8DA125_EMIF_SDREF,
+	.sdram_tim1 = MT41K256M8DA125_EMIF_TIM1,
+	.sdram_tim2 = MT41K256M8DA125_EMIF_TIM2,
+	.sdram_tim3 = MT41K256M8DA125_EMIF_TIM3,
+	.zq_config = MT41K256M8DA125_ZQ_CFG,
+	.emif_ddr_phy_ctlr_1 = MT41K256M8DA125_EMIF_READ_LATENCY,
+};
+
 #ifdef CONFIG_SPL_OS_BOOT
 int spl_start_uboot(void)
 {
@@ -246,15 +275,29 @@ const struct ctrl_ioregs ioregs_baltos = {
 	.dt1ioctl		= MT41K256M16HA125E_IOCTRL_VALUE,
 };
 
+const struct ctrl_ioregs ioregs_sbc7109 = {
+	.cm0ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
+	.cm1ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
+	.cm2ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
+	.dt0ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
+	.dt1ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
+};
+
 void sdram_init(void)
 {
-	gpio_request(GPIO_DDR_VTT_EN, "ddr_vtt_en");
-	gpio_direction_output(GPIO_DDR_VTT_EN, 1);
+	//gpio_request(GPIO_DDR_VTT_EN, "ddr_vtt_en");
+	//gpio_direction_output(GPIO_DDR_VTT_EN, 1);
 
-	config_ddr(400, &ioregs_baltos,
-		   &ddr3_baltos_data,
-		   &ddr3_baltos_cmd_ctrl_data,
-		   &ddr3_baltos_emif_reg_data, 0);
+	if (1)
+		config_ddr(400, &ioregs_sbc7109,
+			&ddr3_sbc7109_data,
+			&ddr3_sbc7109_cmd_ctrl_data,
+			&ddr3_sbc7109_emif_reg_data, 0);
+	else
+		config_ddr(400, &ioregs_baltos,
+			&ddr3_baltos_data,
+			&ddr3_baltos_cmd_ctrl_data,
+			&ddr3_baltos_emif_reg_data, 0);
 }
 #endif
 
