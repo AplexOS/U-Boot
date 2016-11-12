@@ -74,7 +74,8 @@ static int baltos_set_console(void)
 
 static int read_eeprom(BSP_VS_HWPARAM *header)
 {
-	i2c_set_bus_num(1);
+	i2c_set_bus_num(0);
+	
 
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(CONFIG_SYS_I2C_EEPROM_ADDR)) {
@@ -212,8 +213,7 @@ void am33xx_spl_board_init(void)
 	 * 1.1375V.  For MPU voltage we need to switch based on
 	 * the frequency we are running at.
 	 */
-	i2c_set_bus_num(1);
-
+	
 	printf("I2C speed: %d Hz\n", CONFIG_SYS_OMAP24_I2C_SPEED);
 
 	if (i2c_probe(TPS65910_CTRL_I2C_ADDR)) {
@@ -245,14 +245,14 @@ void am33xx_spl_board_init(void)
 
 	/* Set MPU Frequency to what we detected now that voltages are set */
 	do_setup_dpll(&dpll_mpu_regs, &dpll_mpu_opp100);
-
-	writel(0x000010ff, PRM_DEVICE_INST + 4);
+	
+	//writel(0x000010ff, PRM_DEVICE_INST + 4);
 }
 
 const struct dpll_params *get_dpll_ddr_params(void)
 {
-	enable_i2c1_pin_mux();
-	i2c_set_bus_num(1);
+	enable_i2c0_pin_mux();
+	i2c_set_bus_num(0);
 
 	return &dpll_ddr_baltos;
 }
