@@ -193,6 +193,7 @@ void enable_board_pin_mux()
 	configure_module_pin_mux(i2c0_pin_mux);
 	//configure_module_pin_mux(i2c1_pin_mux);
 	configure_module_pin_mux(uart0_pin_mux);
+	configure_module_pin_mux(uart1_pin_mux);
 	configure_module_pin_mux(rgmii1_pin_mux);
 	configure_module_pin_mux(mmc0_pin_mux);
 	configure_module_pin_mux(mmc1_pin_mux);
