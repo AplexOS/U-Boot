@@ -37,6 +37,7 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 /* GPIO that controls power to DDR on EVM-SK */
+#define GPIO_TO_PIN(bank, gpio)		(32 * (bank) + (gpio))
 #define GPIO_DDR_VTT_EN		7
 #define DIP_S1			44
 
@@ -253,6 +254,13 @@ const struct dpll_params *get_dpll_ddr_params(void)
 {
 	enable_i2c0_pin_mux();
 	i2c_set_bus_num(0);
+	gpio_direction_output(GPIO_TO_PIN(0,22),1); //COM0_MODE_0=1
+	gpio_direction_output(GPIO_TO_PIN(0,23),0); //COM0_MODE_1=0
+	gpio_direction_output(GPIO_TO_PIN(0,19),0); //COM0_TERM=0
+	//gpio_set_value(GPIO_TO_PIN(0,22),1);
+	//gpio_set_value(GPIO_TO_PIN(0,23),0);
+	//gpio_set_value(GPIO_TO_PIN(0,19),0);
+	gpio_direction_output(GPIO_TO_PIN(0,12),1); //LVDS_BLKT_ON=1
 
 	return &dpll_ddr_baltos;
 }
