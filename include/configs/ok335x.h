@@ -64,7 +64,7 @@
 	"nandrootfstype=ubifs rootwait=1\0" 
 #else
 #define CON		\
-	"console=ttyO1,115200n8\0" \
+	"console=ttynull,115200n8\0" \
 	"optargs=\0" \
 	"mmcroot=/dev/mmcblk0p2 ro\0" \
 	"mmcrootfstype=ext3 rootwait\0" \

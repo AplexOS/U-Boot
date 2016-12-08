@@ -846,7 +846,7 @@ Linker script and memory map
  .iplt          0x00000000        0x0 arch/arm/cpu/armv7/start.o
                 0x402f7b84                . = ALIGN (0x4)
 
-.rodata         0x402f7b84     0x129d
+.rodata         0x402f7b84     0x12b2
  *(SORT(.rodata*))
  .rodata.gpmc_m_nand
                 0x402f7b84       0x1c arch/arm/cpu/armv7/ti81xx/libti81xx.o
@@ -862,86 +862,86 @@ Linker script and memory map
  .rodata.crc16_tab
                 0x402f7d00      0x200 lib/libgeneric.o
  .rodata.str1.1
-                0x402f7f00      0x2a1 arch/arm/cpu/armv7/omap-common/libomap-common.o
+                0x402f7f00      0x2b6 arch/arm/cpu/armv7/omap-common/libomap-common.o
  .rodata.str1.1
-                0x402f81a1       0x36 arch/arm/cpu/armv7/ti81xx/libti81xx.o
+                0x402f81b6       0x36 arch/arm/cpu/armv7/ti81xx/libti81xx.o
  .rodata.str1.1
-                0x402f81d7       0xfe common/libcommon.o
+                0x402f81ec       0xfe common/libcommon.o
                                 0x100 (size before relaxing)
  .rodata.str1.1
-                0x402f82d5      0x2be disk/libdisk.o
+                0x402f82ea      0x2be disk/libdisk.o
                                 0x2db (size before relaxing)
  .rodata.str1.1
-                0x402f8593      0x27e drivers/mmc/libmmc.o
+                0x402f85a8      0x27e drivers/mmc/libmmc.o
                                 0x280 (size before relaxing)
  .rodata.__func__.6217
-                0x402f8811        0xc drivers/mmc/libmmc.o
+                0x402f8826        0xc drivers/mmc/libmmc.o
  .rodata.__func__.6071
-                0x402f881d        0xd drivers/mmc/libmmc.o
+                0x402f8832        0xd drivers/mmc/libmmc.o
  .rodata.__func__.6014
-                0x402f882a        0xf drivers/mmc/libmmc.o
+                0x402f883f        0xf drivers/mmc/libmmc.o
  .rodata.__func__.6117
-                0x402f8839        0xe drivers/mmc/libmmc.o
+                0x402f884e        0xe drivers/mmc/libmmc.o
  .rodata.__func__.5984
-                0x402f8847       0x10 drivers/mmc/libmmc.o
+                0x402f885c       0x10 drivers/mmc/libmmc.o
  .rodata.__func__.6152
-                0x402f8857        0xf drivers/mmc/libmmc.o
+                0x402f886c        0xf drivers/mmc/libmmc.o
  .rodata.str1.1
-                0x402f8866      0x2f6 drivers/mtd/nand/libnand.o
+                0x402f887b      0x2f6 drivers/mtd/nand/libnand.o
  .rodata.CSWTCH.20
-                0x402f8b5c        0x3 drivers/mtd/nand/libnand.o
+                0x402f8b71        0x3 drivers/mtd/nand/libnand.o
  .rodata.CSWTCH.17
-                0x402f8b5f        0xe drivers/mtd/nand/libnand.o
+                0x402f8b74        0xe drivers/mtd/nand/libnand.o
  .rodata.str1.1
-                0x402f8b6d      0x148 fs/fat/libfat.o
+                0x402f8b82      0x148 fs/fat/libfat.o
                                 0x173 (size before relaxing)
  .rodata._ctype
-                0x402f8cb5      0x100 lib/libgeneric.o
-                0x402f8cb5                _ctype
+                0x402f8cca      0x100 lib/libgeneric.o
+                0x402f8cca                _ctype
  .rodata.digits.5535
-                0x402f8db5       0x10 lib/libgeneric.o
+                0x402f8dca       0x10 lib/libgeneric.o
  .rodata.str1.1
-                0x402f8dc5       0x30 lib/libgeneric.o
+                0x402f8dda       0x30 lib/libgeneric.o
  .rodata.hex_asc
-                0x402f8df5       0x11 lib/libgeneric.o
-                0x402f8df5                hex_asc
+                0x402f8e0a       0x11 lib/libgeneric.o
+                0x402f8e0a                hex_asc
  .rodata.str1.1
-                0x402f8e06       0x1b /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+                0x402f8e1b       0x1b /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
-.rel.dyn        0x402f8e24        0x0
+.rel.dyn        0x402f8e38        0x0
  .rel.iplt      0x00000000        0x0 arch/arm/cpu/armv7/start.o
-                0x402f8e24                . = ALIGN (0x4)
+                0x402f8e38                . = ALIGN (0x4)
 
-.data           0x402f8e28      0x313
+.data           0x402f8e38      0x313
  *(SORT(.data*))
- .data          0x402f8e28       0x90 arch/arm/cpu/armv7/omap-common/libomap-common.o
+ .data          0x402f8e38       0x90 arch/arm/cpu/armv7/omap-common/libomap-common.o
  .data.ti81xx_boot_device
-                0x402f8eb8        0x4 arch/arm/cpu/armv7/ti81xx/libti81xx.o
-                0x402f8eb8                ti81xx_boot_device
+                0x402f8ec8        0x4 arch/arm/cpu/armv7/ti81xx/libti81xx.o
+                0x402f8ec8                ti81xx_boot_device
  .data.board_id
-                0x402f8ebc        0x4 board/forlinx/ok335x/libok335x.o
+                0x402f8ecc        0x4 board/forlinx/ok335x/libok335x.o
  .data.i2c_base
-                0x402f8ec0        0x4 drivers/i2c/libi2c.o
+                0x402f8ed0        0x4 drivers/i2c/libi2c.o
  .data.cur_dev_num
-                0x402f8ec4        0x4 drivers/mmc/libmmc.o
+                0x402f8ed4        0x4 drivers/mmc/libmmc.o
  .data.hw_bch8_nand_oob
-                0x402f8ec8      0x248 drivers/mtd/nand/libnand.o
+                0x402f8ed8      0x248 drivers/mtd/nand/libnand.o
  .data.cur_part
-                0x402f9110        0x4 fs/fat/libfat.o
+                0x402f9120        0x4 fs/fat/libfat.o
  .data.i2c0_pin_mux
-                0x402f9114        0xc board/forlinx/ok335x/libok335x.o
+                0x402f9124        0xc board/forlinx/ok335x/libok335x.o
  .data.uart1_pin_mux
-                0x402f9120        0xc board/forlinx/ok335x/libok335x.o
+                0x402f9130        0xc board/forlinx/ok335x/libok335x.o
  .data.uart0_pin_mux_spl
-                0x402f912c        0xc board/forlinx/ok335x/libok335x.o
+                0x402f913c        0xc board/forlinx/ok335x/libok335x.o
  .data.bch_priv
-                0x402f9138        0x3 drivers/mtd/nand/libnand.o
+                0x402f9148        0x3 drivers/mtd/nand/libnand.o
 
-.igot.plt       0x402f913c        0x0
+.igot.plt       0x402f914c        0x0
  .igot.plt      0x00000000        0x0 arch/arm/cpu/armv7/start.o
-                0x402f913c                . = ALIGN (0x4)
-                0x402f913c                __image_copy_end = .
-                0x402f913c                _end = .
+                0x402f914c                . = ALIGN (0x4)
+                0x402f914c                __image_copy_end = .
+                0x402f914c                _end = .
 
 .bss            0x80000000    0x30898
                 0x80000000                . = ALIGN (0x4)
