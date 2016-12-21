@@ -64,7 +64,7 @@
 	"nandrootfstype=ubifs rootwait=1\0" 
 #else
 #define CON		\
-	"console=ttyO0,115200n8\0" \
+	"console=ttyO1,115200n8\0" \
 	"optargs=\0" \
 	"mmcroot=/dev/mmcblk0p2 ro\0" \
 	"mmcrootfstype=ext3 rootwait\0" \
@@ -355,7 +355,7 @@
  */
 #define CONFIG_SERIAL1			1
 #define CONFIG_SERIAL2          1
-#define CONFIG_CONS_INDEX		1
+#define CONFIG_CONS_INDEX		2
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 
 #define CONFIG_CMD_NET
