@@ -280,6 +280,12 @@ static struct module_pin_mux uart1_pin_mux[] = {
 	{-1},
 };
 
+static struct module_pin_mux gpio0_20_pin_mux[] = {
+    {OFFSET(xdma_event_intr1), MODE(7) | PULLUP_EN | RXACTIVE},
+    {-1},
+};
+
+
 static struct module_pin_mux led_pin_mux[] = {
         {OFFSET(gpmc_a0), MODE(7) | PULLUP_EN | RXACTIVE},         /* GPIO1_16 */
         {OFFSET(gpmc_a1), MODE(7) | PULLUP_EN | RXACTIVE},         /* GPIO1_17 */
@@ -680,7 +686,7 @@ void configure_evm_pin_mux(unsigned char dghtr_brd_id, char version[4], unsigned
 {
 	if (dghtr_brd_id > BASE_BOARD)
 		return;
-	
+
 	set_evm_pin_mux(am335x_evm_pin_mux[0], profile,daughter_board_flag);
 }
 
@@ -695,6 +701,8 @@ void enable_uart0_pin_mux(void)
 	configure_module_pin_mux(uart1_pin_mux);
 }
 
-
-
+void enable_gpio0_20(void)
+{
+    configure_module_pin_mux(gpio0_20_pin_mux);
+}
 

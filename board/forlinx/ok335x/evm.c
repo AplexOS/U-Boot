@@ -39,6 +39,7 @@
 #include <i2c.h>
 #include <serial.h>
 
+
 DECLARE_GLOBAL_DATA_PTR;
 
 
@@ -382,6 +383,19 @@ void s_init(void)
 	 * zengjf 2015-8-27 modify this function for uart1 debug
 	 */
 	enable_uart0_pin_mux();
+
+    /* chenfl 2017-2-4 enable gpio0_20 to configure LVDS_LOGIC_PWR_EN
+     */
+    enable_gpio0_20();
+    #define GPIO0_BASE      (unsigned int *)0x44E07000
+    #define GPIO0_OE        (unsigned int *)(GPIO0_BASE+0x134)
+    #define GPIO0_DATAOUT   (unsigned int *)(GPIO0_BASE+0x13C)
+    *(GPIO0_OE) |= (1 << 20);
+    *(GPIO0_DATAOUT) |= (1 << 20);
+
+    //gpio_request(20, "");
+    //gpio_direction_output(20, 1);
+    //gpio_set_value(20, 1);
 
 	/* IA Motor Control Board has default console on UART3*/
 	/* XXX: This is before we've probed / set board_id */

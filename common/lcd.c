@@ -329,6 +329,17 @@ int drv_lcd_init (void)
 	struct stdio_dev lcddev;
 	int rc;
 
+#if 1
+    static struct module_pin_mux gpio0_20_pin_mux[] = {
+        {OFFSET(emu1), (MODE(7))},
+        {-1},
+    };
+    configure_module_pin_mux(gpio0_20_pin_mux);
+    gpio_request(20, "led");
+    gpio_direction_output(20, 1);
+    gpio_set_value(20, 1);
+#endif
+
 	lcd_base = (void *)(gd->fb_base);
 
 	lcd_line_length = (panel_info.vl_col * NBITS (panel_info.vl_bpix)) / 8;

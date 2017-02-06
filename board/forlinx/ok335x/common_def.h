@@ -45,4 +45,5 @@ extern void configure_evm_pin_mux(unsigned char daughter_board_id,
 					unsigned short daughter_board_profile,
 					unsigned int daughter_board_flag);
 
+extern void enable_gpio0_20(void);
 #endif/*__COMMON_DEF_H__ */
