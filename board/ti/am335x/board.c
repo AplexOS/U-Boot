@@ -95,7 +95,9 @@ static int read_eeprom(void)
 	if (i2c_probe(CONFIG_SYS_I2C_EEPROM_ADDR)) {
 		puts("Could not probe the EEPROM; something fundamentally "
 			"wrong on the I2C bus.\n");
-		return -ENODEV;
+		puts("danny add board id, the id = 0xEE3355AA.\n");
+		header.magic = 0xEE3355AA;
+		return 0;
 	}
 
 	/* read the eeprom using i2c */
@@ -103,7 +105,7 @@ static int read_eeprom(void)
 							sizeof(header))) {
 		puts("Could not read the EEPROM; something fundamentally"
 			" wrong on the I2C bus.\n");
-		return -EIO;
+		return -ENODEV;
 	}
 
 	if (header.magic != 0xEE3355AA) {
@@ -659,12 +661,12 @@ void s_init(void)
 		puts("Could not get board ID.\n");
 #endif
 
+#if 0
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(CONFIG_SYS_I2C_EEPROM_ADDR)) {
 		puts("Could not probe the EEPROM; something fundamentally "
 			"wrong on the I2C bus.\n");
 	}
-#if 0
 
 	/* read the eeprom using i2c */
 	if (i2c_read(CONFIG_SYS_I2C_EEPROM_ADDR, 0, 2, (uchar *)&header,
@@ -692,10 +694,12 @@ void s_init(void)
 		}
 	}
 #endif
+	header.magic = 0xEE3355AA ;
 	memcpy(header.name,"A33515BB", 8);
 	memcpy(header.config,"SKU#01", 6);
 	memcpy(header.version,"1.5", 3);
 	enable_board_pin_mux(&header);
+	puts("pin mux ok.\n");
 	if (!strncmp("A335X_SK", header.name, HDR_NAME_LEN)) {
 		/*
 		 * EVM SK 1.2A and later use gpio0_7 to enable DDR3.
@@ -706,7 +710,8 @@ void s_init(void)
 	}
 
 #ifdef CONFIG_NOR_BOOT
-	am33xx_spl_board_init();
+	//am33xx_spl_board_init();
+	puts("spl board init.\n");
 #endif
 
 	if (!strncmp("A335X_SK", header.name, HDR_NAME_LEN))
@@ -724,6 +729,7 @@ void s_init(void)
 	else
 		config_ddr(266, MT47H128M16RT25E_IOCTRL_VALUE, &ddr2_data,
 			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data);
+	puts("ddr3 init ok.\n");
 #endif
 }
 
@@ -733,12 +739,14 @@ void s_init(void)
 int board_init(void)
 {
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-	if (read_eeprom() < 0)
+	//if (read_eeprom() < 0)
 		puts("Could not get board ID.\n");
 
+	header.magic = 0xEE3355AA;
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
 
 	gpmc_init();
+	puts("danny test gpmc_init ok.\n");
 
 	return 0;
 }

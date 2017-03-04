@@ -152,7 +152,8 @@
 #endif
 
 #ifndef CONFIG_RESTORE_FLASH
-#define DANNY_CONFIG_AUTO_ARG   \
+
+#define CONFIG_BOOTCOMMAND \
 	"mmc rescan; nand erase 0 10000000;" \
 	"fatload mmc 0 0x82000000 uImage;" \
 	"nand write 82000000 280000 500000;" \
@@ -160,15 +161,7 @@
 	"nand write 82000000 80000 100000;" \
 	"fatload mmc 0 82000000 nand-MLO;" \
 	"nand write 82000000 0 40000;" \
-	"fatload mmc 0 82000000 uImage;" 
- #define CONFIG_BOOTCOMMAND \
-		"run nandboot;" 
-	
-
-
-
-
-/* #define CONFIG_BOOTCOMMAND \
+	"fatload mmc 0 82000000 uImage;" \
 	"mmc dev ${mmcdev}; if mmc rescan; then " \
 		"echo SD/MMC found on device ${mmcdev};" \
 		"if run loadbootenv; then " \
@@ -189,8 +182,6 @@
 	"else " \
 		"run nandboot;" \
 	"fi;" \
-
-*/
 
 #else
 

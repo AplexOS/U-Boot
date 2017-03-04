@@ -102,9 +102,6 @@ int nand_erase_opts(nand_info_t *meminfo, const nand_erase_options_t *opts)
 	 * check from erase() method, set block check method to dummy
 	 * and disable bad block table while erasing.
 	 */
-
-	printf("\rDanny test----- opts->scrub = %x",opts->scrub);
-#if 1
 	if (opts->scrub) {
 		erase.scrub = opts->scrub;
 		/*
@@ -116,7 +113,6 @@ int nand_erase_opts(nand_info_t *meminfo, const nand_erase_options_t *opts)
 		}
 		chip->bbt = NULL;
 	}
-#endif 
 
 	for (erased_length = 0;
 	     erased_length < erase_length;
@@ -125,7 +121,6 @@ int nand_erase_opts(nand_info_t *meminfo, const nand_erase_options_t *opts)
 		WATCHDOG_RESET();
 
 		if (!opts->scrub && bbtest) {
-//		if ( bbtest) {
 			int ret = meminfo->block_isbad(meminfo, erase.addr);
 			if (ret > 0) {
 				if (!opts->quiet)
@@ -200,11 +195,9 @@ int nand_erase_opts(nand_info_t *meminfo, const nand_erase_options_t *opts)
 	if (!opts->quiet)
 		printf("\n");
 
-#if 1
 	if (opts->scrub)
 		chip->scan_bbt(meminfo);
 
-#endif
 	return 0;
 }
 
@@ -502,6 +495,7 @@ int nand_write_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 
 	if (actual)
 		*actual = 0;
+
 #ifdef CONFIG_CMD_NAND_YAFFS
 	if (flags & WITH_YAFFS_OOB) {
 		if (flags & ~WITH_YAFFS_OOB)
