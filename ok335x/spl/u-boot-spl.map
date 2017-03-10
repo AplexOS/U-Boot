@@ -1,17 +1,17 @@
 Archive member included because of file (symbol)
 
-/home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+/home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
                               arch/arm/cpu/armv7/omap-common/libomap-common.o (__aeabi_uidiv)
-/home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+/home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
                               drivers/i2c/libi2c.o (__aeabi_idiv)
-/home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
+/home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
                               drivers/mtd/nand/libnand.o (__aeabi_llsr)
-/home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
+/home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
                               drivers/mtd/nand/libnand.o (__aeabi_lasr)
-/home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
+/home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
                               drivers/mmc/libmmc.o (__aeabi_llsl)
-/home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
-                              /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o) (__aeabi_idiv0)
+/home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
+                              /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o) (__aeabi_idiv0)
 
 Discarded input sections
 
@@ -374,28 +374,28 @@ Discarded input sections
  .bss           0x00000000        0x0 lib/libgeneric.o
  .bss.___strtok
                 0x00000000        0x4 lib/libgeneric.o
- .text          0x00000000        0x0 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
- .data          0x00000000        0x0 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
- .bss           0x00000000        0x0 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .text          0x00000000        0x0 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .data          0x00000000        0x0 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
  .text.__aeabi_unwind_cpp_pr0
-                0x00000000        0x4 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
- .data          0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
- .bss           0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
- .data          0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
- .bss           0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
- .data          0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
- .bss           0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
- .text          0x00000000       0x1c /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
- .data          0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
- .bss           0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
+                0x00000000        0x4 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .data          0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+ .data          0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+ .data          0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
+ .text          0x00000000       0x1c /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
+ .data          0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
+                0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
  .ARM.attributes
-                0x00000000       0x21 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
- .data          0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
- .bss           0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
- .data          0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
- .bss           0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
+                0x00000000       0x21 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashrdi3.o)
+ .data          0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
+ .data          0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
+ .bss           0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
 
 Memory Configuration
 
@@ -813,23 +813,23 @@ Linker script and memory map
                 0x402f6fd8                vsprintf
  .text.sprintf  0x402f7610       0x24 lib/libgeneric.o
                 0x402f7610                sprintf
- .text.raise    0x402f7634       0x1c /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .text.raise    0x402f7634       0x1c /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
                 0x402f7634                raise
- .text          0x402f7650      0x278 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+ .text          0x402f7650      0x278 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
                 0x402f7650                __udivsi3
                 0x402f7650                __aeabi_uidiv
                 0x402f78ac                __aeabi_uidivmod
- .text          0x402f78c8      0x2b0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+ .text          0x402f78c8      0x2b0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
                 0x402f78c8                __aeabi_idiv
                 0x402f78c8                __divsi3
                 0x402f7b5c                __aeabi_idivmod
- .text          0x402f7b78       0x18 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
+ .text          0x402f7b78       0x18 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
                 0x402f7b78                __aeabi_llsr
                 0x402f7b78                __lshrdi3
- .text          0x402f7b90       0x18 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
+ .text          0x402f7b90       0x18 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
                 0x402f7b90                __ashldi3
                 0x402f7b90                __aeabi_llsl
- .text          0x402f7ba8        0xc /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
+ .text          0x402f7ba8        0xc /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
                 0x402f7ba8                __aeabi_ldiv0
                 0x402f7ba8                __aeabi_idiv0
 
@@ -909,7 +909,7 @@ Linker script and memory map
                 0x402f8e3a       0x11 lib/libgeneric.o
                 0x402f8e3a                hex_asc
  .rodata.str1.1
-                0x402f8e4b       0x1b /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+                0x402f8e4b       0x1b /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
 .rel.dyn        0x402f8e68        0x0
  .rel.iplt      0x00000000        0x0 arch/arm/cpu/armv7/start.o
@@ -1011,8 +1011,8 @@ LOAD drivers/serial/libserial.o
 LOAD fs/fat/libfat.o
 LOAD lib/libgeneric.o
 END GROUP
-LOAD /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
-LOAD /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a
+LOAD /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+LOAD /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a
 OUTPUT(u-boot-spl elf32-littlearm)
 
 .ARM.attributes
@@ -1044,17 +1044,17 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .ARM.attributes
                 0x000001da       0x29 lib/libgeneric.o
  .ARM.attributes
-                0x00000203       0x29 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+                0x00000203       0x29 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
  .ARM.attributes
-                0x0000022c       0x21 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+                0x0000022c       0x21 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
  .ARM.attributes
-                0x0000024d       0x21 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+                0x0000024d       0x21 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
  .ARM.attributes
-                0x0000026e       0x21 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
+                0x0000026e       0x21 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
  .ARM.attributes
-                0x0000028f       0x21 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
+                0x0000028f       0x21 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
  .ARM.attributes
-                0x000002b0       0x21 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
+                0x000002b0       0x21 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
 
 .comment        0x00000000       0x68
  .comment       0x00000000       0x68 arch/arm/cpu/armv7/libarmv7.o
@@ -1070,7 +1070,7 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .comment       0x00000000       0xd2 drivers/serial/libserial.o
  .comment       0x00000000       0x69 fs/fat/libfat.o
  .comment       0x00000000      0x276 lib/libgeneric.o
- .comment       0x00000000       0x69 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .comment       0x00000000       0x69 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
 .note.GNU-stack
                 0x00000000        0x0
@@ -1099,49 +1099,49 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .note.GNU-stack
                 0x00000000        0x0 lib/libgeneric.o
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+                0x00000000        0x0 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+                0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+                0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
+                0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_lshrdi3.o)
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
+                0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_ashldi3.o)
  .note.GNU-stack
-                0x00000000        0x0 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
+                0x00000000        0x0 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_dvmd_lnx.o)
 
-.debug_line     0x00000000     0x5f4b
+.debug_line     0x00000000     0x6625
  .debug_line    0x00000000       0xa6 arch/arm/cpu/armv7/start.o
- .debug_line    0x000000a6       0xa5 arch/arm/cpu/armv7/libarmv7.o
- .debug_line    0x0000014b      0x901 arch/arm/cpu/armv7/omap-common/libomap-common.o
- .debug_line    0x00000a4c      0x496 arch/arm/cpu/armv7/ti81xx/libti81xx.o
- .debug_line    0x00000ee2      0x582 board/forlinx/ok335x/libok335x.o
- .debug_line    0x00001464      0xa8a common/libcommon.o
- .debug_line    0x00001eee      0x468 disk/libdisk.o
- .debug_line    0x00002356      0x308 drivers/i2c/libi2c.o
- .debug_line    0x0000265e      0xad0 drivers/mmc/libmmc.o
- .debug_line    0x0000312e     0x1723 drivers/mtd/nand/libnand.o
- .debug_line    0x00004851      0x360 drivers/serial/libserial.o
- .debug_line    0x00004bb1      0x5c6 fs/fat/libfat.o
- .debug_line    0x00005177      0xd54 lib/libgeneric.o
- .debug_line    0x00005ecb       0x80 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .debug_line    0x000000a6       0xb8 arch/arm/cpu/armv7/libarmv7.o
+ .debug_line    0x0000015e      0xa6a arch/arm/cpu/armv7/omap-common/libomap-common.o
+ .debug_line    0x00000bc8      0x51b arch/arm/cpu/armv7/ti81xx/libti81xx.o
+ .debug_line    0x000010e3      0x5e1 board/forlinx/ok335x/libok335x.o
+ .debug_line    0x000016c4      0xb12 common/libcommon.o
+ .debug_line    0x000021d6      0x4da disk/libdisk.o
+ .debug_line    0x000026b0      0x341 drivers/i2c/libi2c.o
+ .debug_line    0x000029f1      0xb68 drivers/mmc/libmmc.o
+ .debug_line    0x00003559     0x1853 drivers/mtd/nand/libnand.o
+ .debug_line    0x00004dac      0x3d2 drivers/serial/libserial.o
+ .debug_line    0x0000517e      0x5ff fs/fat/libfat.o
+ .debug_line    0x0000577d      0xe15 lib/libgeneric.o
+ .debug_line    0x00006592       0x93 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
-.debug_info     0x00000000    0x1bc55
- .debug_info    0x00000000       0x61 arch/arm/cpu/armv7/start.o
- .debug_info    0x00000061      0x1dd arch/arm/cpu/armv7/libarmv7.o
- .debug_info    0x0000023e     0x265b arch/arm/cpu/armv7/omap-common/libomap-common.o
- .debug_info    0x00002899     0x1125 arch/arm/cpu/armv7/ti81xx/libti81xx.o
- .debug_info    0x000039be     0x237c board/forlinx/ok335x/libok335x.o
- .debug_info    0x00005d3a     0x2523 common/libcommon.o
- .debug_info    0x0000825d     0x1480 disk/libdisk.o
- .debug_info    0x000096dd     0x1011 drivers/i2c/libi2c.o
- .debug_info    0x0000a6ee     0x3826 drivers/mmc/libmmc.o
- .debug_info    0x0000df14     0x9068 drivers/mtd/nand/libnand.o
- .debug_info    0x00016f7c     0x10b5 drivers/serial/libserial.o
- .debug_info    0x00018031     0x1c98 fs/fat/libfat.o
- .debug_info    0x00019cc9     0x1e8c lib/libgeneric.o
- .debug_info    0x0001bb55      0x100 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+.debug_info     0x00000000    0x1bca1
+ .debug_info    0x00000000       0x74 arch/arm/cpu/armv7/start.o
+ .debug_info    0x00000074      0x1dd arch/arm/cpu/armv7/libarmv7.o
+ .debug_info    0x00000251     0x266e arch/arm/cpu/armv7/omap-common/libomap-common.o
+ .debug_info    0x000028bf     0x114b arch/arm/cpu/armv7/ti81xx/libti81xx.o
+ .debug_info    0x00003a0a     0x237c board/forlinx/ok335x/libok335x.o
+ .debug_info    0x00005d86     0x2523 common/libcommon.o
+ .debug_info    0x000082a9     0x1480 disk/libdisk.o
+ .debug_info    0x00009729     0x1011 drivers/i2c/libi2c.o
+ .debug_info    0x0000a73a     0x3826 drivers/mmc/libmmc.o
+ .debug_info    0x0000df60     0x9068 drivers/mtd/nand/libnand.o
+ .debug_info    0x00016fc8     0x10b5 drivers/serial/libserial.o
+ .debug_info    0x0001807d     0x1c98 fs/fat/libfat.o
+ .debug_info    0x00019d15     0x1e8c lib/libgeneric.o
+ .debug_info    0x0001bba1      0x100 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
 .debug_abbrev   0x00000000     0x555d
  .debug_abbrev  0x00000000       0x14 arch/arm/cpu/armv7/start.o
@@ -1157,7 +1157,7 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .debug_abbrev  0x0000445a      0x3ec drivers/serial/libserial.o
  .debug_abbrev  0x00004846      0x40e fs/fat/libfat.o
  .debug_abbrev  0x00004c54      0x852 lib/libgeneric.o
- .debug_abbrev  0x000054a6       0xb7 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .debug_abbrev  0x000054a6       0xb7 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
 .debug_aranges  0x00000000      0xd48
  .debug_aranges
@@ -1187,7 +1187,7 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .debug_aranges
                 0x00000b50      0x1d0 lib/libgeneric.o
  .debug_aranges
-                0x00000d20       0x28 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+                0x00000d20       0x28 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
 .debug_frame    0x00000000     0x213c
  .debug_frame   0x00000000       0x50 arch/arm/cpu/armv7/libarmv7.o
@@ -1202,37 +1202,37 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .debug_frame   0x00001934      0x190 drivers/serial/libserial.o
  .debug_frame   0x00001ac4      0x1a8 fs/fat/libfat.o
  .debug_frame   0x00001c6c      0x458 lib/libgeneric.o
- .debug_frame   0x000020c4       0x38 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
- .debug_frame   0x000020fc       0x20 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
- .debug_frame   0x0000211c       0x20 /home/Qt/ti-processor-sdk-linux-am335x-evm-01.00.00.00/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
+ .debug_frame   0x000020c4       0x38 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .debug_frame   0x000020fc       0x20 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_udivsi3.o)
+ .debug_frame   0x0000211c       0x20 /home/sbc7116/aplex/linux-devkit/sysroots/i686-arago-linux/usr/bin/../lib/gcc/arm-linux-gnueabihf/4.7.3/libgcc.a(_divsi3.o)
 
-.debug_str      0x00000000     0x3fd2
- .debug_str     0x00000000      0x112 arch/arm/cpu/armv7/libarmv7.o
-                                0x156 (size before relaxing)
- .debug_str     0x00000112      0x772 arch/arm/cpu/armv7/omap-common/libomap-common.o
-                               0x1332 (size before relaxing)
- .debug_str     0x00000884      0x38a arch/arm/cpu/armv7/ti81xx/libti81xx.o
-                                0x7ae (size before relaxing)
- .debug_str     0x00000c0e      0xf27 board/forlinx/ok335x/libok335x.o
-                               0x148c (size before relaxing)
- .debug_str     0x00001b35      0x561 common/libcommon.o
-                                0xd68 (size before relaxing)
- .debug_str     0x00002096      0x261 disk/libdisk.o
-                                0x749 (size before relaxing)
- .debug_str     0x000022f7       0xef drivers/i2c/libi2c.o
-                                0x334 (size before relaxing)
- .debug_str     0x000023e6      0x394 drivers/mmc/libmmc.o
-                                0xb05 (size before relaxing)
- .debug_str     0x0000277a      0xed5 drivers/mtd/nand/libnand.o
-                               0x28eb (size before relaxing)
- .debug_str     0x0000364f      0x229 drivers/serial/libserial.o
-                                0x710 (size before relaxing)
- .debug_str     0x00003878      0x4a6 fs/fat/libfat.o
-                                0x726 (size before relaxing)
- .debug_str     0x00003d1e      0x257 lib/libgeneric.o
-                                0x8fe (size before relaxing)
- .debug_str     0x00003f75       0x5d /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
-                                0x118 (size before relaxing)
+.debug_str      0x00000000     0x40c9
+ .debug_str     0x00000000      0x125 arch/arm/cpu/armv7/libarmv7.o
+                                0x169 (size before relaxing)
+ .debug_str     0x00000125      0x785 arch/arm/cpu/armv7/omap-common/libomap-common.o
+                               0x13a4 (size before relaxing)
+ .debug_str     0x000008aa      0x39d arch/arm/cpu/armv7/ti81xx/libti81xx.o
+                                0x7fa (size before relaxing)
+ .debug_str     0x00000c47      0xf3a board/forlinx/ok335x/libok335x.o
+                               0x14c5 (size before relaxing)
+ .debug_str     0x00001b81      0x574 common/libcommon.o
+                                0xdb4 (size before relaxing)
+ .debug_str     0x000020f5      0x274 disk/libdisk.o
+                                0x76f (size before relaxing)
+ .debug_str     0x00002369      0x102 drivers/i2c/libi2c.o
+                                0x347 (size before relaxing)
+ .debug_str     0x0000246b      0x3a7 drivers/mmc/libmmc.o
+                                0xb2b (size before relaxing)
+ .debug_str     0x00002812      0xee8 drivers/mtd/nand/libnand.o
+                               0x2937 (size before relaxing)
+ .debug_str     0x000036fa      0x23c drivers/serial/libserial.o
+                                0x736 (size before relaxing)
+ .debug_str     0x00003936      0x4b9 fs/fat/libfat.o
+                                0x739 (size before relaxing)
+ .debug_str     0x00003def      0x26a lib/libgeneric.o
+                                0x970 (size before relaxing)
+ .debug_str     0x00004059       0x70 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+                                0x12b (size before relaxing)
 
 .debug_loc      0x00000000    0x109d1
  .debug_loc     0x00000000      0x19d arch/arm/cpu/armv7/libarmv7.o
@@ -1247,7 +1247,7 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .debug_loc     0x0000c6ab      0x377 drivers/serial/libserial.o
  .debug_loc     0x0000ca22     0x16a5 fs/fat/libfat.o
  .debug_loc     0x0000e0c7     0x28be lib/libgeneric.o
- .debug_loc     0x00010985       0x4c /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .debug_loc     0x00010985       0x4c /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
 
 .debug_ranges   0x00000000     0x1838
  .debug_ranges  0x00000000       0x20 arch/arm/cpu/armv7/libarmv7.o
@@ -1262,4 +1262,4 @@ OUTPUT(u-boot-spl elf32-littlearm)
  .debug_ranges  0x00001390      0x108 drivers/serial/libserial.o
  .debug_ranges  0x00001498      0x190 fs/fat/libfat.o
  .debug_ranges  0x00001628      0x1f8 lib/libgeneric.o
- .debug_ranges  0x00001820       0x18 /home/Qt/uboot/u-boot-2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o
+ .debug_ranges  0x00001820       0x18 /home/sbc7116/aplex/board-support/u-boot_2011.09/ok335x/spl/arch/arm/lib/eabi_compat.o

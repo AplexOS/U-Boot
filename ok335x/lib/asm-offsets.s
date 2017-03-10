@@ -19,7 +19,7 @@
 	.type	main, %function
 main:
 .LFB72:
-	.file 1 "/home/Qt/uboot/u-boot-2011.09/lib/asm-offsets.c"
+	.file 1 "/home/sbc7116/aplex/board-support/u-boot_2011.09/lib/asm-offsets.c"
 	.loc 1 23 0
 	.cfi_startproc
 	@ args = 0, pretend = 0, frame = 0
@@ -27,12 +27,12 @@ main:
 	@ link register save eliminated.
 	.loc 1 25 0
 #APP
-@ 25 "/home/Qt/uboot/u-boot-2011.09/lib/asm-offsets.c" 1
+@ 25 "/home/sbc7116/aplex/board-support/u-boot_2011.09/lib/asm-offsets.c" 1
 	
 ->GENERATED_GBL_DATA_SIZE #128 (sizeof(struct global_data) + 15) & ~15
 @ 0 "" 2
 	.loc 1 28 0
-@ 28 "/home/Qt/uboot/u-boot-2011.09/lib/asm-offsets.c" 1
+@ 28 "/home/sbc7116/aplex/board-support/u-boot_2011.09/lib/asm-offsets.c" 1
 	
 ->GENERATED_BD_INFO_SIZE #32 (sizeof(struct bd_info) + 15) & ~15
 @ 0 "" 2
@@ -217,8 +217,8 @@ main:
 	.ascii	"long long int\000"
 .LASF5:
 	.ascii	"unsigned int\000"
-.LASF13:
-	.ascii	"/home/Qt/uboot/u-boot-2011.09\000"
+.LASF14:
+	.ascii	"main\000"
 .LASF1:
 	.ascii	"long unsigned int\000"
 .LASF7:
@@ -232,13 +232,14 @@ main:
 .LASF9:
 	.ascii	"long int\000"
 .LASF12:
-	.ascii	"/home/Qt/uboot/u-boot-2011.09/lib/asm-offsets.c\000"
+	.ascii	"/home/sbc7116/aplex/board-support/u-boot_2011.09/li"
+	.ascii	"b/asm-offsets.c\000"
 .LASF2:
 	.ascii	"short unsigned int\000"
 .LASF3:
 	.ascii	"signed char\000"
-.LASF14:
-	.ascii	"main\000"
+.LASF13:
+	.ascii	"/home/sbc7116/aplex/board-support/u-boot_2011.09\000"
 .LASF4:
 	.ascii	"short int\000"
 .LASF8:

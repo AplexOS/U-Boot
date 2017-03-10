@@ -64,7 +64,7 @@
 	"nandrootfstype=ubifs rootwait=1\0" 
 #else
 #define CON		\
-	"console=ttyO0,115200n8\0" \
+	"console=ttyO1,115200n8\0" \
 	"optargs=\0" \
 	"mmcroot=/dev/mmcblk0p2 ro\0" \
 	"mmcrootfstype=ext3 rootwait\0" \
@@ -174,8 +174,8 @@
 			"setenv fdtfile am335x-evmsk.dtb; fi\0" \
     "auto_update_nand=  echo ---------------Begin update system to Nand---------------;led all on;"\
     			"setenv TYPE 0;nand erase.chip;mmc rescan; "\
-                "setenv TYPE 1;fatload mmc 0 80A00000 nand_MLO;		 setenv TYPE 2;nandecc hw 2;nand write.i 80A00000 0 ${filesize}; "\
-				"setenv TYPE 3;fatload mmc 0 80A00000 nand_u-boot.img;setenv TYPE 4;nandecc hw 2;nand write.i 80A00000 80000 ${filesize}; "\
+                "setenv TYPE 1;fatload mmc 0 80A00000 MLO;		 setenv TYPE 2;nandecc hw 2;nand write.i 80A00000 0 ${filesize}; "\
+				"setenv TYPE 3;fatload mmc 0 80A00000 u-boot.img;setenv TYPE 4;nandecc hw 2;nand write.i 80A00000 80000 ${filesize}; "\
                 "setenv TYPE 5;fatload mmc 0 80A00000 uImage;	 setenv TYPE 6;nandecc hw 2;nand write.i 80A00000 280000 ${filesize}; "\
                 "setenv TYPE 7;fatload mmc 0 80A00000 ubi.img;	 setenv TYPE 8;nandecc sw;nand write.i 80A00000 780000 ${filesize};"\
                 "echo ;"\
@@ -247,11 +247,7 @@
 #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
 #define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
 
-#if defined(CONFIG_OK335XS2)
-#define PHYS_DRAM_1_SIZE		0x08000000	/* 128 MiB */
-#else
-#define PHYS_DRAM_1_SIZE		0x20000000	/* 512 MiB */
-#endif
+#define PHYS_DRAM_1_SIZE		0x10000000	/* 256 MiB  DDR3 */
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
 #define CONFIG_SYS_INIT_RAM_ADDR	SRAM0_START
@@ -355,7 +351,7 @@
  */
 #define CONFIG_SERIAL1			1
 #define CONFIG_SERIAL2          1
-#define CONFIG_CONS_INDEX		1
+#define CONFIG_CONS_INDEX		2
 #define CONFIG_SYS_CONSOLE_INFO_QUIET
 
 #define CONFIG_CMD_NET
