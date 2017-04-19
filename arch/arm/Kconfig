@@ -365,6 +365,14 @@ config TARGET_AM335X_BALTOS
 	select DM_SERIAL
 	select DM_GPIO
 
+config TARGET_AM335X_SBC7109
+    bool "Support am335x_sbc7109"
+    select CPU_V7
+    select SUPPORT_SPL
+    select DM
+    select DM_SERIAL
+    select DM_GPIO
+
 config TARGET_AM335X_EVM
 	bool "Support am335x_evm"
 	select CPU_V7
@@ -883,6 +891,7 @@ source "board/vscom/baltos/Kconfig"
 source "board/woodburn/Kconfig"
 source "board/work-microwave/work_92105/Kconfig"
 source "board/zipitz2/Kconfig"
+source "board/sbc7109/Kconfig"
 
 source "arch/arm/Kconfig.debug"
 
