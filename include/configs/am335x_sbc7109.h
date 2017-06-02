@@ -104,6 +104,7 @@
 	"bootfile=zImage\0" \
 	"fdtfile=undefined\0" \
 	"console=ttyO0,115200n8\0" \
+	"verify=n\0" \
 	"partitions=" \
 		"uuid_disk=${uuid_gpt_disk};" \
 		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
@@ -197,12 +198,12 @@
 #endif
 
 #define CONFIG_BOOTCOMMAND \
-	"run findfdt; " \
 	"run mmcboot;" \
 	"setenv mmcdev 1; " \
 	"setenv bootpart 1:2; " \
-	"run mmcboot;" \
-	"run nandboot;"
+	"run mmcboot;"
+
+#define CONFIG_BOOTDELAY        0
 
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
@@ -274,6 +275,7 @@
  * add mass storage support and for gadget we add both RNDIS ethernet
  * and DFU.
  */
+#if 0
 #define CONFIG_USB_MUSB_DSPS
 #define CONFIG_ARCH_MISC_INIT
 #define CONFIG_USB_MUSB_PIO_ONLY
@@ -292,6 +294,7 @@
 #define CONFIG_USB_ETH_RNDIS
 #define CONFIG_USBNET_HOST_ADDR	"de:ad:be:af:00:00"
 #endif /* CONFIG_USB_MUSB_GADGET */
+#endif
 
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_USBETH_SUPPORT)
 /* disable host part of MUSB in SPL */
@@ -313,6 +316,7 @@
 #define CONFIG_PHY_ATHEROS
 
 /* NAND support */
+#undef CONFIG_NAND
 #ifdef CONFIG_NAND
 #define CONFIG_CMD_NAND
 #define GPMC_NAND_ECC_LP_x8_LAYOUT	1
