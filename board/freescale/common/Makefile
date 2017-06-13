@@ -67,6 +67,7 @@ obj-${CONFIG_ANDROID_RECOVERY} += recovery.o
 endif
 
 obj-$(CONFIG_LS102XA_STREAM_ID)	+= ls102xa_stream_id.o
+obj-${CONFIG_SPLASH_SCREEN}	+= fsl_bmp_reversed_600x400.o
 
 # deal with common files for P-series corenet based devices
 obj-$(CONFIG_P2041RDB)	+= p_corenet/

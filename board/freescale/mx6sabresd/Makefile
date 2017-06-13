@@ -11,3 +11,4 @@ obj-y  := mx6sabresd.o
 extra-$(CONFIG_USE_PLUGIN) :=  plugin.bin
 $(obj)/plugin.bin: $(obj)/plugin.o
 	$(OBJCOPY) -O binary --gap-fill 0xff $< $@
+obj-y	+= eeprom_info.o
