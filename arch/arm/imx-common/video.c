@@ -10,7 +10,9 @@ int board_video_skip(void)
 {
 	int i;
 	int ret;
+	char *s=getenv("disp_num");
 	char const *panel = getenv("panel");
+	int disp_num= s ? (int)simple_strtol(s, NULL, 10) : 0;
 
 	if (!panel) {
 		for (i = 0; i < display_count; i++) {
@@ -34,7 +36,7 @@ int board_video_skip(void)
 	}
 
 	if (i < display_count) {
-		ret = ipuv3_fb_init(&displays[i].mode, 0,
+		ret = ipuv3_fb_init(&displays[i].mode, disp_num,
 				    displays[i].pixfmt);
 		if (!ret) {
 			if (displays[i].enable)

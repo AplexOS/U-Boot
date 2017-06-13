@@ -52,8 +52,14 @@
 #endif
 #endif /*CONFIG_FSL_FASTBOOT*/
 
-DECLARE_GLOBAL_DATA_PTR;
+#ifdef CONFIG_UBOOT_LOGO_ENABLE_OVER_8BITS
+#include <asm/imx-common/imx_pwm.h>
+#include <asm/imx-common/mxc_ipu.h>
+#endif
 
+#include "eeprom_info.h"
+
+DECLARE_GLOBAL_DATA_PTR;
 #define UART_PAD_CTRL  (PAD_CTL_PUS_100K_UP |			\
 	PAD_CTL_SPEED_MED | PAD_CTL_DSE_40ohm |			\
 	PAD_CTL_SRE_FAST  | PAD_CTL_HYS)
@@ -87,6 +93,145 @@ DECLARE_GLOBAL_DATA_PTR;
 #define DISP0_PWR_EN	IMX_GPIO_NR(1, 21)
 #define EPDC_PAD_CTRL    (PAD_CTL_PKE | PAD_CTL_SPEED_MED |	\
 	PAD_CTL_DSE_40ohm | PAD_CTL_HYS)
+#define LVDS_VCC_PORT1	IMX_GPIO_NR(3, 16)
+#define LVDS_VCC_PORT2	IMX_GPIO_NR(3, 17)
+
+extern unsigned char fsl_bmp_reversed_600x400[];
+extern int fsl_bmp_reversed_600x400_size;
+extern int g_ipu_hw_rev;
+
+extern int video_display_bitmap(ulong bmp_image, int x, int y);
+extern int display_clk_config(u32 clk_type, u32 freq);
+
+static void set_LVDS_VCC(int port, int status)
+{
+	if(port==1)
+	{
+		imx_iomux_v3_setup_pad(MX6_PAD_EIM_D16__GPIO3_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL));
+		gpio_direction_output(LVDS_VCC_PORT1,status);
+	}
+	if(port==2)
+	{
+		imx_iomux_v3_setup_pad(MX6_PAD_EIM_D17__GPIO3_IO17 | MUX_PAD_CTRL(NO_PAD_CTRL));
+		gpio_direction_output(LVDS_VCC_PORT2,status);
+	}
+	if(port==3)
+	{
+		imx_iomux_v3_setup_pad(MX6_PAD_EIM_D16__GPIO3_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL));
+		gpio_direction_output(LVDS_VCC_PORT1,status);
+		imx_iomux_v3_setup_pad(MX6_PAD_EIM_D17__GPIO3_IO17 | MUX_PAD_CTRL(NO_PAD_CTRL));
+		gpio_direction_output(LVDS_VCC_PORT2,status);
+	}
+	return ;
+}
+
+void bmp_data_tranfer(char * destaddr, u32 value)
+{
+	u32 ovalue=0x0+value;
+
+	while(ovalue>0)
+	{
+		*destaddr=(uchar)ovalue&0xff;
+		ovalue=ovalue>>8;
+		destaddr++;
+	}
+	*destaddr=0x0;
+}
+
+void set_bmp_header(char * destaddr, int width, int high)
+{
+	bmp_data_tranfer(destaddr+2, 0x436+width*high);
+	bmp_data_tranfer(destaddr+18, width);
+	bmp_data_tranfer(destaddr+22, high);
+	return;
+}
+
+int get_bmp_4byte(char * srcaddr)
+{
+	int ret=0;
+	int i;
+	for(i=0;i<4;i++)
+	{
+		ret=ret*256+srcaddr[3-i];
+	}
+	return ret;
+}
+
+void set_panel_env(void)
+{
+	char tmpchar[128]={0};
+	uchar color_depth=eeprom_i2c_get_color_depth();
+	switch(eeprom_i2c_get_EDID())
+	{
+		case RESOLUTION_640X480:
+			sprintf(tmpchar,"panel640x480d%d",color_depth);
+			break;
+		default:
+		case RESOLUTION_800X480:
+			sprintf(tmpchar,"panel800x480d%d",color_depth);
+			break;
+		case RESOLUTION_800X600:
+			sprintf(tmpchar,"panel800x600d%d",color_depth);
+			break;
+		case RESOLUTION_1024X600:
+			sprintf(tmpchar,"panel1024x600d%d",color_depth);
+			break;
+		case RESOLUTION_1024X768:
+			sprintf(tmpchar,"panel1024x768d%d",color_depth);
+			break;
+		case RESOLUTION_1280X800:
+			sprintf(tmpchar,"panel1280x800d%d",color_depth);
+			break;
+		case RESOLUTION_1366X768:
+			sprintf(tmpchar,"panel1366x768d%d",color_depth);
+			break;
+		case RESOLUTION_1920X1080:
+			sprintf(tmpchar,"panel1920x1080d%d",color_depth);
+			break;
+	}
+	setenv("panel",tmpchar);
+	setenv("lvds_num","1");//lvds1 route to di 1
+	setenv("disp_num","1");//lvds1 route to di 1
+}
+
+void copy_bmp_screen(char * destaddr,char * srcaddr, int width,int high)
+{
+	u32 offset=0x0;
+	int i=0;
+	int bmpwidth=280;
+	int bmphigh=168;
+	extern unsigned char fsl_bmp_reversed_pass[];
+//	char tmp[128]={0};
+
+	memset((char *)destaddr, 0x0, (width+2)*high+0x436);
+	if(eeprom_i2c_pass_logo()==0)
+	{
+		bmpwidth=get_bmp_4byte((char *) srcaddr+18);
+		bmphigh=get_bmp_4byte((char *) srcaddr+22);
+		memcpy((char *)destaddr, (char *)srcaddr,0x436);
+	}
+	else
+	{
+		bmpwidth=get_bmp_4byte((char *) fsl_bmp_reversed_pass+18);
+		bmphigh=get_bmp_4byte((char *) fsl_bmp_reversed_pass+22);
+		memcpy((char *)destaddr, (char *)fsl_bmp_reversed_pass,0x436);
+	}
+//	sprintf(tmp,"(%d,%d)\n",bmpwidth,bmphigh);
+//	puts(tmp);
+	set_bmp_header(destaddr,width,high);
+	if(width==1366)width=1368;
+	for(i=0;i<bmphigh;i++)
+	{
+		if(width==1920)
+			offset=0x436+width*(high/2-bmphigh/2+i)+(width -bmpwidth)/2-430;
+		else
+			offset=0x436+width*(high/2-bmphigh/2+i)+(width -bmpwidth)/2;
+		if(eeprom_i2c_pass_logo()==0)
+			memcpy((char *)destaddr+offset, (char *)srcaddr+(u32)(0x436+bmpwidth*i),bmpwidth);
+		else
+			memcpy((char *)destaddr+offset, (char *)fsl_bmp_reversed_pass+(u32)(0x436+bmpwidth*i),bmpwidth);
+	}
+}
 
 int dram_init(void)
 {
@@ -136,11 +281,11 @@ static iomux_v3_cfg_t const usdhc2_pads[] = {
 	MX6_PAD_SD2_DAT1__SD2_DATA1	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD2_DAT2__SD2_DATA2	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD2_DAT3__SD2_DATA3	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D4__SD2_DATA4	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D5__SD2_DATA5	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D6__SD2_DATA6	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D7__SD2_DATA7	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D2__GPIO2_IO02	| MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
+	//MX6_PAD_NANDF_D4__SD2_DATA4	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_NANDF_D5__SD2_DATA5	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_NANDF_D6__SD2_DATA6	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_NANDF_D7__SD2_DATA7	| MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_NANDF_D2__GPIO2_IO02	| MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
 };
 
 static iomux_v3_cfg_t const usdhc3_pads[] = {
@@ -150,11 +295,11 @@ static iomux_v3_cfg_t const usdhc3_pads[] = {
 	MX6_PAD_SD3_DAT1__SD3_DATA1 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT2__SD3_DATA2 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 	MX6_PAD_SD3_DAT3__SD3_DATA3 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD3_DAT4__SD3_DATA4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD3_DAT5__SD3_DATA5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD3_DAT6__SD3_DATA6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_SD3_DAT7__SD3_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
-	MX6_PAD_NANDF_D0__GPIO2_IO00    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
+	//MX6_PAD_SD3_DAT4__SD3_DATA4 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_SD3_DAT5__SD3_DATA5 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_SD3_DAT6__SD3_DATA6 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_SD3_DAT7__SD3_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
+	//MX6_PAD_NANDF_D0__GPIO2_IO00    | MUX_PAD_CTRL(NO_PAD_CTRL), /* CD */
 };
 
 static iomux_v3_cfg_t const usdhc4_pads[] = {
@@ -170,7 +315,8 @@ static iomux_v3_cfg_t const usdhc4_pads[] = {
 	MX6_PAD_SD4_DAT7__SD4_DATA7 | MUX_PAD_CTRL(USDHC_PAD_CTRL),
 };
 
-#ifdef CONFIG_MXC_SPI
+#if 0
+//#ifdef CONFIG_MXC_SPI
 static iomux_v3_cfg_t const ecspi1_pads[] = {
 	MX6_PAD_KEY_COL0__ECSPI1_SCLK | MUX_PAD_CTRL(SPI_PAD_CTRL),
 	MX6_PAD_KEY_COL1__ECSPI1_MISO | MUX_PAD_CTRL(SPI_PAD_CTRL),
@@ -221,13 +367,13 @@ static iomux_v3_cfg_t const rgb_pads[] = {
 	MX6_PAD_DISP0_DAT23__IPU1_DISP0_DATA23 | MUX_PAD_CTRL(NO_PAD_CTRL),
 	MX6_PAD_SD1_DAT3__GPIO1_IO21 | MUX_PAD_CTRL(NO_PAD_CTRL),
 };
-
+#if 0
 static void enable_rgb(struct display_info_t const *dev)
 {
 	imx_iomux_v3_setup_multiple_pads(rgb_pads, ARRAY_SIZE(rgb_pads));
 	gpio_direction_output(DISP0_PWR_EN, 1);
 }
-
+#endif
 static struct i2c_pads_info i2c_pad_info1 = {
 	.scl = {
 		.i2c_mode = MX6_PAD_KEY_COL3__I2C2_SCL | I2C_PAD,
@@ -238,6 +384,19 @@ static struct i2c_pads_info i2c_pad_info1 = {
 		.i2c_mode = MX6_PAD_KEY_ROW3__I2C2_SDA | I2C_PAD,
 		.gpio_mode = MX6_PAD_KEY_ROW3__GPIO4_IO13 | I2C_PAD,
 		.gp = IMX_GPIO_NR(4, 13)
+	}
+};
+
+static struct i2c_pads_info i2c_pad_info2 = {
+	.scl = {
+		.i2c_mode = MX6_PAD_GPIO_3__I2C3_SCL | I2C_PAD,
+		.gpio_mode = MX6_PAD_GPIO_3__GPIO1_IO03 | I2C_PAD,
+		.gp = IMX_GPIO_NR(1, 3)
+	},
+	.sda = {
+		.i2c_mode = MX6_PAD_GPIO_6__I2C3_SDA | I2C_PAD,
+		.gpio_mode =  MX6_PAD_GPIO_6__GPIO1_IO06 | I2C_PAD,
+		.gp = IMX_GPIO_NR(1, 6)
 	}
 };
 
@@ -346,8 +505,13 @@ int mmc_map_to_kernel_blk(int dev_no)
 	return dev_no + 1;
 }
 
+#ifndef CONFIG_SBC7112
 #define USDHC2_CD_GPIO	IMX_GPIO_NR(2, 2)
 #define USDHC3_CD_GPIO	IMX_GPIO_NR(2, 0)
+#else
+//#define USDHC2_CD_GPIO	IMX_GPIO_NR(2, 2)
+#define USDHC3_CD_GPIO	IMX_GPIO_NR(4, 10)//mmc cd by aplex 
+#endif
 
 int board_mmc_getcd(struct mmc *mmc)
 {
@@ -356,7 +520,11 @@ int board_mmc_getcd(struct mmc *mmc)
 
 	switch (cfg->esdhc_base) {
 	case USDHC2_BASE_ADDR:
+#ifndef CONFIG_SBC7112
 		ret = !gpio_get_value(USDHC2_CD_GPIO);
+#else
+		ret =0; /* aplex */
+#endif
 		break;
 	case USDHC3_BASE_ADDR:
 		ret = !gpio_get_value(USDHC3_CD_GPIO);
@@ -382,12 +550,15 @@ int board_mmc_init(bd_t *bis)
 	 * mmc1                    SD3
 	 * mmc2                    eMMC
 	 */
+	//printf("%s:%s:%i: here i am\n", __FILE__, __func__, __LINE__);
 	for (i = 0; i < CONFIG_SYS_FSL_USDHC_NUM; i++) {
 		switch (i) {
 		case 0:
 			imx_iomux_v3_setup_multiple_pads(
 				usdhc2_pads, ARRAY_SIZE(usdhc2_pads));
+#ifndef CONFIG_SBC7112
 			gpio_direction_input(USDHC2_CD_GPIO);
+#endif
 			usdhc_cfg[0].sdhc_clk = mxc_get_clock(MXC_ESDHC2_CLK);
 			break;
 		case 1:
@@ -413,6 +584,7 @@ int board_mmc_init(bd_t *bis)
 			return ret;
 	}
 
+	Load_config_from_mmc();
 	return 0;
 #else
 	struct src *psrc = (struct src *)SRC_BASE_ADDR;
@@ -523,6 +695,7 @@ static void setup_epdc_power(void)
 {
 	/* Setup epdc voltage */
 
+	printf("%s:%s:%i: here i am\n", __FILE__, __func__, __LINE__);
 	/* EIM_A17 - GPIO2[21] for PWR_GOOD status */
 	imx_iomux_v3_setup_pad(MX6_PAD_EIM_A17__GPIO2_IO21 |
 				MUX_PAD_CTRL(EPDC_PAD_CTRL));
@@ -566,6 +739,7 @@ static void epdc_disable_pins(void)
 static void setup_epdc(void)
 {
 	unsigned int reg;
+	printf("%s:%s:%i: here i am\n", __FILE__, __func__, __LINE__);
 	struct mxc_ccm_reg *ccm_regs = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
 
 	/*** epdc Maxim PMIC settings ***/
@@ -725,37 +899,38 @@ static void do_enable_hdmi(struct display_info_t const *dev)
 	imx_enable_hdmi_phy();
 }
 
+/* Add by qinzd 2016-10-26 */
+static iomux_v3_cfg_t const backlight_pads[] = {
+	MX6_PAD_SD1_DAT2__GPIO1_IO19 | MUX_PAD_CTRL(NO_PAD_CTRL),
+	MX6_PAD_SD1_DAT3__GPIO1_IO21 | MUX_PAD_CTRL(NO_PAD_CTRL),
+	MX6_PAD_NANDF_CS2__GPIO6_IO15 | MUX_PAD_CTRL(NO_PAD_CTRL),
+	MX6_PAD_NANDF_CS3__GPIO6_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL),
+};
+
 static void enable_lvds(struct display_info_t const *dev)
 {
-	struct iomuxc *iomux = (struct iomuxc *)
-				IOMUXC_BASE_ADDR;
-	u32 reg = readl(&iomux->gpr[2]);
-	reg |= IOMUXC_GPR2_DATA_WIDTH_CH0_18BIT |
-	       IOMUXC_GPR2_DATA_WIDTH_CH1_18BIT;
-	writel(reg, &iomux->gpr[2]);
+//	struct iomuxc *iomux = (struct iomuxc *)
+//				IOMUXC_BASE_ADDR;
+//	u32 reg = readl(&iomux->gpr[2]);
+//	reg |= IOMUXC_GPR2_DATA_WIDTH_CH0_18BIT |
+//	       IOMUXC_GPR2_DATA_WIDTH_CH1_18BIT;
+//	writel(reg, &iomux->gpr[2]);
+
+	/* Add by qinzd 2016-10-26 */
+	imx_iomux_v3_setup_multiple_pads(backlight_pads, ARRAY_SIZE(backlight_pads));
+	gpio_direction_output(IMX_GPIO_NR(1, 19), 1);
+	gpio_direction_output(IMX_GPIO_NR(1, 21), 1);
+	gpio_direction_output(IMX_GPIO_NR(6, 15), 1);
+	gpio_direction_output(IMX_GPIO_NR(6, 16), 1);
+}
+
+void disable_lvds_gpio(void)
+{
+	gpio_direction_output(IMX_GPIO_NR(6, 15), 0);
+	gpio_direction_output(IMX_GPIO_NR(6, 16), 0);
 }
 
 struct display_info_t const displays[] = {{
-	.bus	= -1,
-	.addr	= 0,
-	.pixfmt	= IPU_PIX_FMT_RGB666,
-	.detect	= NULL,
-	.enable	= enable_lvds,
-	.mode	= {
-		.name           = "Hannstar-XGA",
-		.refresh        = 60,
-		.xres           = 1024,
-		.yres           = 768,
-		.pixclock       = 15385,
-		.left_margin    = 220,
-		.right_margin   = 40,
-		.upper_margin   = 21,
-		.lower_margin   = 7,
-		.hsync_len      = 60,
-		.vsync_len      = 10,
-		.sync           = FB_SYNC_EXT,
-		.vmode          = FB_VMODE_NONINTERLACED
-} }, {
 	.bus	= -1,
 	.addr	= 0,
 	.pixfmt	= IPU_PIX_FMT_RGB24,
@@ -776,26 +951,301 @@ struct display_info_t const displays[] = {{
 		.sync           = 0,
 		.vmode          = FB_VMODE_NONINTERLACED
 } }, {
-	.bus	= 0,
+	.bus	= 1,
 	.addr	= 0,
-	.pixfmt	= IPU_PIX_FMT_RGB24,
+	.pixfmt	= IPU_PIX_FMT_RGB666,
 	.detect	= NULL,
-	.enable	= enable_rgb,
+	.enable	= enable_lvds,
 	.mode	= {
-		.name           = "SEIKO-WVGA",
-		.refresh        = 60,
-		.xres           = 800,
-		.yres           = 480,
-		.pixclock       = 29850,
-		.left_margin    = 89,
-		.right_margin   = 164,
-		.upper_margin   = 23,
-		.lower_margin   = 10,
-		.hsync_len      = 10,
-		.vsync_len      = 10,
-		.sync           = 0,
+		.name           = "panel800x480d18",
+		.refresh		= 70,
+		.xres			= 800,
+		.yres			= 480,
+		.pixclock		= 26143,
+		.left_margin	= 110,
+		.right_margin	= 39,
+		.upper_margin	= 15,
+		.lower_margin	= 15,
+		.hsync_len		= 80,
+		.vsync_len		= 21,
+		.sync			= 0,
 		.vmode          = FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel800x480d24",
+		.refresh		= 70,
+		.xres			= 800,
+		.yres			= 480,
+		.pixclock		= 26143,
+		.left_margin	= 110,
+		.right_margin	= 39,
+		.upper_margin	= 15,
+		.lower_margin	= 15,
+		.hsync_len		= 80,
+		.vsync_len		= 21,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB666,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel800x600d18",
+		.refresh		= 59,
+		.xres			= 800,
+		.yres			= 600,
+		.pixclock		= 26143,
+		.left_margin	= 110,
+		.right_margin	= 39,
+		.upper_margin	= 5,
+		.lower_margin	= 20,
+		.hsync_len		= 80,
+		.vsync_len		= 5,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel800x600d24",
+		.refresh		= 59,
+		.xres			= 800,
+		.yres			= 600,
+		.pixclock		= 26143,
+		.left_margin	= 110,
+		.right_margin	= 39,
+		.upper_margin	= 5,
+		.lower_margin	= 20,
+		.hsync_len		= 80,
+		.vsync_len		= 5,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {//leelin
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB666,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1024x600d18",
+		.refresh		= 58,
+		.xres			= 1024,
+		.yres			= 600,
+		.pixclock		= 20623,
+		.left_margin	= 147,
+		.right_margin	= 48,
+		.upper_margin	= 6,	
+		.lower_margin	= 20,
+		.hsync_len		= 104,
+		.vsync_len		= 6,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1024x600d24",
+		.refresh		= 60,
+		.xres			= 1024, //1024+320=1344
+		.yres			= 600,	//600+35=635
+		.pixclock		= 19528,
+		.left_margin	= 220,	//220+40+60=320
+		.right_margin	= 40,
+		.upper_margin	= 18,	//18+7+10=35
+		.lower_margin	= 7,
+		.hsync_len		= 60,
+		.vsync_len		= 10,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB666,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1024x768d18",
+		.refresh		= 60,
+		.xres			= 1024,
+		.yres			= 768,
+		.pixclock		= 15748,
+		.left_margin	= 147,	
+		.right_margin	= 48,
+		.upper_margin	= 5,	
+		.lower_margin	= 21,
+		.hsync_len		= 104,
+		.vsync_len		= 5,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1024x768d24",
+		.refresh		= 60,
+		.xres			= 1024,
+		.yres			= 768,
+		.pixclock		= 15748,
+		.left_margin	= 147,	
+		.right_margin	= 48,
+		.upper_margin	= 5,	
+		.lower_margin	= 21,
+		.hsync_len		= 104,
+		.vsync_len		= 5,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB666,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1280x800d18",
+		.refresh		= 60,
+		.xres			= 1280,
+		.yres			= 800,	//600+35=635
+		.pixclock		= 13966,
+		.left_margin	= 110,	//220+40+60=320
+		.right_margin	= 53,
+		.upper_margin	= 8,	//18+7+10=35
+		.lower_margin	= 8,
+		.hsync_len		= 7,
+		.vsync_len		= 7,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1280x800d24",
+		.refresh		= 60,
+		.xres			= 1280,
+		.yres			= 800,	//600+35=635
+		.pixclock		= 13966,
+		.left_margin	= 110,	//220+40+60=320
+		.right_margin	= 53,
+		.upper_margin	= 8,	//18+7+10=35
+		.lower_margin	= 8,
+		.hsync_len		= 7,
+		.vsync_len		= 7,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB666,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1366x768d18",
+		.refresh		= 60,
+		.xres			= 1366,
+		.yres			= 768,
+		.pixclock		= 13257,
+		.left_margin	= 50,
+		.right_margin	= 50,
+		.upper_margin	= 9,
+		.lower_margin	= 9,
+		.hsync_len		= 94,
+		.vsync_len		= 20,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1366x768d24",
+		.refresh		= 60,
+		.xres			= 1366,
+		.yres			= 768,
+		.pixclock		= 13257,
+		.left_margin	= 50,
+		.right_margin	= 50,
+		.upper_margin	= 9,
+		.lower_margin	= 9,
+		.hsync_len		= 94,
+		.vsync_len		= 20,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB666,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1920x1080d18",
+		.refresh		= 60,
+		.xres			= 1920,
+		.yres			= 1080,
+		.pixclock		= 13250,
+		.left_margin	= 100,
+		.right_margin	= 100,
+		.upper_margin	= 10,
+		.lower_margin	= 10,
+		.hsync_len		= 80,
+		.vsync_len		= 18,
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED
+} }, {
+	.bus	= 1,
+	.addr	= 0,
+	.pixfmt = IPU_PIX_FMT_RGB24,
+	.detect = NULL,
+	.enable = enable_lvds,
+	.mode	= {
+		.name			= "panel1920x1080d24",
+#if 1
+		.refresh		= 60,
+		.xres			= 1920,
+		.yres			= 1080,
+		.pixclock		= 13250,
+		.left_margin	= 100,
+		.right_margin	= 100,
+		.upper_margin	= 10,
+		.lower_margin	= 10,
+		.hsync_len		= 80,
+		.vsync_len		= 18,
+		.sync			= 0,
+#else
+		.refresh		= 60,
+		.xres			= 1920,
+		.yres			= 1080,
+		.pixclock		= 11560,
+		.left_margin	= 328,
+		.right_margin	= 128,
+		.upper_margin	= 3,
+		.lower_margin	= 32,
+		.hsync_len		= 200,
+		.vsync_len		= 5,
+		.sync			= 0,
+#endif
+		.vmode			= FB_VMODE_NONINTERLACED
 } } };
+
 size_t display_count = ARRAY_SIZE(displays);
 
 static void setup_display(void)
@@ -804,6 +1254,7 @@ static void setup_display(void)
 	struct iomuxc *iomux = (struct iomuxc *)IOMUXC_BASE_ADDR;
 	int reg;
 
+	printf("%s:%s:%i: here i am\n", __FILE__, __func__, __LINE__);
 	/* Setup HSYNC, VSYNC, DISP_CLK for debugging purposes */
 	imx_iomux_v3_setup_multiple_pads(di0_pads, ARRAY_SIZE(di0_pads));
 
@@ -854,6 +1305,117 @@ static void setup_display(void)
 }
 #endif /* CONFIG_VIDEO_IPUV3 */
 
+#ifdef CONFIG_UBOOT_LOGO_ENABLE_OVER_8BITS
+#ifdef IPU_OUTPUT_MODE_LCD
+static void ipu_iomux_config(void)
+{
+	iomux_v3_cfg_t display_pads[] = {
+		MX6_PAD_DI0_DISP_CLK__IPU1_DI0_DISP_CLK | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DI0_PIN15__IPU1_DI0_PIN15 | MUX_PAD_CTRL(NO_PAD_CTRL), 	/* DE */
+		MX6_PAD_DI0_PIN2__IPU1_DI0_PIN02 | MUX_PAD_CTRL(NO_PAD_CTRL),		/* HSync */
+		MX6_PAD_DI0_PIN3__IPU1_DI0_PIN03 | MUX_PAD_CTRL(NO_PAD_CTRL),		/* VSync */
+		MX6_PAD_DISP0_DAT0__IPU1_DISP0_DATA00 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT1__IPU1_DISP0_DATA01 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT2__IPU1_DISP0_DATA02 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT3__IPU1_DISP0_DATA03 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT4__IPU1_DISP0_DATA04 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT5__IPU1_DISP0_DATA05 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT6__IPU1_DISP0_DATA06 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT7__IPU1_DISP0_DATA07 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT8__IPU1_DISP0_DATA08 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT9__IPU1_DISP0_DATA09 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT10__IPU1_DISP0_DATA10 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT11__IPU1_DISP0_DATA11 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT12__IPU1_DISP0_DATA12 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT13__IPU1_DISP0_DATA13 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT14__IPU1_DISP0_DATA14 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT15__IPU1_DISP0_DATA15 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT16__IPU1_DISP0_DATA16 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT17__IPU1_DISP0_DATA17 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT18__IPU1_DISP0_DATA18 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT19__IPU1_DISP0_DATA19 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT20__IPU1_DISP0_DATA20 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT21__IPU1_DISP0_DATA21 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT22__IPU1_DISP0_DATA22 | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_DISP0_DAT23__IPU1_DISP0_DATA23 | MUX_PAD_CTRL(NO_PAD_CTRL),
+	};
+
+	imx_iomux_v3_setup_multiple_pads(display_pads,
+			ARRAY_SIZE(display_pads));
+}
+#endif
+
+#ifdef IPU_OUTPUT_MODE_LVDS
+static void setup_lvds_iomux(void)
+{
+	struct pwm_device pwm = {
+		.pwm_id = 0,
+		.pwmo_invert = 0,
+	};
+
+	imx_pwm_config(pwm, 25000, 50000);
+	imx_pwm_enable(pwm);
+
+	/* GPIO backlight */
+	imx_iomux_v3_setup_pad(MX6_PAD_SD1_DAT3__PWM1_OUT | MUX_PAD_CTRL(NO_PAD_CTRL));
+	/* LVDS panel CABC_EN */
+	imx_iomux_v3_setup_pad(MX6_PAD_NANDF_CS2__GPIO6_IO15 | MUX_PAD_CTRL(NO_PAD_CTRL));
+	imx_iomux_v3_setup_pad(MX6_PAD_NANDF_CS3__GPIO6_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL));
+
+	/*
+	 * Set LVDS panel CABC_EN to low to disable
+	 * CABC function. This function will turn backlight
+	 * automatically according to display content, so
+	 * simply disable it to get rid of annoying unstable
+	 * backlight phenomena.
+	 */
+	gpio_direction_output(IMX_GPIO_NR(6, 15), 1);
+	gpio_direction_output(IMX_GPIO_NR(6, 16), 1);
+}
+#endif
+
+#ifdef IPU_OUTPUT_MODE_LCD
+static void setup_lcd_iomux(void)
+{
+	unsigned int reg;
+	struct pwm_device pwm = {
+		.pwm_id = 0,
+		.pwmo_invert = 0,
+	};
+
+	imx_pwm_config(pwm, 25000, 50000);
+	imx_pwm_enable(pwm);
+
+	/* LCD Power */
+	imx_iomux_v3_setup_pad(MX6_PAD_ENET_TXD0__GPIO1_IO30 | MUX_PAD_CTRL(NO_PAD_CTRL));
+	/* LCD reset */
+	imx_iomux_v3_setup_pad(MX6_PAD_EIM_DA8__GPIO3_IO08 | MUX_PAD_CTRL(NO_PAD_CTRL));
+	/* Backlight */
+	imx_iomux_v3_setup_pad(MX6_PAD_SD1_DAT3__PWM1_OUT | MUX_PAD_CTRL(NO_PAD_CTRL));
+
+	/* Set LCD Power to high. */
+	gpio_direction_output(IMX_GPIO_NR(1, 30), 1);
+
+	/* Set LCD reset to high. */
+	gpio_direction_output(IMX_GPIO_NR(3, 8), 1);
+}
+#endif
+
+#ifdef IPU_OUTPUT_MODE_HDMI
+static void setup_hdmi_iomux(void)
+{
+	iomux_v3_cfg_t hdmi_i2c_pads[] = {
+		MX6_PAD_KEY_COL3__HDMI_TX_DDC_SCL | MUX_PAD_CTRL(NO_PAD_CTRL),
+		MX6_PAD_KEY_ROW3__HDMI_TX_DDC_SDA | MUX_PAD_CTRL(NO_PAD_CTRL),
+	};
+
+	imx_iomux_v3_setup_multiple_pads(hdmi_i2c_pads,
+			ARRAY_SIZE(hdmi_i2c_pads));
+}
+#endif
+
+#endif  //CONFIG_UBOOT_LOGO_ENABLE_OVER_8BITS
+
 /*
  * Do not overwrite the console
  * Use always serial for U-Boot console
@@ -877,17 +1439,18 @@ int board_eth_init(bd_t *bis)
 
 static iomux_v3_cfg_t const usb_otg_pads[] = {
 	MX6_PAD_EIM_D22__USB_OTG_PWR | MUX_PAD_CTRL(NO_PAD_CTRL),
-	MX6_PAD_ENET_RX_ER__USB_OTG_ID | MUX_PAD_CTRL(OTG_ID_PAD_CTRL),
+//	MX6_PAD_ENET_RX_ER__USB_OTG_ID | MUX_PAD_CTRL(OTG_ID_PAD_CTRL),
+	MX6_PAD_GPIO_1__USB_OTG_ID | MUX_PAD_CTRL(OTG_ID_PAD_CTRL),
 };
 
-static iomux_v3_cfg_t const usb_hc1_pads[] = {
-	MX6_PAD_ENET_TXD1__GPIO1_IO29 | MUX_PAD_CTRL(NO_PAD_CTRL),
-};
+//static iomux_v3_cfg_t const usb_hc1_pads[] = {
+//	MX6_PAD_ENET_TXD1__GPIO1_IO29 | MUX_PAD_CTRL(NO_PAD_CTRL),
+//};
 
 static void setup_usb(void)
 {
-	imx_iomux_v3_setup_multiple_pads(usb_otg_pads,
-					 ARRAY_SIZE(usb_otg_pads));
+//	imx_iomux_v3_setup_multiple_pads(usb_otg_pads,
+//					 ARRAY_SIZE(usb_otg_pads));
 
 	/*
 	 * set daisy chain for otg_pin_id on 6q.
@@ -895,8 +1458,8 @@ static void setup_usb(void)
 	 */
 	imx_iomux_set_gpr_register(1, 13, 1, 0);
 
-	imx_iomux_v3_setup_multiple_pads(usb_hc1_pads,
-					 ARRAY_SIZE(usb_hc1_pads));
+//	imx_iomux_v3_setup_multiple_pads(usb_hc1_pads,
+//					 ARRAY_SIZE(usb_hc1_pads));
 }
 
 int board_ehci_hcd_init(int port)
@@ -948,12 +1511,21 @@ int board_init(void)
 {
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
-
+	set_LVDS_VCC(3,0);
 #ifdef CONFIG_MXC_SPI
-	setup_spi();
+//	setup_spi();
 #endif
 	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 
+#ifdef CONFIG_EEPROM_GPIO_I2C4
+	/* GPIO to I2C4  SCL*/
+	imx_iomux_v3_setup_pad(MX6_PAD_ENET_TX_EN__GPIO1_IO28 | MUX_PAD_CTRL(NO_PAD_CTRL));
+	/* GPIO to I2C4 SDA*/
+	imx_iomux_v3_setup_pad(MX6_PAD_ENET_TXD1__GPIO1_IO29 | MUX_PAD_CTRL(NO_PAD_CTRL));
+#else
+	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info2);
+#endif
+	eeprom_i2c_init();
 #ifdef CONFIG_USB_EHCI_MX6
 	setup_usb();
 #endif
@@ -965,6 +1537,8 @@ int board_init(void)
 #ifdef CONFIG_CMD_SATA
 	setup_sata();
 #endif
+
+	set_LVDS_VCC(3,1);
 
 	return 0;
 }
@@ -1174,8 +1748,264 @@ static const struct boot_mode board_boot_modes[] = {
 };
 #endif
 
+static void customer_lvds(void)
+{
+	unsigned int reg=0;
+	uchar color_depth=eeprom_i2c_get_color_depth();
+	uchar display_type=eeprom_i2c_get_type();
+	uchar display_edid=eeprom_i2c_get_EDID();
+#if 1
+	if(display_type== 1)
+	{
+		imx_iomux_set_gpr_register(3, 8, 2, 1);
+		//if (display_edid == RESOLUTION_1920X1080)
+		//	reg |= (1 << 10);
+		if (color_depth == 24)
+		{
+			reg |= (1 << 7);
+			if (display_edid == RESOLUTION_1920X1080)
+				reg |= (1 << 5);
+		}
+		reg |= (3 << 2);
+		if (display_edid == RESOLUTION_1920X1080)
+		{
+			reg |= (1 << 4);
+			reg |= (3 << 0);
+		}
+		writel(reg, IOMUXC_BASE_ADDR + 0x8);
+	}
+#else
+#if (LVDS_PORT == 0)
+		if(IPU == 1)
+		{
+			if(DI == 0)
+				imx_iomux_set_gpr_register(3, 6, 2, 0);
+			else if(DI == 1)
+				imx_iomux_set_gpr_register(3, 6, 2, 1);
+		}
+	
+		if(IPU == 2)
+		{
+			if(DI == 0)
+				imx_iomux_set_gpr_register(3, 6, 2, 2);
+			else if(DI == 1)
+				imx_iomux_set_gpr_register(3, 6, 2, 3);
+		}
+#endif
+	
+#if (LVDS_PORT == 1)
+		if(IPU == 1)
+		{
+			if(DI == 0)
+				imx_iomux_set_gpr_register(3, 8, 2, 0);
+			else if(DI == 1)
+				imx_iomux_set_gpr_register(3, 8, 2, 1);
+		}
+	
+		if(IPU == 2)
+		{
+			if(DI == 0)
+				imx_iomux_set_gpr_register(3, 8, 2, 2);
+			else if(DI == 1)
+				imx_iomux_set_gpr_register(3, 8, 2, 3);
+		}
+#endif
+	
+		reg = 0;
+		if (DI == 0)
+			reg |= (DISPLAY_VSYNC_POLARITY << 9);
+		else if(DI == 1)
+			reg |= (DISPLAY_VSYNC_POLARITY << 10);
+	
+#if (LVDS_PORT == 0)
+#if (DISPLAY_IF_BPP == 24)
+		reg |= (1 << 5);
+#ifdef LVDS_SPLIT_MODE
+		reg |= (1 << 7);
+#endif
+#endif
+	
+		if (DI == 0)
+			reg |= (1 << 0);
+		else if(DI == 1)
+			reg |= (3 << 0);
+	
+#ifdef LVDS_SPLIT_MODE
+		reg |= (1 << 4);
+		if (DI == 0)
+			reg |= (1 << 2);
+		else if(DI == 1)
+			reg |= (3 << 2);
+#endif
+#endif
+	
+#if (LVDS_PORT == 1)
+#if (DISPLAY_IF_BPP == 24)
+		reg |= (1 << 7);
+#ifdef LVDS_SPLIT_MODE
+		reg |= (1 << 5);
+#endif
+#endif
+	
+		if (DI == 0)
+			reg |= (1 << 2);
+		else if(DI == 1)
+			reg |= (3 << 2);
+#ifdef LVDS_SPLIT_MODE
+		reg |= (1 << 4);
+		if (DI == 0)
+			reg |= (1 << 0);
+		else if(DI == 1)
+			reg |= (3 << 0);
+#endif
+#endif
+	
+		writel(reg, IOMUXC_BASE_ADDR + 0x8);  //Set LDB_CTRL
+
+#endif
+	return;
+}
+
 int board_late_init(void)
 {
+	unsigned char * pData;
+	u32 clocksource=0;
+#ifdef CONFIG_UBOOT_LOGO_ENABLE_OVER_8BITS	//for 16bpp or 32bpp logo
+	unsigned int size = DISPLAY_WIDTH * DISPLAY_HEIGHT * (DISPLAY_BPP / 8);
+	unsigned int start, count;
+	int i, bmpReady = 0;
+#if 1
+	int mmc_dev = mmc_get_env_devno();
+	struct mmc *mmc = find_mmc_device(mmc_dev);
+#endif
+
+	pData = (unsigned char *)CONFIG_FB_BASE;
+#if 0
+	if (mmc)	{
+		if (mmc_init(mmc) == 0) {
+			start = ALIGN(UBOOT_LOGO_BMP_ADDR, mmc->read_bl_len) / mmc->read_bl_len;
+			count = ALIGN(size, mmc->read_bl_len) / mmc->read_bl_len;
+			mmc->block_dev.block_read(mmc_dev, start, count, pData);
+			bmpReady = 1;
+		}
+	}
+#endif
+
+	if (bmpReady == 0) {
+		// Fill RGB frame buffer
+		// Red
+		for (i = 0; i < (DISPLAY_WIDTH * DISPLAY_HEIGHT * (DISPLAY_BPP / 8) / 3); i += (DISPLAY_BPP / 8)) {
+#if (DISPLAY_BPP == 16)
+			pData[i + 0] = 0x00;
+			pData[i + 1] = 0xF8;
+#else
+			pData[i + 0] = 0x00;
+			pData[i + 1] = 0x00;
+			pData[i + 2] = 0xFF;
+			pData[i + 3] = 0x00;
+#endif
+		}
+
+		// Green
+		for (; i < (DISPLAY_WIDTH * DISPLAY_HEIGHT * (DISPLAY_BPP / 8) / 3) * 2; i += (DISPLAY_BPP / 8)) {
+#if (DISPLAY_BPP == 16)
+			pData[i + 0] = 0xE0;
+			pData[i + 1] = 0x07;
+#else
+			pData[i + 0] = 0x00;
+			pData[i + 1] = 0xFF;
+			pData[i + 2] = 0x00;
+			pData[i + 3] = 0x00;
+#endif
+		}
+
+		// Blue
+		for (; i < DISPLAY_WIDTH * DISPLAY_HEIGHT * (DISPLAY_BPP / 8); i += (DISPLAY_BPP / 8)) {
+#if (DISPLAY_BPP == 16)
+			pData[i + 0] = 0x1F;
+			pData[i + 1] = 0x00;
+#else
+			pData[i + 0] = 0xFF;
+			pData[i + 1] = 0x00;
+			pData[i + 2] = 0x00;
+			pData[i + 3] = 0x00;
+#endif
+		}
+	}
+#ifndef CONFIG_SYS_DCACHE_OFF
+	flush_dcache_range((u32)pData, (u32)(pData + DISPLAY_WIDTH * DISPLAY_HEIGHT * (DISPLAY_BPP / 8)));
+#endif
+
+#ifdef IPU_OUTPUT_MODE_LVDS
+	setup_lvds_iomux();
+#endif
+
+#ifdef IPU_OUTPUT_MODE_LCD
+	ipu_iomux_config();
+	setup_lcd_iomux();
+#endif
+
+#ifdef IPU_OUTPUT_MODE_HDMI
+	setup_hdmi_iomux();
+#endif
+
+	ipu_display_setup(IPU_NUM, DI_NUM);
+#else	//test
+	customer_lvds();
+	pData = (unsigned char *)CONFIG_FB_BASE;
+	clocksource=MXC_IPU1_LVDS_DI1_CLK;
+	switch(eeprom_i2c_get_EDID())
+	{
+		//setenv("bootargs","console=ttymxc0,115200 init=/init video=mxcfb0:dev=ldb,800x480M@70,if=RGB666,bpp=32 video=mxcfb1:off video=mxcfb2:off fbmem=40M fb0base=0x27b00000 vmalloc=400M androidboot.console=ttymxc0 androidboot.hardware=freescale mem=1024M\0");
+		case RESOLUTION_640X480:
+			display_clk_config(clocksource, 34285715);
+			set_kernel_env(640,480);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,640,480);
+			break;
+		default:
+		case RESOLUTION_800X480:
+			display_clk_config(clocksource, 38000000);
+			set_kernel_env(800,480);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,800,480);
+			break;
+		case RESOLUTION_800X600:
+			display_clk_config(clocksource, 38000000);
+			set_kernel_env(800,600);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,800,600);
+			break;
+		case RESOLUTION_1024X600:
+			//display_clk_config(clocksource, 51206400);
+			display_clk_config(clocksource, 47000000);
+			set_kernel_env(1024,600);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,1024,600);
+			break;
+		case RESOLUTION_1024X768:
+			display_clk_config(clocksource, 64000000);
+			set_kernel_env(1024,768);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,1024,768);
+			break;
+		case RESOLUTION_1280X800:
+			display_clk_config(clocksource, 65000000);
+			set_kernel_env(1280,800);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,1280,800);
+			break;
+		case RESOLUTION_1366X768:
+			display_clk_config(clocksource, 74000000);
+			set_kernel_env(1366,768);
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,1366,768);
+			break;
+		case RESOLUTION_1920X1080:
+			copy_bmp_screen((char *)pData,(char *)fsl_bmp_reversed_600x400,1920,1080);
+			//display_split_clk_config(MXC_IPU1_LVDS_DI1_CLK, 83000000);
+			display_split_clk_config(MXC_IPU1_LVDS_DI0_CLK, 65000000);
+			set_kernel_env(1920,1080);
+			break;
+	}
+//	pData = (unsigned char *)CONFIG_FB_BASE;
+//	memcpy(pData,fsl_bmp_reversed_600x400,fsl_bmp_reversed_600x400_size);
+	video_display_bitmap((ulong)pData,0,0);
+#endif
+
 #ifdef CONFIG_CMD_BMODE
 	add_board_boot_modes(board_boot_modes);
 #endif
@@ -1236,9 +2066,11 @@ void board_fastboot_setup(void)
 
 #ifdef CONFIG_ANDROID_RECOVERY
 
-#define GPIO_VOL_DN_KEY IMX_GPIO_NR(1, 5)
+#define GPIO_VOL_DN_KEY 	IMX_GPIO_NR(5, 20)
+//#define GPIO_VOL_DN_KEY IMX_GPIO_NR(1, 5)
 iomux_v3_cfg_t const recovery_key_pads[] = {
-	(MX6_PAD_GPIO_5__GPIO1_IO05 | MUX_PAD_CTRL(NO_PAD_CTRL)),
+//	(MX6_PAD_GPIO_5__GPIO1_IO05 | MUX_PAD_CTRL(NO_PAD_CTRL)),
+	(MX6_PAD_CSI0_DATA_EN__GPIO5_IO20 | MUX_PAD_CTRL(NO_PAD_CTRL)),
 };
 
 int check_recovery_cmd_file(void)
@@ -1246,6 +2078,9 @@ int check_recovery_cmd_file(void)
     int button_pressed = 0;
     int recovery_mode = 0;
 
+#ifdef CONFIG_SBC7112
+	return recovery_mode || button_pressed;
+#endif
     recovery_mode = recovery_check_and_clean_flag();
 
     /* Check Recovery Combo Button press or not. */

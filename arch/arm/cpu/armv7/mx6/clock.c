@@ -22,6 +22,9 @@ enum pll_clocks {
 	PLL_VIDEO,	/* AUDIO PLL */
 };
 
+#define PLL5_FREQ_MIN	650000000
+#define PLL5_FREQ_MAX	1300000000
+
 struct mxc_ccm_reg *imx_ccm = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
 
 #ifdef CONFIG_MXC_OCOTP
@@ -907,6 +910,797 @@ void mxs_set_vadcclk(void)
 	writel(reg, &imx_ccm->cscmr2);
 }
 #endif
+
+static int config_lvds_clk(u32 ipu, u32 di, u32 freq)
+{
+	u32 divider;
+	unsigned int reg;
+#ifdef LVDS_CLOCK_SRC_PLL5
+	u32 pre_div_rate;
+	u32 test_div_sel = 2;
+	u32 control3 = 0;
+	u64 temp64;
+	u32 mfn, mfd = 1000000;
+#endif
+
+	printf("config_ipu_lvds_clk: freq = %d.\r\n", freq);
+
+#ifdef CONFIG_MX6Q
+	__raw_writel(BM_ANADIG_PFD_528_PFD2_CLKGATE, &imx_ccm->analog_pfd_528_set);
+#endif
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Disable the PLL */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg |= BM_ANADIG_PLL_VIDEO_BYPASS;
+	reg &= ~BM_ANADIG_PLL_VIDEO_ENABLE;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+#endif
+
+	/*
+	 * Need to follow a strict procedure when changing the LDB
+	 * clock, else we can introduce a glitch. Things to keep in
+	 * mind:
+	 * 1. The current and new parent clocks must be disabled.
+	 * 2. The default clock for ldb_dio_clk is mmdc_ch1 which has
+	 * no CG bit.
+	 * 3. In the RTL implementation of the LDB_DI_CLK_SEL mux
+	 * the top four options are in one mux and the PLL3 option along
+	 * with another option is in the second mux. There is third mux
+	 * used to decide between the first and second mux.
+	 * The code below switches the parent to the bottom mux first
+	 * and then manipulates the top mux. This ensures that no glitch
+	 * will enter the divider.
+	 *
+	 * Need to disable MMDC_CH1 clock manually as there is no CG bit
+	 * for this clock. The only way to disable this clock is to move
+	 * it topll3_sw_clk and then to disable pll3_sw_clk
+	 * Make sure periph2_clk2_sel is set to pll3_sw_clk
+	 */
+	reg = __raw_readl(&imx_ccm->cbcmr);
+	reg &= ~(1 << 20);
+	__raw_writel(reg, &imx_ccm->cbcmr);
+	
+	/*
+	 * Set MMDC_CH1 mask bit.
+	 */
+	reg = __raw_readl(&imx_ccm->ccdr);
+	reg |= 1 << 16;
+	__raw_writel(reg, &imx_ccm->ccdr);
+
+	/*
+	 * Set the periph2_clk_sel to the top mux so that
+	 * mmdc_ch1 is from pll3_sw_clk.
+	 */
+	reg = __raw_readl(&imx_ccm->cbcdr);
+	reg |= 1 << 26;
+	__raw_writel(reg, &imx_ccm->cbcdr);
+
+	/*
+	 * Wait for the clock switch.
+	 */
+	while (__raw_readl(&imx_ccm->cdhipr))
+		;
+	
+	/*
+	 * Disable pll3_sw_clk by selecting the bypass clock source.
+	 */
+	reg = __raw_readl(&imx_ccm->ccsr);
+	reg |= 1 << 0;
+	__raw_writel(reg, &imx_ccm->ccsr);
+
+	/*
+	 * Set the ldb_di0_clk and ldb_di1_clk to 111b.
+	 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	reg |= ((7 << 9) | (7 << 12));
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+
+	/*
+	 * Set the ldb_di0_clk and ldb_di1_clk to 100b.
+	 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	reg &= ~((7 << 9) | (7 << 12));
+	reg |= ((4 << 9) | (4 << 12));
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Set ldb_di_clk clock source to PLL5 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	if (di == 0) {
+		reg &= ~(0x7 << 9);
+		reg |= (0x0 << 9);
+	} else if (di == 1) {
+		reg &= ~(0x7 << 12);
+		reg |= (0x0 << 12);
+	}
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+#else
+	/* Set ldb_di_clk clock source to PLL2 PFD0 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	if (di == 0) {
+		reg &= ~(0x7 << 9);
+		reg |= (0x1 << 9);
+	} else if (di == 1) {
+		reg &= ~(0x7 << 12);
+		reg |= (0x1 << 12);
+	}
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+#endif
+
+	/*
+	 * Unbypass pll3_sw_clk.
+	 */
+	reg = __raw_readl(&imx_ccm->ccsr);
+	reg &= ~(1 << 0);
+	__raw_writel(reg, &imx_ccm->ccsr);
+
+	/*
+	 * Set the periph2_clk_sel back to the bottom mux so that
+	 * mmdc_ch1 is from its original parent.
+	 */
+	reg = __raw_readl(&imx_ccm->cbcdr);
+	reg &= ~(1 << 26);
+	__raw_writel(reg, &imx_ccm->cbcdr);
+
+	/*
+	 * Wait for the clock switch.
+	 */
+	while (__raw_readl(&imx_ccm->cdhipr))
+		;
+
+	/*
+	 * Clear MMDC_CH1 mask bit.
+	 */
+	reg = __raw_readl(&imx_ccm->ccdr);
+	reg &= ~(1 << 16);
+	__raw_writel(reg, &imx_ccm->ccdr);
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Set PLL5 Clock */
+	pre_div_rate = freq;
+	while (pre_div_rate < PLL5_FREQ_MIN) {
+		pre_div_rate *= 2;
+		/*
+		 * test_div_sel field values:
+		 * 2 -> Divide by 1
+		 * 1 -> Divide by 2
+		 * 0 -> Divide by 4
+		 *
+		 * control3 field values:
+		 * 0 -> Divide by 1
+		 * 1 -> Divide by 2
+		 * 3 -> Divide by 4
+		 */
+		if (test_div_sel != 0)
+			test_div_sel --;
+		else {
+			control3 ++;
+			if (control3 == 2)
+				control3 ++;
+		}
+	}
+	divider = pre_div_rate / MXC_HCLK;
+	temp64 = (u64) (pre_div_rate - (divider * MXC_HCLK));
+	temp64 *= mfd;
+	do_div(temp64, MXC_HCLK);
+	mfn = temp64;
+
+	reg = __raw_readl(&imx_ccm->analog_pll_video)
+			& ~(BM_ANADIG_PLL_VIDEO_DIV_SELECT | BM_ANADIG_PLL_VIDEO_TEST_DIV_SELECT);
+	reg |= (divider |
+		(test_div_sel << BP_ANADIG_PLL_VIDEO_TEST_DIV_SELECT));
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+	__raw_writel(mfn, &imx_ccm->analog_pll_video_num);
+	__raw_writel(mfd, &imx_ccm->analog_pll_video_denom);
+
+	reg = __raw_readl(&imx_ccm->ana_misc2)
+		& ~BM_ANADIG_ANA_MISC2_CONTROL3;
+	reg |= control3 << BP_ANADIG_ANA_MISC2_CONTROL3;
+	__raw_writel(reg, &imx_ccm->ana_misc2);
+
+	/* Enable the PLL power */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg &= ~BM_ANADIG_PLL_VIDEO_POWERDOWN;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	/* Wait for PLL to lock */
+	while((__raw_readl(&imx_ccm->analog_pll_video) & BM_ANADIG_PLL_VIDEO_LOCK) == 0)
+		printf("wait for pll5 lock.\n");
+
+	/* Enable the PLL output */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg &= ~BM_ANADIG_PLL_VIDEO_BYPASS;
+	reg |= BM_ANADIG_PLL_VIDEO_ENABLE;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	printf("config_ipu_lvds_clk: set pll5 clock to %dHz.\r\n", decode_pll(PLL_VIDEO, MXC_HCLK));
+
+#ifdef CONFIG_MX6Q
+	__raw_writel(BM_ANADIG_PFD_528_PFD2_CLKGATE, &imx_ccm->analog_pfd_528_clr);
+#endif
+#else
+	/* Set PLL2 PFD0 Clock */
+	divider = (decode_pll(PLL_BUS, MXC_HCLK) / 1000000) * 18 / (freq / 1000000);
+	if(divider < 12)
+		divider = 12;
+	if(divider > 35)
+		divider = 35;
+
+//	printf("config_ipu_lvds_clk: set pll2_pfd0 clock to %dMHz, divider = %d.\r\n", decode_pll(PLL_BUS, MXC_HCLK) /1000000  / divider * 18, divider);
+	printf("config_ipu_lvds_clk(%d): %d Hz.\r\n", divider, 528*1000000/7/divider * 18);
+
+#ifdef CONFIG_MX6Q
+	__raw_writel(BM_ANADIG_PFD_528_PFD2_CLKGATE, &imx_ccm->analog_pfd_528_clr);
+#endif
+
+	reg = __raw_readl(&imx_ccm->analog_pfd_528);
+	reg &= ~BM_ANADIG_PFD_528_PFD0_FRAC;
+	reg |= (divider << BP_ANADIG_PFD_528_PFD0_FRAC);
+	__raw_writel(BM_ANADIG_PFD_528_PFD0_FRAC, &imx_ccm->analog_pfd_528_clr);
+	__raw_writel(reg, &imx_ccm->analog_pfd_528_set);
+#endif
+
+#ifdef LVDS_SPLIT_MODE
+	/* Set ipu_di clock to ldb_di_clk/3.5 */
+	reg = __raw_readl(&imx_ccm->cscmr2);
+	if (di == 0)
+		reg &= ~(0x1 << 10);
+	else if (di == 1)
+		reg &= ~(0x1 << 11);
+#else
+	/* Set ipu_di clock to ldb_di_clk/7 */
+	reg = __raw_readl(&imx_ccm->cscmr2);
+	if (di == 0)
+		reg |= (0x1 << 10);
+	else if (di == 1)
+		reg |= (0x1 << 11);
+#endif
+	__raw_writel(reg, &imx_ccm->cscmr2);
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Set ipu_di_clk clock source to ldb_di_clk, and root clock pre-multiplexer from PLL5, ipu_di_podf divide by 1 */
+        if (ipu == 1) {
+		reg = __raw_readl(&imx_ccm->chsccdr);
+		if (di == 0) {
+			reg &= ~(0x1FF << 0);
+			reg |= ((3 << 0) | (2 << 6));
+		} else if (di == 1) {
+			reg &= ~(0x1FF << 9);
+			reg |= ((4 << 9) | (2 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->chsccdr);
+	}
+
+        if (ipu == 2) {
+                reg = __raw_readl(&imx_ccm->cscdr2);
+                if (di == 0) {
+                        reg &= ~(0x1FF << 0);
+                        reg |= ((3 << 0) | (2 << 6));
+                } else if (di == 1) {
+                        reg &= ~(0x1FF << 9);
+                        reg |= ((4 << 9) | (2 << 15));
+                }
+                __raw_writel(reg, &imx_ccm->cscdr2);
+        }
+#else
+	/* Set ipu_di_clk clock source to ldb_di_clk, and root clock pre-multiplexer from PLL2 PFD0, ipu_di_podf divide by 1 */
+	if (ipu == 1) {
+		reg = __raw_readl(&imx_ccm->chsccdr);
+		if (di == 0) {
+			reg &= ~(0x1FF << 0);
+			reg |= ((3 << 0) | (3 << 6));
+		} else if (di == 1) {
+			reg &= ~(0x1FF << 9);
+			reg |= ((4 << 9) | (3 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->chsccdr);
+	}
+
+	if (ipu == 2) {
+		reg = __raw_readl(&imx_ccm->cscdr2);
+		if (di == 0) {
+			reg &= ~(0x1FF << 0);
+			reg |= ((3 << 0) | (3 << 6));
+		} else if (di == 1) {
+			reg &= ~(0x1FF << 9);
+			reg |= ((4 << 9) | (3 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->cscdr2);
+	}
+#endif
+	return 0;
+}
+
+static int config_lvds_split_clk(u32 ipu, u32 di, u32 freq)
+{
+	u32 divider;
+	unsigned int reg;
+#ifdef LVDS_CLOCK_SRC_PLL5
+	u32 pre_div_rate;
+	u32 test_div_sel = 2;
+	u32 control3 = 0;
+	u64 temp64;
+	u32 mfn, mfd = 1000000;
+#endif
+
+	printf("config_ipu_lvds_clk: freq = %d.\r\n", freq);
+
+#ifdef CONFIG_MX6Q
+	__raw_writel(BM_ANADIG_PFD_528_PFD2_CLKGATE, &imx_ccm->analog_pfd_528_set);
+#endif
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Disable the PLL */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg |= BM_ANADIG_PLL_VIDEO_BYPASS;
+	reg &= ~BM_ANADIG_PLL_VIDEO_ENABLE;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+#endif
+
+	/*
+	 * Need to follow a strict procedure when changing the LDB
+	 * clock, else we can introduce a glitch. Things to keep in
+	 * mind:
+	 * 1. The current and new parent clocks must be disabled.
+	 * 2. The default clock for ldb_dio_clk is mmdc_ch1 which has
+	 * no CG bit.
+	 * 3. In the RTL implementation of the LDB_DI_CLK_SEL mux
+	 * the top four options are in one mux and the PLL3 option along
+	 * with another option is in the second mux. There is third mux
+	 * used to decide between the first and second mux.
+	 * The code below switches the parent to the bottom mux first
+	 * and then manipulates the top mux. This ensures that no glitch
+	 * will enter the divider.
+	 *
+	 * Need to disable MMDC_CH1 clock manually as there is no CG bit
+	 * for this clock. The only way to disable this clock is to move
+	 * it topll3_sw_clk and then to disable pll3_sw_clk
+	 * Make sure periph2_clk2_sel is set to pll3_sw_clk
+	 */
+	reg = __raw_readl(&imx_ccm->cbcmr);
+	reg &= ~(1 << 20);
+	__raw_writel(reg, &imx_ccm->cbcmr);
+	
+	/*
+	 * Set MMDC_CH1 mask bit.
+	 */
+	reg = __raw_readl(&imx_ccm->ccdr);
+	reg |= 1 << 16;
+	__raw_writel(reg, &imx_ccm->ccdr);
+
+	/*
+	 * Set the periph2_clk_sel to the top mux so that
+	 * mmdc_ch1 is from pll3_sw_clk.
+	 */
+	reg = __raw_readl(&imx_ccm->cbcdr);
+	reg |= 1 << 26;
+	__raw_writel(reg, &imx_ccm->cbcdr);
+
+	/*
+	 * Wait for the clock switch.
+	 */
+	while (__raw_readl(&imx_ccm->cdhipr))
+		;
+	
+	/*
+	 * Disable pll3_sw_clk by selecting the bypass clock source.
+	 */
+	reg = __raw_readl(&imx_ccm->ccsr);
+	reg |= 1 << 0;
+	__raw_writel(reg, &imx_ccm->ccsr);
+
+	/*
+	 * Set the ldb_di0_clk and ldb_di1_clk to 111b.
+	 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	reg |= ((7 << 9) | (7 << 12));
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+
+	/*
+	 * Set the ldb_di0_clk and ldb_di1_clk to 100b.
+	 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	reg &= ~((7 << 9) | (7 << 12));
+	reg |= ((4 << 9) | (4 << 12));
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Set ldb_di_clk clock source to PLL5 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	if (di == 0) {
+		reg &= ~(0x7 << 9);
+		reg |= (0x0 << 9);
+	} else if (di == 1) {
+		reg &= ~(0x7 << 12);
+		reg |= (0x0 << 12);
+	}
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+#else
+	/* Set ldb_di_clk clock source to PLL2 PFD0 */
+	reg = __raw_readl(&imx_ccm->cs2cdr);
+	if (di == 0) {
+		reg &= ~(0x7 << 9);
+		reg |= (0x1 << 9);
+	} else if (di == 1) {
+		reg &= ~(0x7 << 12);
+		reg |= (0x1 << 12);
+	}
+	__raw_writel(reg, &imx_ccm->cs2cdr);
+#endif
+
+	/*
+	 * Unbypass pll3_sw_clk.
+	 */
+	reg = __raw_readl(&imx_ccm->ccsr);
+	reg &= ~(1 << 0);
+	__raw_writel(reg, &imx_ccm->ccsr);
+
+	/*
+	 * Set the periph2_clk_sel back to the bottom mux so that
+	 * mmdc_ch1 is from its original parent.
+	 */
+	reg = __raw_readl(&imx_ccm->cbcdr);
+	reg &= ~(1 << 26);
+	__raw_writel(reg, &imx_ccm->cbcdr);
+
+	/*
+	 * Wait for the clock switch.
+	 */
+	while (__raw_readl(&imx_ccm->cdhipr))
+		;
+
+	/*
+	 * Clear MMDC_CH1 mask bit.
+	 */
+	reg = __raw_readl(&imx_ccm->ccdr);
+	reg &= ~(1 << 16);
+	__raw_writel(reg, &imx_ccm->ccdr);
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Set PLL5 Clock */
+	pre_div_rate = freq;
+	while (pre_div_rate < PLL5_FREQ_MIN) {
+		pre_div_rate *= 2;
+		/*
+		 * test_div_sel field values:
+		 * 2 -> Divide by 1
+		 * 1 -> Divide by 2
+		 * 0 -> Divide by 4
+		 *
+		 * control3 field values:
+		 * 0 -> Divide by 1
+		 * 1 -> Divide by 2
+		 * 3 -> Divide by 4
+		 */
+		if (test_div_sel != 0)
+			test_div_sel --;
+		else {
+			control3 ++;
+			if (control3 == 2)
+				control3 ++;
+		}
+	}
+	divider = pre_div_rate / MXC_HCLK;
+	temp64 = (u64) (pre_div_rate - (divider * MXC_HCLK));
+	temp64 *= mfd;
+	do_div(temp64, MXC_HCLK);
+	mfn = temp64;
+
+	reg = __raw_readl(&imx_ccm->analog_pll_video)
+			& ~(BM_ANADIG_PLL_VIDEO_DIV_SELECT | BM_ANADIG_PLL_VIDEO_TEST_DIV_SELECT);
+	reg |= (divider |
+		(test_div_sel << BP_ANADIG_PLL_VIDEO_TEST_DIV_SELECT));
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+	__raw_writel(mfn, &imx_ccm->analog_pll_video_num);
+	__raw_writel(mfd, &imx_ccm->analog_pll_video_denom);
+
+	reg = __raw_readl(&imx_ccm->ana_misc2)
+		& ~BM_ANADIG_ANA_MISC2_CONTROL3;
+	reg |= control3 << BP_ANADIG_ANA_MISC2_CONTROL3;
+	__raw_writel(reg, &imx_ccm->ana_misc2);
+
+	/* Enable the PLL power */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg &= ~BM_ANADIG_PLL_VIDEO_POWERDOWN;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	/* Wait for PLL to lock */
+	while((__raw_readl(&imx_ccm->analog_pll_video) & BM_ANADIG_PLL_VIDEO_LOCK) == 0)
+		printf("wait for pll5 lock.\n");
+
+	/* Enable the PLL output */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg &= ~BM_ANADIG_PLL_VIDEO_BYPASS;
+	reg |= BM_ANADIG_PLL_VIDEO_ENABLE;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	printf("config_ipu_lvds_clk: set pll5 clock to %dHz.\r\n", decode_pll(PLL_VIDEO, MXC_HCLK));
+
+#ifdef CONFIG_MX6Q
+	__raw_writel(BM_ANADIG_PFD_528_PFD2_CLKGATE, &imx_ccm->analog_pfd_528_clr);
+#endif
+#else
+	/* Set PLL2 PFD0 Clock */
+	divider = (decode_pll(PLL_BUS, MXC_HCLK) / 1000000) * 18 / (freq / 1000000);
+	if(divider < 12)
+		divider = 12;
+	if(divider > 35)
+		divider = 35;
+
+//	printf("config_ipu_lvds_clk: set pll2_pfd0 clock to %dMHz, divider = %d.\r\n", decode_pll(PLL_BUS, MXC_HCLK) /1000000  / divider * 18, divider);
+	printf("config_ipu_lvds_clk(%d): %d Hz.\r\n", divider, 528*1000000/7/divider * 18);
+
+#ifdef CONFIG_MX6Q
+	__raw_writel(BM_ANADIG_PFD_528_PFD2_CLKGATE, &imx_ccm->analog_pfd_528_clr);
+#endif
+
+	reg = __raw_readl(&imx_ccm->analog_pfd_528);
+	reg &= ~BM_ANADIG_PFD_528_PFD0_FRAC;
+	reg |= (divider << BP_ANADIG_PFD_528_PFD0_FRAC);
+	__raw_writel(BM_ANADIG_PFD_528_PFD0_FRAC, &imx_ccm->analog_pfd_528_clr);
+	__raw_writel(reg, &imx_ccm->analog_pfd_528_set);
+#endif
+
+	/* Set ipu_di clock to ldb_di_clk/3.5 */
+	reg = __raw_readl(&imx_ccm->cscmr2);
+	if (di == 0)
+		reg &= ~(0x1 << 10);
+	else if (di == 1)
+		reg &= ~(0x1 << 11);
+	__raw_writel(reg, &imx_ccm->cscmr2);
+
+#ifdef LVDS_CLOCK_SRC_PLL5
+	/* Set ipu_di_clk clock source to ldb_di_clk, and root clock pre-multiplexer from PLL5, ipu_di_podf divide by 1 */
+        if (ipu == 1) {
+		reg = __raw_readl(&imx_ccm->chsccdr);
+		if (di == 0) {
+			reg &= ~(0x1FF << 0);
+			reg |= ((3 << 0) | (2 << 6));
+		} else if (di == 1) {
+			reg &= ~(0x1FF << 9);
+			reg |= ((4 << 9) | (2 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->chsccdr);
+	}
+
+        if (ipu == 2) {
+                reg = __raw_readl(&imx_ccm->cscdr2);
+                if (di == 0) {
+                        reg &= ~(0x1FF << 0);
+                        reg |= ((3 << 0) | (2 << 6));
+                } else if (di == 1) {
+                        reg &= ~(0x1FF << 9);
+                        reg |= ((4 << 9) | (2 << 15));
+                }
+                __raw_writel(reg, &imx_ccm->cscdr2);
+        }
+#else
+	/* Set ipu_di_clk clock source to ldb_di_clk, and root clock pre-multiplexer from PLL2 PFD0, ipu_di_podf divide by 1 */
+	if (ipu == 1) {
+		reg = __raw_readl(&imx_ccm->chsccdr);
+		if (di == 0) {
+			reg &= ~(0x1FF << 0);
+			reg |= ((3 << 0) | (3 << 6));
+		} else if (di == 1) {
+			reg &= ~(0x1FF << 9);
+			reg |= ((4 << 9) | (3 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->chsccdr);
+	}
+
+	if (ipu == 2) {
+		reg = __raw_readl(&imx_ccm->cscdr2);
+		if (di == 0) {
+			reg &= ~(0x1FF << 0);
+			reg |= ((3 << 0) | (3 << 6));
+		} else if (di == 1) {
+			reg &= ~(0x1FF << 9);
+			reg |= ((4 << 9) | (3 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->cscdr2);
+	}
+#endif
+	return 0;
+}
+
+static int config_ipu_di_clk(u32 ipu, u32 di, u32 freq)
+{
+	unsigned int reg;
+
+	u32 pre_div_rate, divider;
+	u32 test_div_sel = 2;
+	u32 control3 = 0;
+	u64 temp64;
+	u32 mfn, mfd = 1000000;
+
+	printf("config_ipu_di_clk: freq = %d.\r\n", freq);
+
+	/* Set PLL5 Clock */
+	/* Disable the PLL first */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg |= BM_ANADIG_PLL_VIDEO_BYPASS;
+	reg &= ~BM_ANADIG_PLL_VIDEO_ENABLE;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	pre_div_rate = freq * 2;
+	while (pre_div_rate < PLL5_FREQ_MIN) {
+		pre_div_rate *= 2;
+		/*
+		 * test_div_sel field values:
+		 * 2 -> Divide by 1
+		 * 1 -> Divide by 2
+		 * 0 -> Divide by 4
+		 *
+		 * control3 field values:
+		 * 0 -> Divide by 1
+		 * 1 -> Divide by 2
+		 * 3 -> Divide by 4
+		 */
+		if (test_div_sel != 0)
+			test_div_sel --;
+		else {
+			control3 ++;
+			if (control3 == 2)
+				control3 ++;
+		}
+	}
+	divider = pre_div_rate / MXC_HCLK;
+	temp64 = (u64) (pre_div_rate - (divider * MXC_HCLK));
+	temp64 *= mfd;
+	do_div(temp64, MXC_HCLK);
+	mfn = temp64;
+
+	reg = __raw_readl(&imx_ccm->analog_pll_video)
+			& ~(BM_ANADIG_PLL_VIDEO_DIV_SELECT | BM_ANADIG_PLL_VIDEO_TEST_DIV_SELECT);
+	reg |= (divider |
+		(test_div_sel << BP_ANADIG_PLL_VIDEO_TEST_DIV_SELECT));
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+	__raw_writel(mfn, &imx_ccm->analog_pll_video_num);
+	__raw_writel(mfd, &imx_ccm->analog_pll_video_denom);
+
+	reg = __raw_readl(&imx_ccm->ana_misc2)
+		& ~BM_ANADIG_ANA_MISC2_CONTROL3;
+	reg |= control3 << BP_ANADIG_ANA_MISC2_CONTROL3;
+	__raw_writel(reg, &imx_ccm->ana_misc2);
+
+	/* Enable the PLL power */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg &= ~BM_ANADIG_PLL_VIDEO_POWERDOWN;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	/* Wait for PLL to lock */
+	while((__raw_readl(&imx_ccm->analog_pll_video) & BM_ANADIG_PLL_VIDEO_LOCK) == 0)
+		printf("wait for pll5 lock.\n");
+
+	/* Enable the PLL output */
+	reg = __raw_readl(&imx_ccm->analog_pll_video);
+	reg &= ~BM_ANADIG_PLL_VIDEO_BYPASS;
+	reg |= BM_ANADIG_PLL_VIDEO_ENABLE;
+	__raw_writel(reg, &imx_ccm->analog_pll_video);
+
+	printf("config_ipu_di_clk: set pll5 clock to %dHz.\r\n", decode_pll(PLL_VIDEO, MXC_HCLK));
+
+	/* Set ipu_di_clk clock source to pre-muxed ipu di clock, divided by 2, and root clock pre-muxed from PLL5 */
+	if (ipu == 1) {
+		reg = __raw_readl(&imx_ccm->chsccdr);
+		if (di == 0) {
+			reg &= ~0x000001FF;
+			reg |= ((0 << 0) | (1 << 3) | (2 << 6));
+		} else if (di == 1) {
+			reg &= ~0x0003FE00;
+			reg |= ((0 << 9) | (1 << 12) | (2 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->chsccdr);
+	}
+
+	if (ipu == 2) {
+		reg = __raw_readl(&imx_ccm->cscdr2);
+		if (di == 0) {
+			reg &= ~0x000001FF;
+			reg |= ((0 << 0) | (1 << 3) | (2 << 6));
+		} else if (di == 1) {
+			reg &= ~0x0003FE00;
+			reg |= ((0 << 9) | (1 << 12) | (2 << 15));
+		}
+		__raw_writel(reg, &imx_ccm->cscdr2);
+	}
+
+	return 0;
+}
+
+/*!
+ *
+ * @param clk_type  clock type, e.g MXC_IPU1_LVDS_DI0_CLK, MXC_IPU1_DI0_CLK, etc.
+ * @param freq		targeted freq in Hz
+ * @return          0 if successful; non-zero otherwise
+ */
+int display_clk_config(u32 clk_type, u32 freq)
+{
+	switch (clk_type) {
+	case MXC_IPU1_LVDS_DI0_CLK:
+		//if (config_lvds_clk(1, 0, freq*7))
+		if (config_lvds_split_clk(1, 0, freq*7))
+			return -1;
+		break;
+	case MXC_IPU1_LVDS_DI1_CLK:
+		if (config_lvds_clk(1, 1, freq*7))
+			return -1;
+		break;
+	case MXC_IPU2_LVDS_DI0_CLK:
+		if (config_lvds_clk(2, 0, freq*7))
+ 			return -1;
+		break;
+	case MXC_IPU2_LVDS_DI1_CLK:
+		if (config_lvds_clk(2, 1, freq*7))
+ 			return -1;
+		break;
+	case MXC_IPU1_DI0_CLK:
+		if (config_ipu_di_clk(1, 0, freq*7))
+			return -1;
+		break;
+	case MXC_IPU1_DI1_CLK:
+		if (config_ipu_di_clk(1, 1, freq*7))
+			return -1;
+		break;
+	case MXC_IPU2_DI0_CLK:
+		if (config_ipu_di_clk(2, 0, freq*7))
+			return -1;
+		break;
+	case MXC_IPU2_DI1_CLK:
+		if (config_ipu_di_clk(2, 1, freq*7))
+			return -1;
+		break;
+	default:
+		printf("Unsupported or invalid clock type! :(\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+int display_split_clk_config(u32 clk_type, u32 freq)
+{
+	switch (clk_type) {
+	case MXC_IPU1_LVDS_DI0_CLK:
+		if (config_lvds_split_clk(1, 0, freq*7))
+			return -1;
+		break;
+	case MXC_IPU1_LVDS_DI1_CLK:
+		if (config_lvds_split_clk(1, 1, freq*7))
+			return -1;
+		break;
+	case MXC_IPU2_LVDS_DI0_CLK:
+		if (config_lvds_split_clk(2, 0, freq*7))
+ 			return -1;
+		break;
+	case MXC_IPU2_LVDS_DI1_CLK:
+		if (config_lvds_split_clk(2, 1, freq*7))
+ 			return -1;
+		break;
+	case MXC_IPU1_DI0_CLK:
+		if (config_lvds_split_clk(1, 0, freq*7))
+			return -1;
+		break;
+	case MXC_IPU1_DI1_CLK:
+		if (config_lvds_split_clk(1, 1, freq*7))
+			return -1;
+		break;
+	case MXC_IPU2_DI0_CLK:
+		if (config_lvds_split_clk(2, 0, freq*7))
+			return -1;
+		break;
+	case MXC_IPU2_DI1_CLK:
+		if (config_lvds_split_clk(2, 1, freq*7))
+			return -1;
+		break;
+	default:
+		printf("Unsupported or invalid split clock type! :(\n");
+		return -1;
+	}
+
+	return 0;
+}
 
 #ifdef CONFIG_FEC_MXC
 int enable_fec_anatop_clock(int fec_id, enum enet_freq freq)

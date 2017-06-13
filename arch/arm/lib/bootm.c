@@ -30,7 +30,9 @@
 #endif
 
 DECLARE_GLOBAL_DATA_PTR;
-
+#ifdef CONFIG_SBC7112
+extern void disable_lvds_gpio(void);
+#endif
 static struct tag *params;
 
 static ulong get_sp(void)
@@ -70,8 +72,11 @@ void arch_lmb_reserve(struct lmb *lmb)
  */
 static void announce_and_cleanup(int fake)
 {
-	printf("\nStarting kernel ...%s\n\n", fake ?
+	printf("\nStarting kernel ...arm%s\n\n", fake ?
 		"(fake run for tracing)" : "");
+#ifdef CONFIG_SBC7112
+	disable_lvds_gpio();
+#endif
 	bootstage_mark_name(BOOTSTAGE_ID_BOOTM_HANDOFF, "start_kernel");
 #ifdef CONFIG_BOOTSTAGE_FDT
 	bootstage_fdt_add_report();

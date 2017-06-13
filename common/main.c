@@ -82,6 +82,8 @@ void main_loop(void)
 	update_tftp(0UL);
 #endif /* CONFIG_UPDATE_TFTP */
 
+	if(getenv("Halt"))
+		setenv("bootdelay","-1");
 	s = bootdelay_process();
 	if (cli_process_fdt(&s))
 		cli_secure_boot_cmd(s);
