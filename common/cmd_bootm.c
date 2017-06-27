@@ -217,7 +217,8 @@ static int bootm_start(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]
 	int		ret;
 
 	memset ((void *)&images, 0, sizeof (images));
-	images.verify = getenv_yesno ("verify");
+	//images.verify = getenv_yesno ("verify");
+    images.verify = 0;
 
 	bootm_start_lmb();
 

@@ -437,7 +437,7 @@ static struct module_pin_mux rmii1_pin_mux[] = {
    {OFFSET(mii1_rxd0), MODE(1) | RXACTIVE},    /* RMII1_RXD0 */
    {OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
    {OFFSET(mdio_clk), MODE(0) | PULLUP_EN},    /* MDIO_CLK */
-   {OFFSET(rmii1_refclk), MODE(0) | RXACTIVE}, /* RMII1_REFCLK */
+   //{OFFSET(rmii1_refclk), MODE(0) | RXACTIVE}, /* RMII1_REFCLK */
    {-1},
 };
 #endif
@@ -547,7 +547,7 @@ static struct module_pin_mux mmc1_pin_mux[] = {
 	{OFFSET(gpmc_csn1), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CLK */
 	{OFFSET(gpmc_csn2), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CMD */
 	{OFFSET(uart1_rxd), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_WP */
-	{OFFSET(mcasp0_fsx), (MODE(4) | RXACTIVE)},	/* MMC1_CD */
+	//{OFFSET(mcasp0_fsx), (MODE(4) | RXACTIVE)},	/* MMC1_CD */
 	{-1},
 };
 #endif
@@ -564,9 +564,9 @@ static struct module_pin_mux spi0_pin_mux[] = {
 };
 
 static struct module_pin_mux spi1_pin_mux[] = {
-	{OFFSET(mcasp0_aclkx), MODE(3) | PULLUDEN | RXACTIVE},	/*SPI0_SCLK */
-	{OFFSET(mcasp0_fsx), MODE(3) | PULLUDEN | PULLUP_EN |
-							RXACTIVE}, /*SPI0_D0 */
+	//{OFFSET(mcasp0_aclkx), MODE(3) | PULLUDEN | RXACTIVE},	/*SPI0_SCLK */
+	//{OFFSET(mcasp0_fsx), MODE(3) | PULLUDEN | PULLUP_EN |
+    //							RXACTIVE}, /*SPI0_D0 */
 	{OFFSET(mcasp0_axr0), MODE(3) | PULLUDEN | RXACTIVE}, /*SPI0_D1 */
 	{OFFSET(mcasp0_ahclkr), MODE(3) | PULLUDEN | PULLUP_EN |
 							RXACTIVE}, /*SPI0_CS0 */
