@@ -1524,14 +1524,14 @@ void lcd_enable(void)
 	/* LVDS panel CABC_EN0 */
 	//mxc_iomux_v3_setup_pad(MX6Q_PAD_NANDF_CS2__GPIO_6_15);
 	/* LVDS panel CABC_EN1 */
-	//mxc_iomux_v3_setup_pad(MX6Q_PAD_NANDF_CS3__GPIO_6_16);
+	mxc_iomux_v3_setup_pad(MX6Q_PAD_NANDF_CS3__GPIO_6_16);
 #elif defined CONFIG_MX6DL
 	/* PWM backlight */
 	mxc_iomux_v3_setup_pad(MX6DL_PAD_SD1_DAT3__PWM1_PWMO);
 	/* LVDS panel CABC_EN0 */
 	//mxc_iomux_v3_setup_pad(MX6DL_PAD_NANDF_CS2__GPIO_6_15);
 	/* LVDS panel CABC_EN1 */
-	//mxc_iomux_v3_setup_pad(MX6DL_PAD_NANDF_CS3__GPIO_6_16);
+	mxc_iomux_v3_setup_pad(MX6DL_PAD_NANDF_CS3__GPIO_6_16);
 #endif
 	/*
 	 * Set LVDS panel CABC_EN0 to low to disable
@@ -1563,8 +1563,8 @@ void lcd_enable(void)
 	writel(reg, GPIO6_BASE_ADDR + GPIO_GDIR);
 
 	reg = readl(GPIO6_BASE_ADDR + GPIO_DR);
-	reg &= ~(1 << 16);
-	//reg |= (1 << 16);
+	// reg &= ~(1 << 16);
+	reg |= (1 << 16);
 	writel(reg, GPIO6_BASE_ADDR + GPIO_DR);	
 
 	/* Disable ipu1_clk/ipu1_di_clk_x/ldb_dix_clk. */
