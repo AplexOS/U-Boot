@@ -78,7 +78,7 @@
                 "uboot=u-boot.bin\0"                    \
                 "kernel=uImage\0"                               \
                 "nfsroot=/opt/eldk/arm\0"                               \
-                "bootargs_base=setenv bootargs console=ttymxc0,115200 video=mxcfb0:dev=ldb,800x480@60,if=RGB666,bpp=32 fbcon=rotate:1\0"\
+		        "bootargs_base=setenv bootargs console=ttymxc0,115200 video=mxcfb0:dev=ldb,LDB-XGA,bpp=32\0" \
                 "bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
                         "ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
                 "bootcmd_net=run bootargs_base bootargs_nfs; "          \
@@ -93,6 +93,7 @@
 		"splashpos=m,m\0"					\
 		"lvds_num=1\0"             \
 
+                // "bootargs_base=setenv bootargs console=ttymxc0,115200 video=mxcfb0:dev=ldb,800x480@60,if=RGB666,bpp=32 fbcon=rotate:1\0"\
                 //"bootargs_base=setenv bootargs console=ttymxc0,115200 video=mxcfb0:dev=lcd,SEIKO-WVGA,if=RGB24,bpp=32 fbcon=rotate:3\0" \
                 //"bootargs_base=setenv bootargs console=tty0 console=ttymxc0,115200 video=mxcfb0:dev=lcd,SEIKO-WVGA,if=RGB24,bpp=32 fbcon=rotate:1\0" \
                 //"bootargs_base=setenv bootargs console=ttymxc0,115200 video=mxcfb0:dev=ldb,800x480@60,if=RGB666,bpp=32 fbcon=rotate:1\0"\
