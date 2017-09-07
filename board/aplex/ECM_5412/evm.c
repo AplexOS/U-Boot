@@ -437,6 +437,7 @@ int board_evm_init(void)
 		gd->bd->bi_arch_number = MACH_TYPE_TIAM335IAEVM;
 	else
 		gd->bd->bi_arch_number = MACH_APLEX_ECM_5412;
+		//gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
 
 	/* address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
