@@ -3314,7 +3314,8 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_GOFLEXHOME           3338
 #define MACH_TYPE_TIAM335EVM           3589
 #define MACH_TYPE_TIAM335IAEVM         3684
-#define MACH_APLEX_ECM_5412            3688
+#define MACH_APLEX_ECM_5416            3688
+#define MACH_APLEX_CMI_AT101           3689
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type

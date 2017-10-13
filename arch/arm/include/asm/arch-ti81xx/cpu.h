@@ -390,8 +390,8 @@ struct gptimer {
 /**
  * zengjf modify for debug serial
  */
-#define DEFAULT_UART_BASE		UART0_BASE 
-#define DEFAULT_UART_BASE		UART1_BASE
+#define DEFAULT_UART_BASE		UART0_BASE
+/* #define DEFAULT_UART_BASE		UART1_BASE */
 #endif
 /* UART registers */
 /*TODO:Move to a new file */
