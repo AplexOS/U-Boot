@@ -373,6 +373,15 @@ config TARGET_AM335X_SBC7109
     select DM_SERIAL
     select DM_GPIO
 
+config TARGET_AM335X_SBC_7109_455
+    bool "Support am335x_sbc_7109_455"
+    select CPU_V7
+    select SUPPORT_SPL
+    select DM
+    select DM_SERIAL
+    select DM_GPIO
+
+
 config TARGET_AM335X_EVM
 	bool "Support am335x_evm"
 	select CPU_V7
@@ -892,6 +901,7 @@ source "board/woodburn/Kconfig"
 source "board/work-microwave/work_92105/Kconfig"
 source "board/zipitz2/Kconfig"
 source "board/sbc7109/Kconfig"
+source "board/sbc_7109_455/Kconfig"
 
 source "arch/arm/Kconfig.debug"
 
