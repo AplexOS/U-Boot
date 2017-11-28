@@ -37,12 +37,13 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 /* GPIO that controls power to DDR on EVM-SK */
-#define GPIO_TO_PIN(bank, gpio)		(32 * (bank) + (gpio))
+#define GPIO_TO_PIN(bank, gpio)        (32 * (bank) + (gpio))
 #define GPIO_DDR_VTT_EN		7
 #define DIP_S1			44
 
 static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
 
+#if 0
 static int baltos_set_console(void)
 {
 	int val, i, dips = 0;
@@ -72,11 +73,11 @@ static int baltos_set_console(void)
 
 	return 0;
 }
+#endif
 
 static int read_eeprom(BSP_VS_HWPARAM *header)
 {
 	i2c_set_bus_num(0);
-	
 
 	/* Check if baseboard eeprom is available */
 	if (i2c_probe(CONFIG_SYS_I2C_EEPROM_ADDR)) {
@@ -155,33 +156,32 @@ static struct emif_regs ddr3_baltos_emif_reg_data = {
 	.emif_ddr_phy_ctlr_1 = MT41K256M16HA125E_EMIF_READ_LATENCY,
 };
 
-
 static const struct ddr_data ddr3_sbc7109_data = {
-	.datardsratio0 = MT41K256M8DA125_RD_DQS,
-	.datawdsratio0 = MT41K256M8DA125_WR_DQS,
-	.datafwsratio0 = MT41K256M8DA125_PHY_FIFO_WE,
-	.datawrsratio0 = MT41K256M8DA125_PHY_WR_DATA,
+    .datardsratio0 = MT41K256M8DA125_RD_DQS,
+    .datawdsratio0 = MT41K256M8DA125_WR_DQS,
+    .datafwsratio0 = MT41K256M8DA125_PHY_FIFO_WE,
+    .datawrsratio0 = MT41K256M8DA125_PHY_WR_DATA,
 };
 
 static const struct cmd_control ddr3_sbc7109_cmd_ctrl_data = {
-	.cmd0csratio = MT41K256M8DA125_RATIO,
-	.cmd0iclkout = MT41K256M8DA125_INVERT_CLKOUT,
+    .cmd0csratio = MT41K256M8DA125_RATIO,
+    .cmd0iclkout = MT41K256M8DA125_INVERT_CLKOUT,
 
-	.cmd1csratio = MT41K256M8DA125_RATIO,
-	.cmd1iclkout = MT41K256M8DA125_INVERT_CLKOUT,
+    .cmd1csratio = MT41K256M8DA125_RATIO,
+    .cmd1iclkout = MT41K256M8DA125_INVERT_CLKOUT,
 
-	.cmd2csratio = MT41K256M8DA125_RATIO,
-	.cmd2iclkout = MT41K256M8DA125_INVERT_CLKOUT,
+    .cmd2csratio = MT41K256M8DA125_RATIO,
+    .cmd2iclkout = MT41K256M8DA125_INVERT_CLKOUT,
 };
 
 static struct emif_regs ddr3_sbc7109_emif_reg_data = {
-	.sdram_config = MT41K256M8DA125_EMIF_SDCFG,
-	.ref_ctrl = MT41K256M8DA125_EMIF_SDREF,
-	.sdram_tim1 = MT41K256M8DA125_EMIF_TIM1,
-	.sdram_tim2 = MT41K256M8DA125_EMIF_TIM2,
-	.sdram_tim3 = MT41K256M8DA125_EMIF_TIM3,
-	.zq_config = MT41K256M8DA125_ZQ_CFG,
-	.emif_ddr_phy_ctlr_1 = MT41K256M8DA125_EMIF_READ_LATENCY,
+    .sdram_config = MT41K256M8DA125_EMIF_SDCFG,
+    .ref_ctrl = MT41K256M8DA125_EMIF_SDREF,
+    .sdram_tim1 = MT41K256M8DA125_EMIF_TIM1,
+    .sdram_tim2 = MT41K256M8DA125_EMIF_TIM2,
+    .sdram_tim3 = MT41K256M8DA125_EMIF_TIM3,
+    .zq_config = MT41K256M8DA125_ZQ_CFG,
+    .emif_ddr_phy_ctlr_1 = MT41K256M8DA125_EMIF_READ_LATENCY,
 };
 
 #ifdef CONFIG_SPL_OS_BOOT
@@ -214,6 +214,7 @@ void am33xx_spl_board_init(void)
 	 * 1.1375V.  For MPU voltage we need to switch based on
 	 * the frequency we are running at.
 	 */
+
 	printf("I2C speed: %d Hz\n", CONFIG_SYS_OMAP24_I2C_SPEED);
 
 	if (i2c_probe(TPS65910_CTRL_I2C_ADDR)) {
@@ -245,23 +246,18 @@ void am33xx_spl_board_init(void)
 
 	/* Set MPU Frequency to what we detected now that voltages are set */
 	do_setup_dpll(&dpll_mpu_regs, &dpll_mpu_opp100);
-	
-	//writel(0x000010ff, PRM_DEVICE_INST + 4);
 }
 
 const struct dpll_params *get_dpll_ddr_params(void)
 {
 	enable_i2c0_pin_mux();
-	i2c_set_bus_num(0);
-	gpio_direction_output(GPIO_TO_PIN(0,22),1); //COM0_MODE_0=1
-	gpio_direction_output(GPIO_TO_PIN(0,23),0); //COM0_MODE_1=0
-	gpio_direction_output(GPIO_TO_PIN(0,19),0); //COM0_TERM=0
-	//gpio_set_value(GPIO_TO_PIN(0,22),1);
-	//gpio_set_value(GPIO_TO_PIN(0,23),0);
-	//gpio_set_value(GPIO_TO_PIN(0,19),0);
-	gpio_direction_output(GPIO_TO_PIN(0,12),1); //LVDS_BLKT_ON=1
+    i2c_set_bus_num(0);
+    gpio_direction_output(GPIO_TO_PIN(0,22),1); //COM0_MODE_0=1
+    gpio_direction_output(GPIO_TO_PIN(0,23),0); //COM0_MODE_1=0
+    gpio_direction_output(GPIO_TO_PIN(0,19),0); //COM0_TERM=0
+    gpio_direction_output(GPIO_TO_PIN(0,12),1); //LVDS_BLKT_ON=1
 
-	return &dpll_ddr_baltos;
+    return &dpll_ddr_baltos;
 }
 
 void set_uart_mux_conf(void)
@@ -283,28 +279,26 @@ const struct ctrl_ioregs ioregs_baltos = {
 };
 
 const struct ctrl_ioregs ioregs_sbc7109 = {
-	.cm0ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
-	.cm1ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
-	.cm2ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
-	.dt0ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
-	.dt1ioctl		= MT41K256M8DA125_IOCTRL_VALUE,
+    .cm0ioctl       = MT41K256M8DA125_IOCTRL_VALUE,
+    .cm1ioctl       = MT41K256M8DA125_IOCTRL_VALUE,
+    .cm2ioctl       = MT41K256M8DA125_IOCTRL_VALUE,
+    .dt0ioctl       = MT41K256M8DA125_IOCTRL_VALUE,
+    .dt1ioctl       = MT41K256M8DA125_IOCTRL_VALUE,
 };
+
 
 void sdram_init(void)
 {
-	//gpio_request(GPIO_DDR_VTT_EN, "ddr_vtt_en");
-	//gpio_direction_output(GPIO_DDR_VTT_EN, 1);
-
-	if (1)
-		config_ddr(400, &ioregs_sbc7109,
-			&ddr3_sbc7109_data,
-			&ddr3_sbc7109_cmd_ctrl_data,
-			&ddr3_sbc7109_emif_reg_data, 0);
-	else
-		config_ddr(400, &ioregs_baltos,
-			&ddr3_baltos_data,
-			&ddr3_baltos_cmd_ctrl_data,
-			&ddr3_baltos_emif_reg_data, 0);
+    if (1)
+        config_ddr(400, &ioregs_sbc7109,
+                   &ddr3_sbc7109_data,
+                   &ddr3_sbc7109_cmd_ctrl_data,
+                   &ddr3_sbc7109_emif_reg_data, 0);
+    else
+        config_ddr(400, &ioregs_baltos,
+                   &ddr3_baltos_data,
+                   &ddr3_baltos_cmd_ctrl_data,
+                   &ddr3_baltos_emif_reg_data, 0);
 }
 #endif
 
@@ -380,6 +374,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 	return 0;
 }
 
+#if 0
 static struct module_pin_mux dip_pin_mux[] = {
 	{OFFSET(gpmc_ad12), (MODE(7) | RXACTIVE )},	/* GPIO1_12 */
 	{OFFSET(gpmc_ad13), (MODE(7)  | RXACTIVE )},	/* GPIO1_13 */
@@ -387,17 +382,18 @@ static struct module_pin_mux dip_pin_mux[] = {
 	{OFFSET(gpmc_ad15), (MODE(7)  | RXACTIVE )},	/* GPIO1_15 */
 	{-1},
 };
+#endif
 
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+#if 0
 	BSP_VS_HWPARAM header;
 	char model[4];
 
 	/* get production data */
-	// John remove setting system model name.
-	/*
+
 	if (read_eeprom(&header)) {
 		strcpy(model, "211");
 	} else {
@@ -408,7 +404,7 @@ int board_late_init(void)
 		}
 	}
 	setenv("board_name", model);
-	*/
+#endif
 #endif
 
 	return 0;
@@ -525,17 +521,44 @@ int board_eth_init(bd_t *bis)
 	miiphy_write(devname, 0x7, AR8051_PHY_DEBUG_DATA_REG,
 			AR8051_RGMII_TX_CLK_DLY);
 #endif
-#if defined(CONFIG_USB_ETHER) && \
-	(!defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_USBETH_SUPPORT))
-	if (is_valid_ethaddr(mac_addr))
-		eth_setenv_enetaddr("usbnet_devaddr", mac_addr);
 
-	rv = usb_eth_initialize(bis);
-	if (rv < 0)
-		printf("Error %d registering USB_ETHER\n", rv);
-	else
-		n += rv;
+#if defined(CONFIG_USB_ETHER) && \
+    (!defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_USBETH_SUPPORT))
+    if (is_valid_ethaddr(mac_addr))
+        eth_setenv_enetaddr("usbnet_devaddr", mac_addr);
+
+    rv = usb_eth_initialize(bis);
+    if (rv < 0)
+        printf("Error %d registering USB_ETHER\n", rv);
+    else
+        n += rv;
 #endif
+
 	return n;
+}
+#endif
+
+
+#ifdef CONFIG_MISC_INIT_R
+int misc_init_r(void)
+{
+    printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
+
+#ifdef AUTO_UPDATESYS
+    if(*((int *)0x80000000) == 8)
+    {
+        run_command("run auto_update_nand", 0);
+        for(;;);
+    }
+#endif
+
+    if(*((int *)0x80000000) == 8)
+        setenv("bootdev", "MMC");
+    else if(*((int *)0x80000000) == 5)
+        setenv("bootdev", "NAND");
+    else
+        printf("Boot device don't exist\n");
+
+    return 0;
 }
 #endif

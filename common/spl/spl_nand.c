@@ -16,7 +16,6 @@
 int spl_nand_load_image(void)
 {
 	nand_init();
-
 	nand_spl_load_image(CONFIG_SYS_NAND_U_BOOT_OFFS,
 			    CONFIG_SYS_NAND_U_BOOT_SIZE,
 			    (void *)CONFIG_SYS_NAND_U_BOOT_DST);
@@ -80,6 +79,7 @@ int spl_nand_load_image(void)
 
 	/*use CONFIG_SYS_TEXT_BASE as temporary storage area */
 	header = (struct image_header *)(CONFIG_SYS_TEXT_BASE);
+
 #ifdef CONFIG_SPL_OS_BOOT
 	if (!spl_start_uboot()) {
 		/*
@@ -89,6 +89,8 @@ int spl_nand_load_image(void)
 		 * CONFIG_CMD_SPL_WRITE_SIZE therefore may overwrite
 		 * following sections like BSS
 		 */
+        printf("aplex is here nand_init over \n ");
+
 		nand_spl_load_image(CONFIG_CMD_SPL_NAND_OFS,
 			CONFIG_CMD_SPL_WRITE_SIZE,
 			(void *)CONFIG_SYS_TEXT_BASE);

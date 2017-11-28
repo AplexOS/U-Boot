@@ -19,11 +19,14 @@
 #include <linux/sizes.h>
 #include <configs/ti_am335x_common.h>
 
-#define CONFIG_ENV_IS_NOWHERE // John
-#define CONFIG_DISPLAY_CPUINFO // John
-#define CONFIG_HSMMC2_8BIT // John
-#define CONFIG_SBC7109 // John
-#define CONFIG_SUPPORT_EMMC_BOOT // John
+#define CONFIG_BOOTDELAY     2
+
+/* #define DEBUG */
+
+#define CONFIG_ENV_IS_NOWHERE
+#define CONFIG_DISPLAY_CPUINFO
+#define CONFIG_HSMMC2_8BIT
+#define CONFIG_SBC7109
 
 #define MACH_TYPE_TIAM335EVM		3589	/* Until the next sync */
 #define CONFIG_MACH_TYPE		MACH_TYPE_TIAM335EVM
@@ -72,23 +75,22 @@
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
-	"nandargs=setenv bootargs console=${console} " \
+	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init"\
 		"${optargs} " \
-		"${mtdparts} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
-	"nandroot=ubi0:rootfs rw ubi.mtd=5\0" \
+	"nandroot=ubi0:rootfs rw ubi.mtd=4,2048\0" \
 	"nandrootfstype=ubifs rootwait=1\0" \
 	"nandboot=echo Booting from nand ...; " \
 		"run nandargs; " \
-		"setenv loadaddr 0x84000000; " \
-		"ubi part UBI; " \
-		"ubifsmount ubi0:kernel; " \
-		"ubifsload $loadaddr kernel-fit.itb;" \
-		"ubifsumount; " \
-		"bootm ${loadaddr}#conf${board_name}; " \
-		"if test $? -ne 0; then echo Using default FIT config; " \
-		"bootm ${loadaddr}; fi;\0"
+        "nandecc hw 8; "\
+		"setenv loadaddr 0x82000000; " \
+        "setenv fdtaddr 0x88000000; "\
+        "nandecc hw 8; "\
+        "nand read ${loadaddr} 0x280000 0x500000; "\
+        "nandecc hw 8; "\
+        "nand read ${fdtaddr} 0x700000 0x20000; "\
+		"bootz ${loadaddr} - ${fdtaddr} ;\0"
 #else
 #define NANDARGS ""
 #endif
@@ -104,7 +106,6 @@
 	"bootfile=zImage\0" \
 	"fdtfile=undefined\0" \
 	"console=ttyO0,115200n8\0" \
-	"verify=n\0" \
 	"partitions=" \
 		"uuid_disk=${uuid_gpt_disk};" \
 		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
@@ -192,18 +193,37 @@
 	"ramboot=echo Booting from ramdisk ...; " \
 		"run ramargs; " \
 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
-	"findfdt=setenv fdtfile am335x-baltos.dtb\0" \
+	"findfdt=setenv fdtfile am335x-sbc7109.dtb\0" \
+    "auto_update_nand= echo ------------------Begin update system to Nand -----------------;"\
+        "nand erase.chip ;mmc rescan;"\
+        "fatload mmc 0 81000000 MLO; nandecc hw 8; nand write.i 81000000 0 $filesize; "\
+        "fatload mmc 0 81000000 u-boot.img; nandecc hw 8; nand write.i 81000000 80000 $filesize; "\
+        "fatload mmc 0 81000000 zImage; nandecc hw 8; nand write.i 81000000 280000 ${filesize}; "\
+        "fatload mmc 0 81000000 am335x-sbc_7109_455.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
+        "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000 780000 ${filesize};"\
+        "echo ;"\
+        "echo ------------------Begin update system to Nand -----------------;\0"\
 	NANDARGS
 	/*DFUARGS*/
 #endif
 
+#if 0
 #define CONFIG_BOOTCOMMAND \
-	"run mmcboot;" \
-	"setenv mmcdev 1; " \
-	"setenv bootpart 1:2; " \
-	"run mmcboot;"
+    "if test $bootdev = MMC; then"\
+	    "run mmcboot;"\
+    "else"\
+        "run nandboot;"\
+    "fi;"
+#endif
 
-#define CONFIG_BOOTDELAY        0
+#if 1
+#define CONFIG_BOOTCOMMAND \
+    "if test $bootdev = MMC; then "\
+	    "run mmcboot;"\
+    "else "\
+        "run nandboot;"\
+    "fi;"
+#endif
 
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
@@ -275,9 +295,9 @@
  * add mass storage support and for gadget we add both RNDIS ethernet
  * and DFU.
  */
-#if 0
 #define CONFIG_USB_MUSB_DSPS
 #define CONFIG_ARCH_MISC_INIT
+#define CONFIG_MISC_INIT_R
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #define CONFIG_AM335X_USB0
@@ -294,7 +314,6 @@
 #define CONFIG_USB_ETH_RNDIS
 #define CONFIG_USBNET_HOST_ADDR	"de:ad:be:af:00:00"
 #endif /* CONFIG_USB_MUSB_GADGET */
-#endif
 
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_USBETH_SUPPORT)
 /* disable host part of MUSB in SPL */
@@ -316,9 +335,14 @@
 #define CONFIG_PHY_ATHEROS
 
 /* NAND support */
-#undef CONFIG_NAND
 #ifdef CONFIG_NAND
+
+#if 1
+#define AUTO_UPDATESYS   /* auto update system */
+#endif
+
 #define CONFIG_CMD_NAND
+#define CONFIG_CMD_NANDECC
 #define GPMC_NAND_ECC_LP_x8_LAYOUT	1
 #if !defined(CONFIG_SPI_BOOT) && !defined(CONFIG_NOR_BOOT)
 #define MTDIDS_DEFAULT			"nand0=omap2-nand.0"
