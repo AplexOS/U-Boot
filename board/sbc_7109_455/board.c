@@ -33,6 +33,8 @@
 #include <environment.h>
 #include <watchdog.h>
 #include "board.h"
+#include <common.h>
+#include <autoboot.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -157,7 +159,7 @@ static struct emif_regs ddr3_baltos_emif_reg_data = {
 };
 
 static const struct ddr_data ddr3_sbc7109_data = {
-    .datardsratio0 = MT41K256M8DA125_RD_DQS,
+	.datardsratio0 = MT41K256M8DA125_RD_DQS,
     .datawdsratio0 = MT41K256M8DA125_WR_DQS,
     .datafwsratio0 = MT41K256M8DA125_PHY_FIFO_WE,
     .datawrsratio0 = MT41K256M8DA125_PHY_WR_DATA,
@@ -175,8 +177,8 @@ static const struct cmd_control ddr3_sbc7109_cmd_ctrl_data = {
 };
 
 static struct emif_regs ddr3_sbc7109_emif_reg_data = {
-    .sdram_config = MT41K256M8DA125_EMIF_SDCFG,
-    .ref_ctrl = MT41K256M8DA125_EMIF_SDREF,
+	.sdram_config = MT41K256M8DA125_EMIF_SDCFG,
+	.ref_ctrl = MT41K256M8DA125_EMIF_SDREF,
     .sdram_tim1 = MT41K256M8DA125_EMIF_TIM1,
     .sdram_tim2 = MT41K256M8DA125_EMIF_TIM2,
     .sdram_tim3 = MT41K256M8DA125_EMIF_TIM3,
@@ -388,12 +390,11 @@ static struct module_pin_mux dip_pin_mux[] = {
 int board_late_init(void)
 {
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-#if 0
 	BSP_VS_HWPARAM header;
 	char model[4];
 
 	/* get production data */
-
+	/*
 	if (read_eeprom(&header)) {
 		strcpy(model, "211");
 	} else {
@@ -404,7 +405,7 @@ int board_late_init(void)
 		}
 	}
 	setenv("board_name", model);
-#endif
+	*/
 #endif
 
 	return 0;
@@ -548,7 +549,8 @@ int misc_init_r(void)
     if(*((int *)0x80000000) == 8)
     {
         run_command("run auto_update_nand", 0);
-        for(;;);
+        while(1)
+            udelay(1000);
     }
 #endif
 

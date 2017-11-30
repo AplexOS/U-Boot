@@ -2185,6 +2185,23 @@ static uint8_t *nand_fill_oob(struct mtd_info *mtd, uint8_t *oob, size_t len,
 	return NULL;
 }
 
+static void show_process(unsigned long a, unsigned long b)
+{
+    static int last_percent = 100;
+    int percent = 0;
+
+    percent = a / (b / 100);
+
+    if (percent != last_percent)
+    {
+        printf("\r%02d%% complete", percent);
+    }
+    else
+    {
+        printf("\n");
+    }
+}
+
 #define NOTALIGNED(x)	((x & (chip->subpagesize - 1)) != 0)
 
 /**
@@ -2292,6 +2309,8 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 		if (!writelen)
 			break;
 
+        show_process(ops->len - writelen, ops->len);
+
 		column = 0;
 		buf += bytes;
 		realpage++;
@@ -2306,6 +2325,7 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 	}
 
 	ops->retlen = ops->len - writelen;
+
 	if (unlikely(oob))
 		ops->oobretlen = ops->ooblen;
 

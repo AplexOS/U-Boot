@@ -166,6 +166,11 @@ void enable_i2c1_pin_mux(void)
 	configure_module_pin_mux(i2c1_pin_mux);
 }
 
+static struct module_pin_mux gpio0_20_pin_mux[] = {
+    {OFFSET(xdma_event_intr1), MODE(7) | PULLUDEN | PULLUP_EN},
+    {-1},
+};
+
 void enable_board_pin_mux()
 {
     configure_module_pin_mux(i2c0_pin_mux);
@@ -174,6 +179,7 @@ void enable_board_pin_mux()
     configure_module_pin_mux(uart1_pin_mux);
     configure_module_pin_mux(rgmii1_pin_mux);
     configure_module_pin_mux(mmc0_pin_mux);
+    configure_module_pin_mux(gpio0_20_pin_mux);
 
 #if defined(CONFIG_NAND)
 	configure_module_pin_mux(nand_pin_mux);

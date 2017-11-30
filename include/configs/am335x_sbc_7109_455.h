@@ -75,7 +75,7 @@
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
-	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init"\
+	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M"\
 		"${optargs} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
@@ -202,7 +202,7 @@
         "fatload mmc 0 81000000 am335x-sbc_7109_455.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
         "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000 780000 ${filesize};"\
         "echo ;"\
-        "echo ------------------Begin update system to Nand -----------------;\0"\
+        "echo ------------------success update system to Nand -----------------;\0"\
 	NANDARGS
 	/*DFUARGS*/
 #endif
