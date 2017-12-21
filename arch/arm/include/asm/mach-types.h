@@ -3316,6 +3316,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_TIAM335IAEVM         3684
 #define MACH_APLEX_ECM_5416            3688
 #define MACH_APLEX_CMI_AT101           3689
+#define MACH_APLEX_ECM_5410           3690
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type

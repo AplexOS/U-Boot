@@ -2498,6 +2498,7 @@ static int nand_flash_detect_onfi(struct mtd_info *mtd,
 	mtd->writesize = le32_to_cpu(p->byte_per_page);
 	mtd->erasesize = le32_to_cpu(p->pages_per_block) * mtd->writesize;
 	mtd->oobsize = le16_to_cpu(p->spare_bytes_per_page);
+    //mtd->oobsize = 224;
 	chip->chipsize = (uint64_t)le32_to_cpu(p->blocks_per_lun) * mtd->erasesize;
 	*busw = 0;
 	if (le16_to_cpu(p->features) & 1)

@@ -132,7 +132,7 @@ static int init_baudrate(void)
 
 static int display_banner(void)
 {
-	printf("\n\n%s\n\n", version_string);
+	printf("\n\n%s\n\n---1", version_string);
 	debug("U-Boot code: %08lX -> %08lX  BSS: -> %08lX\n",
 	       _TEXT_BASE,
 	       _bss_start_ofs + _TEXT_BASE, _bss_end_ofs + _TEXT_BASE);
