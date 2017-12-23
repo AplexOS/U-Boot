@@ -73,7 +73,7 @@
 #endif
 
 /* set to negative value for no autoboot */
-#define CONFIG_BOOTDELAY		3
+#define CONFIG_BOOTDELAY		0
 
 #define CONFIG_MMC
 #define CONFIG_NAND
