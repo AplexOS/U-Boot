@@ -571,7 +571,6 @@ static struct evm_pin_mux general_purpose_evm_pin_mux[] = {
 #ifdef CONFIG_MMC
 	{mmc0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 #endif
-#endif
 
 	{uart0_pin_mux, PROFILE_ALL, DEV_ON_BASEBOARD},
 	{0},
