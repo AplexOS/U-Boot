@@ -543,14 +543,20 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_MISC_INIT_R
 int misc_init_r(void)
 {
-    printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
-
+    //printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
 #ifdef AUTO_UPDATESYS
     if(*((int *)0x80000000) == 8)
     {
         run_command("run auto_update_nand", 0);
+        gpio_request(29, "led1");
+        gpio_direction_output(29, 1);
         while(1)
-            udelay(1000);
+        {
+            gpio_set_value(29, 1);
+            udelay(500000);
+            gpio_set_value(29, 0);
+            udelay(500000);
+        }
     }
 #endif
 

@@ -24,9 +24,6 @@
 static struct module_pin_mux uart0_pin_mux[] = {
 	{OFFSET(uart0_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART0_RXD */
     {OFFSET(uart0_txd), (MODE(0) | PULLUDEN | PULLUP_EN)},		/* UART0_TXD */
-    {OFFSET(gpmc_ad8), (MODE(7) | PULLUDEN | PULLUP_EN)},       /* COM0_MODE_0 */
-    {OFFSET(gpmc_ad9), (MODE(7) | PULLUDEN | PULLDOWN_EN)},     /* COM0_MODE_1 */
-    {OFFSET(xdma_event_intr0), (MODE(7) | PULLUDEN | PULLDOWN_EN)}, /* COM0_TERM */
 	{-1},
 };
 
@@ -67,7 +64,6 @@ static struct module_pin_mux mmc0_pin_mux[] = {
 	{OFFSET(mmc0_dat0), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT0 */
 	{OFFSET(mmc0_clk), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CLK */
 	{OFFSET(mmc0_cmd), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CMD */
-	//{OFFSET(spi0_cs1), (MODE(5) | RXACTIVE | PULLUP_EN)},	/* MMC0_CD */
     {OFFSET(gpmc_clk), (MODE(7) | RXACTIVE)},   /* MMC0_CD */
 	{-1},
 };
@@ -166,8 +162,8 @@ void enable_i2c1_pin_mux(void)
 	configure_module_pin_mux(i2c1_pin_mux);
 }
 
-static struct module_pin_mux gpio0_20_pin_mux[] = {
-    {OFFSET(xdma_event_intr1), MODE(7) | PULLUDEN | PULLUP_EN},
+static struct module_pin_mux gpio0_29_pin_mux[] = {
+    {OFFSET(rmii1_refclk), MODE(7)},
     {-1},
 };
 
@@ -179,7 +175,7 @@ void enable_board_pin_mux()
     configure_module_pin_mux(uart1_pin_mux);
     configure_module_pin_mux(rgmii1_pin_mux);
     configure_module_pin_mux(mmc0_pin_mux);
-    configure_module_pin_mux(gpio0_20_pin_mux);
+    configure_module_pin_mux(gpio0_29_pin_mux);
 
 #if defined(CONFIG_NAND)
 	configure_module_pin_mux(nand_pin_mux);
