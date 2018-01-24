@@ -1,0 +1,6 @@
+BALTOS BOARD
+M:	Yegor Yefremov <yegorslists@googlemail.com>
+S:	Maintained
+F:	board/cmi_at101/
+F:	include/configs/am335x_cmi_at101.h
+F:	configs/am335x_cmi_at101_defconfig

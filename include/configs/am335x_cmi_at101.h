@@ -37,7 +37,7 @@
 #define V_SCLK				(V_OSCK)
 
 /* Custom script for NOR */
-#define CONFIG_SYS_LDSCRIPT		"board/sbc_7109_455/u-boot.lds"
+#define CONFIG_SYS_LDSCRIPT		"board/cmi_at101/u-boot.lds"
 
 /* Always 128 KiB env size */
 #define CONFIG_ENV_SIZE			(128 << 10)
@@ -193,13 +193,13 @@
 	"ramboot=echo Booting from ramdisk ...; " \
 		"run ramargs; " \
 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
-	"findfdt=setenv fdtfile am335x-sbc7109.dtb\0" \
+	"findfdt=setenv fdtfile am335x-cmi_at101.dtb\0" \
     "auto_update_nand= echo ------------------Begin update system to Nand -----------------;"\
         "nand erase.chip ;mmc rescan;"\
         "fatload mmc 0 81000000 MLO; nandecc hw 8; nand write.i 81000000 0 $filesize; "\
         "fatload mmc 0 81000000 u-boot.img; nandecc hw 8; nand write.i 81000000 80000 $filesize; "\
         "fatload mmc 0 81000000 zImage; nandecc hw 8; nand write.i 81000000 280000 ${filesize}; "\
-        "fatload mmc 0 81000000 am335x-sbc_7109_455.dtb; nandecc hw 8; nand write.i 81000000 1700000 ${filesize}; "\
+        "fatload mmc 0 81000000 am335x-cmi_at101.dtb; nandecc hw 8; nand write.i 81000000 1700000 ${filesize}; "\
         "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000 1780000 ${filesize};"\
         "echo ;"\
         "echo ------------------success update system to Nand -----------------;\0"\
