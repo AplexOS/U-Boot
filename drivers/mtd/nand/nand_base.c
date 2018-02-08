@@ -3342,6 +3342,8 @@ static void nand_decode_ext_id(struct mtd_info *mtd, struct nand_chip *chip,
 		}
 
 	}
+
+    printf("oobsize: %d  erase_size: %d writesize : %d\n", mtd->oobsize, mtd->erasesize, mtd->writesize);
 }
 
 /*
