@@ -291,10 +291,11 @@
 
 	mmc1_pins: pinmux_mmc1_pins {
 		pinctrl-single,pins = <
-			0x160 (PIN_INPUT | MUX_MODE7) /* spi0_cs1.gpio0_6 */
+			//0x160 (PIN_INPUT | MUX_MODE7) /* spi0_cs1.gpio0_6 */
+			0x8C (PIN_INPUT_PULLUP | MUX_MODE7)	/* gpmc_clk.gpio2_1, INPUT_PULLUP | MODE7 */
 		>;
 	};
-
+#if 0
 	mmc3_pins: pinmux_mmc3_pins {
 		pinctrl-single,pins = <
 			0x44 (PIN_INPUT_PULLUP | MUX_MODE3)	/* gpmc_a1.mmc2_dat0, INPUT_PULLUP | MODE3 */
@@ -305,7 +306,7 @@
 			0x8C (PIN_INPUT_PULLUP | MUX_MODE3)	/* gpmc_clk.mmc2_clk, INPUT_PULLUP | MODE3 */
 		>;
 	};
-
+#endif
 	wlan_pins: pinmux_wlan_pins {
 		pinctrl-single,pins = <
 			0x40 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a0.gpio1_16 */
@@ -316,6 +317,7 @@
 
 	lcd_pins_s0: lcd_pins_s0 {
 		pinctrl-single,pins = <
+#if 0
 			0x20 (PIN_OUTPUT | MUX_MODE1)		/* gpmc_ad8.lcd_data23 */
 			0x24 (PIN_OUTPUT | MUX_MODE1)		/* gpmc_ad9.lcd_data22 */
 			0x28 (PIN_OUTPUT | MUX_MODE1)		/* gpmc_ad10.lcd_data21 */
@@ -324,6 +326,7 @@
 			0x34 (PIN_OUTPUT | MUX_MODE1)		/* gpmc_ad13.lcd_data18 */
 			0x38 (PIN_OUTPUT | MUX_MODE1)		/* gpmc_ad14.lcd_data17 */
 			0x3c (PIN_OUTPUT | MUX_MODE1)		/* gpmc_ad15.lcd_data16 */
+#endif
 			0xa0 (PIN_OUTPUT | MUX_MODE0)		/* lcd_data0.lcd_data0 */
 			0xa4 (PIN_OUTPUT | MUX_MODE0)		/* lcd_data1.lcd_data1 */
 			0xa8 (PIN_OUTPUT | MUX_MODE0)		/* lcd_data2.lcd_data2 */
@@ -717,9 +720,9 @@
 	bus-width = <4>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc1_pins>;
-	cd-gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+	cd-gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
 };
-
+#if 0
 &mmc3 {
 	/* these are on the crossbar and are outlined in the
 	   xbar-event-map element */
@@ -745,7 +748,7 @@
 		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
 	};
 };
-
+#endif
 &edma {
 	ti,edma-xbar-event-map = /bits/ 16 <1 12
 					    2 13>;

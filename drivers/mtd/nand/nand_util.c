@@ -38,6 +38,9 @@ typedef struct mtd_info		mtd_info_t;
 #define cpu_to_je16(x) (x)
 #define cpu_to_je32(x) (x)
 
+extern void lcd_progress_index(int position);
+extern void lcd_progress_complete(void);
+
 /**
  * nand_erase_opts: - erase NAND flash with support for various options
  *		      (jffs2 formatting)
@@ -166,6 +169,7 @@ int nand_erase_opts(nand_info_t *meminfo, const nand_erase_options_t *opts)
 			 * steps to reduce the number of messages printed
 			 * on (slow) serial consoles
 			 */
+			lcd_progress_index(percent);
 			if (percent != percent_complete) {
 				percent_complete = percent;
 
@@ -178,8 +182,10 @@ int nand_erase_opts(nand_info_t *meminfo, const nand_erase_options_t *opts)
 			}
 		}
 	}
+	printf("\rErasing 100%% complete.");
 	if (!opts->quiet)
 		printf("\n");
+	lcd_progress_complete();
 
 	return 0;
 }
@@ -624,8 +630,10 @@ int nand_write_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 			rval = nand_verify(nand, offset, *length, buffer);
 
 		if (rval == 0)
+		{
+			lcd_progress_complete();
 			return 0;
-
+		}
 		*length = 0;
 		printf("NAND write to offset %llx failed %d\n",
 			offset, rval);
@@ -740,7 +748,10 @@ int nand_read_skip_bad(nand_info_t *nand, loff_t offset, size_t *length,
 	if (!need_skip) {
 		rval = nand_read(nand, offset, length, buffer);
 		if (!rval || rval == -EUCLEAN)
+		{
+			lcd_progress_complete();
 			return 0;
+		}
 
 		*length = 0;
 		printf("NAND read from offset %llx failed %d\n",

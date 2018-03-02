@@ -11,6 +11,10 @@ obj-y += boot.o
 obj-$(CONFIG_CMD_BOOTM) += bootm.o
 obj-y += help.o
 obj-y += version.o
+# add lcd command
+#obj-y += lcd_cmd.o
+obj-$(CONFIG_LCD_UBOOT) += lcd_cmd.o
+
 
 # command
 obj-$(CONFIG_CMD_AES) += aes.o

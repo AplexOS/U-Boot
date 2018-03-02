@@ -87,4 +87,15 @@ void enable_uart5_pin_mux(void);
 void enable_i2c0_pin_mux(void);
 void enable_i2c1_pin_mux(void);
 void enable_board_pin_mux(void);
+
+void lcdbacklight(int gpio, char *name, int val);
+void lcdbacklight_off(int gpio);
+void lcdbacklight_on(int gpio);
+void board_lcd_reset(int gpio);
+
+void lcd_progress_index(int percent);
+void lcd_progress_complete(void);
+void lcd_buffer_init(void);
+
+
 #endif

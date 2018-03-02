@@ -39,6 +39,7 @@ obj-$(CONFIG_SPL_SATA_SUPPORT) += block/
 
 else
 
+obj-$(CONFIG_LCD_UBOOT) += lcd/
 obj-y += adc/
 obj-$(CONFIG_DM_DEMO) += demo/
 obj-$(CONFIG_BIOSEMU) += bios_emulator/

@@ -663,6 +663,7 @@ libs-y += cmd/
 libs-y += common/
 libs-$(CONFIG_API) += api/
 libs-$(CONFIG_HAS_POST) += post/
+#libs-$(CONFIG_LCD_UBOOT) += drivers/lcd/
 libs-y += test/
 libs-y += test/dm/
 libs-$(CONFIG_UT_ENV) += test/env/

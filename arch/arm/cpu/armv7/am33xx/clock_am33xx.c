@@ -62,6 +62,20 @@ const struct dpll_params dpll_core = {
 const struct dpll_params dpll_per = {
 		960, OSC-1, 5, -1, -1, -1, -1};
 
+const struct dpll_regs dpll_dis_regs = {
+	.cm_clkmode_dpll = CM_WKUP + 0x98,
+	.cm_idlest_dpll  = CM_WKUP + 0x48,
+	.cm_clksel_dpll  = CM_WKUP + 0x54,
+	.cm_div_m2_dpll  = CM_WKUP + 0xA4,
+};
+
+const struct dpll_params dpll_dis = {100, OSC-1, 1, -1, -1, -1, -1};
+
+const struct dpll_params *get_dpll_dis_params(void)
+{
+	return &dpll_dis;
+}
+
 const struct dpll_params *get_dpll_mpu_params(void)
 {
 	return &dpll_mpu;

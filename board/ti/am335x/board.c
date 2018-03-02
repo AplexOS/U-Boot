@@ -38,6 +38,7 @@
 
 #include "../common/board_detect.h"
 #include "board.h"
+#include "../../../drivers/lcd/rasterDisplay.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -552,6 +553,48 @@ static struct clk_synth cdce913_data = {
 
 static bool eth0_is_mii;
 static bool eth1_is_mii;
+#endif
+
+#if !defined(CONFIG_SPL_BUILD)
+void lcdbacklight(int gpio, char *name, int val)
+{
+        int ret;
+        ret = gpio_request(gpio, name);
+        if (ret < 0) {
+                printf("%s: Unable to request %s\n", __func__, name);
+                return;
+        }
+        ret = gpio_direction_output(gpio, 0);
+        if (ret < 0) {
+                printf("%s: Unable to set %s as output\n", __func__, name);
+                goto err_free_gpio;
+        }
+        gpio_set_value(gpio, val);
+        return;
+err_free_gpio:
+        gpio_free(gpio);
+}
+
+void lcdbacklight_off(int gpio)
+{
+        gpio_set_value(gpio,1);
+        Lcd_off();
+        return;
+}
+
+void lcdbacklight_on(int gpio)
+{
+        gpio_set_value(gpio,0); //write 0 to turn on
+        Lcd_on();
+        return;
+}
+
+void board_lcd_reset(int gpio)
+{
+        gpio_set_value(gpio,1);
+        Lcd_reset();
+        return;
+}
 #endif
 
 /*

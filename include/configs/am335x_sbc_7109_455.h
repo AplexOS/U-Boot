@@ -20,6 +20,7 @@
 #include <configs/ti_am335x_common.h>
 
 #define CONFIG_BOOTDELAY     2
+#define CONFIG_LCD_UBOOT
 
 /* #define DEBUG */
 
@@ -75,7 +76,7 @@
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
-	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M"\
+	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M "\
 		"${optargs} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
@@ -90,6 +91,7 @@
         "nand read ${loadaddr} 0x280000 0x500000; "\
         "nandecc hw 8; "\
         "nand read ${fdtaddr} 0x700000 0x20000; "\
+		"ULCD reset; "\
 		"bootz ${loadaddr} - ${fdtaddr} ;\0"
 #else
 #define NANDARGS ""

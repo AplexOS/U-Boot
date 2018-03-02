@@ -35,15 +35,23 @@
 #include "board.h"
 #include <common.h>
 #include <autoboot.h>
-
+#include "../../../drivers/lcd/rasterDisplay.h"
+#define BITMAP_LOGO
+#ifdef BITMAP_LOGO
+#include "../../../drivers/lcd/image.h"
+#endif
 DECLARE_GLOBAL_DATA_PTR;
 
 /* GPIO that controls power to DDR on EVM-SK */
 #define GPIO_TO_PIN(bank, gpio)        (32 * (bank) + (gpio))
 #define GPIO_DDR_VTT_EN		7
 #define DIP_S1			44
+#define logo_high	(180)
+#define logo_width	(300)
 
 static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+char membuf[1280*800*4+32]={0};
+static int progress_position=(480*3/4);
 
 #if 0
 static int baltos_set_console(void)
@@ -258,6 +266,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
     gpio_direction_output(GPIO_TO_PIN(0,23),0); //COM0_MODE_1=0
     gpio_direction_output(GPIO_TO_PIN(0,19),0); //COM0_TERM=0
     gpio_direction_output(GPIO_TO_PIN(0,12),1); //LVDS_BLKT_ON=1
+    gpio_direction_output(GPIO_TO_PIN(0, 7),0); //LVDS_BRIGHTNESS=1
 
     return &dpll_ddr_baltos;
 }
@@ -304,11 +313,57 @@ void sdram_init(void)
 }
 #endif
 
+#if !defined(CONFIG_SPL_BUILD)
+void lcd_gpio_setup(int gpio, char *name, int val)
+{
+	int ret;
+	ret = gpio_request(gpio, name);
+	if (ret < 0) {
+		printf("%s: Unable to request %s\n", __func__, name);
+		return;
+	}
+	ret = gpio_direction_output(gpio, 0);
+	if (ret < 0) {
+		printf("%s: Unable to set %s as output\n", __func__, name);
+		goto err_free_gpio;
+	}
+	gpio_set_value(gpio, val);
+	return;
+err_free_gpio:
+	gpio_free(gpio);
+	return;
+}
+
+void lcdbacklight_off(int gpio)
+{
+	gpio_set_value(gpio,0);
+	//Lcd_off();
+	return;
+}
+
+void lcdbacklight_on(int gpio)
+{
+	gpio_set_value(gpio,1); //write 0 to turn on
+	//Lcd_on();
+	return;
+}
+
+void board_lcd_reset(int gpio)
+{
+	gpio_set_value(gpio,0);
+	Lcd_reset();
+	return;
+}
+#endif
+
 /*
  * Basic board specific setup.  Pinmux has been handled already.
  */
 int board_init(void)
 {
+	//puts("eeprom_i2c_init\n");
+	eeprom_i2c_init();
+
 #if defined(CONFIG_HW_WATCHDOG)
 	hw_watchdog_init();
 #endif
@@ -318,6 +373,121 @@ int board_init(void)
 	gpmc_init();
 #endif
 	return 0;
+}
+
+void lcd_progress_complete(void)
+{
+	int i=0,j=0,k=0,offset=0;
+	int screen_width=eeprom_i2c_get_width();
+	int screen_height=eeprom_i2c_get_height();
+
+	offset=progress_position*screen_width*4+(screen_width-logo_width)/2*4+32;
+	for(i=0;i<5;i++)
+	{
+		for(j=0;j<logo_width;j++)
+		{
+			k=offset+screen_width*4*i+4*j;
+			membuf[k+1]=0x00;
+		}
+	}	
+	progress_position +=10;
+}
+
+void lcd_progress_index(int percent)
+{
+	int i=0,j=0,k=0,offset=0;
+	int screen_width=eeprom_i2c_get_width();
+	int screen_height=eeprom_i2c_get_height();
+	int currentstep=logo_width*percent/100;
+
+	offset=progress_position*screen_width*4+(screen_width-logo_width)/2*4+32;
+	for(i=0;i<5;i++)
+	{
+		for(j=0;j<logo_width;j++)
+		{
+			//k=offset+800*4*i+4*j;
+			k=offset+screen_width*4*i+4*j;
+			if(j<currentstep)
+			{
+				membuf[k+0]=0xff;
+				membuf[k+1]=0xff;
+				//membuf[k+2]=0xff;
+			}
+			else
+			{
+				//memset(membuf+k,0x00,(400-j)*4);
+				memset(membuf+k,0x00,(logo_width-j)*4);
+				break;
+			}
+		}
+	}	
+}
+
+void lcd_buffer_init(void)
+{
+	int size;
+	unsigned int i=0,j=0,k=0,offset=0;
+	int screen_width=eeprom_i2c_get_width();
+	int screen_height=eeprom_i2c_get_height();
+
+	//puts("lcd_buffer_init\n");
+#if !defined(CONFIG_SPL_BUILD)
+	lcd_gpio_setup(20, "lcdvcc", 1);
+	lcd_gpio_setup(12, "lcdpwm", 1);
+#endif
+	size = screen_width*screen_height*4+32;
+	memset(membuf, 0, size);
+#ifndef BITMAP_LOGO
+	membuf[1]=0x40;
+	offset=(screen_height-logo_high)/2*screen_width*4+(screen_width-logo_width)/2*4+32;
+	for(i=0;i<logo_high;i++)
+	{
+		for(j=0;j<logo_width;j++)
+		{
+			k=offset+screen_width*4*i+4*j;
+			if(i<(logo_high/2))
+			{
+				if(j<(logo_width/2))
+				{
+					membuf[k+2]=0xff;
+				}
+				else
+				{
+					membuf[k+1]=0xff;
+				}
+			}
+			else
+			{
+				if(j<(logo_width/2))
+				{
+					membuf[k+0]=0xff;
+				}
+				else
+				{
+					membuf[k+0]=0xff;
+					membuf[k+1]=0xff;
+				}
+			}
+		}
+	}
+#else
+	memcpy(membuf,image,32);
+	offset=(screen_height-logo_high)/2*screen_width*4+(screen_width-logo_width)/2*4+32;
+	j=8;
+	k=logo_width*4;
+	for(i=0;i<logo_high;i++)
+	{
+		memcpy(membuf+offset+i*screen_width*4,image+j+i*logo_width,k);
+	}
+#endif
+
+#if !defined(CONFIG_SPL_BUILD)
+	//puts("Lcd_Init\n");
+	Lcd_Init((unsigned int)membuf,(unsigned int)size);
+	lcd_gpio_setup(7, "lcdbacklight", 1);
+#endif
+	progress_position=screen_height*3/4;
+	//printf("screen_width= %d, screen_height= %d, progress_position=%d\n", screen_width, screen_height, progress_position);
 }
 
 int ft_board_setup(void *blob, bd_t *bd)
@@ -389,9 +559,10 @@ static struct module_pin_mux dip_pin_mux[] = {
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+	//puts("board_late_init\n");
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-	BSP_VS_HWPARAM header;
-	char model[4];
+	//BSP_VS_HWPARAM header;
+	//char model[4];
 
 	/* get production data */
 	/*
@@ -543,15 +714,23 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_MISC_INIT_R
 int misc_init_r(void)
 {
-    printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
-
+	//puts("misc_init_r\n");
 #ifdef AUTO_UPDATESYS
     if(*((int *)0x80000000) == 8)
     {
+		Load_config_from_mmc();
+		lcd_buffer_init();
         run_command("run auto_update_nand", 0);
         while(1)
             udelay(1000);
     }
+	else
+	{
+		//eeprom_i2c_init();
+		Load_config_from_mmc();
+		lcd_buffer_init();
+		set_7109_env();
+	}
 #endif
 
     if(*((int *)0x80000000) == 8)

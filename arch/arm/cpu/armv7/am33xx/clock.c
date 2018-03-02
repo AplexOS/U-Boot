@@ -114,6 +114,10 @@ static void setup_dplls(void)
 
 	params = get_dpll_ddr_params();
 	do_setup_dpll(&dpll_ddr_regs, params);
+
+	params = get_dpll_dis_params();
+
+	do_setup_dpll(&dpll_dis_regs, params);
 }
 
 static inline void wait_for_clk_enable(u32 *clkctrl_addr)

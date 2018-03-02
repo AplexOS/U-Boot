@@ -96,6 +96,7 @@
 	"run findfdt; " \
 	"run init_console; " \
 	"run envboot; " \
+	"run RESET_LCD; " \
 	"run distro_bootcmd"
 
 #include <config_distro_bootcmd.h>
@@ -183,6 +184,7 @@
 		"else " \
 			"setenv console ttyO0,115200n8;" \
 		"fi;\0" \
+	"run RESET_LCD; " \
 	NANDARGS \
 	NETARGS \
 	DFUARGS \

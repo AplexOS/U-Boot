@@ -46,6 +46,8 @@
 #include <asm/errno.h>
 
 static bool is_module_text_address(unsigned long addr) {return 0;}
+extern void lcd_progress_index(int position);
+static void show_process(unsigned long a, unsigned long b);
 
 /* Define default oob placement schemes for large and small page devices */
 static struct nand_ecclayout nand_oob_8 = {
@@ -1369,7 +1371,10 @@ static int nand_do_read_ops(struct mtd_info *mtd, loff_t from,
 	unsigned int max_bitflips = 0;
 	int retry_mode = 0;
 	bool ecc_fail = false;
+	bool progress_mode=false;
 
+   	if(*((int *)0x80000000) != 8 && ops->len>500000)
+		progress_mode=true;
 	chipnr = (int)(from >> chip->chip_shift);
 	chip->select_chip(mtd, chipnr);
 
@@ -1497,6 +1502,8 @@ read_retry:
 			retry_mode = 0;
 		}
 
+    	if(progress_mode)
+        	show_process(ops->len - readlen, ops->len);
 		if (!readlen)
 			break;
 
@@ -2198,8 +2205,9 @@ static void show_process(unsigned long a, unsigned long b)
     }
     else
     {
-        printf("\n");
+        printf("\r100%% complete\n");
     }
+	lcd_progress_index(percent);
 }
 
 #define NOTALIGNED(x)	((x & (chip->subpagesize - 1)) != 0)
@@ -2306,11 +2314,9 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 			break;
 
 		writelen -= bytes;
+        show_process(ops->len - writelen, ops->len);
 		if (!writelen)
 			break;
-
-        show_process(ops->len - writelen, ops->len);
-
 		column = 0;
 		buf += bytes;
 		realpage++;
@@ -2325,7 +2331,6 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 	}
 
 	ops->retlen = ops->len - writelen;
-
 	if (unlikely(oob))
 		ops->oobretlen = ops->ooblen;
 
@@ -2393,6 +2398,7 @@ static int nand_write(struct mtd_info *mtd, loff_t to, size_t len,
 	ret = nand_do_write_ops(mtd, to, &ops);
 	*retlen = ops.retlen;
 	nand_release_device(mtd);
+
 	return ret;
 }
 

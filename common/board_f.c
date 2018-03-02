@@ -120,7 +120,7 @@ static int init_func_watchdog_init(void)
 	defined(CONFIG_IMX_WATCHDOG))
 	hw_watchdog_init();
 # endif
-	puts("       Watchdog enabled\n");
+	//puts("       Watchdog enabled\n");//leelin
 	WATCHDOG_RESET();
 
 	return 0;

@@ -11,3 +11,4 @@ obj-y	:= mux.o
 endif
 
 obj-y	+= board.o
+obj-y	+= eeprom_info.o
