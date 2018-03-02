@@ -177,7 +177,7 @@
                 "setenv TYPE 1;fatload mmc 0 80A00000 MLO;		 setenv TYPE 2;nandecc hw 2;nand write.i 80A00000 0 ${filesize}; "\
 				"setenv TYPE 3;fatload mmc 0 80A00000 u-boot.img;setenv TYPE 4;nandecc hw 2;nand write.i 80A00000 80000 ${filesize}; "\
                 "setenv TYPE 5;fatload mmc 0 80A00000 uImage;	 setenv TYPE 6;nandecc hw 2;nand write.i 80A00000 280000 ${filesize}; "\
-                "setenv TYPE 7;fatload mmc 0 80A00000 ubi.img;	 setenv TYPE 8;nandecc sw;nand write.i 80A00000 780000 ${filesize};"\
+                "setenv TYPE 7;fatload mmc 0 80A00000 ubi.img;	 setenv TYPE 8;nandecc hw 2;nand write.i 80A00000 780000 ${filesize};"\
                 "echo ;"\
                 "echo --------------Update system to Nand success--------------;led flash all;\0"\
     "update_nand=  echo ---------------Begin update system to Nand---------------;led all on;"\
@@ -185,7 +185,7 @@
                 "setenv TYPE 1;fatload mmc 0 80A00000 MLO;		 setenv TYPE 2;nandecc hw 2;nand write.i 80A00000 0 ${filesize}; "\
 				"setenv TYPE 3;fatload mmc 0 80A00000 u-boot.img;setenv TYPE 4;nandecc hw 2;nand write.i 80A00000 80000 ${filesize}; "\
 				"setenv TYPE 5;fatload mmc 0 80A00000 uImage;	 setenv TYPE 6;nandecc hw 2;nand write.i 80A00000 280000 ${filesize}; "\
-                "setenv TYPE 7;fatload mmc 0 80A00000 ubi.img;	 setenv TYPE 8;nandecc sw;nand write.i 80A00000 780000 ${filesize};"\
+                "setenv TYPE 7;fatload mmc 0 80A00000 ubi.img;	 setenv TYPE 8;nandecc hw 2;nand write.i 80A00000 780000 ${filesize};"\
                 "echo ;"\
                 "echo --------------Update system to Nand success--------------;led all off;"\
                 
