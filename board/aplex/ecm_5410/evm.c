@@ -442,6 +442,7 @@ int board_init(void)
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
 	printf("this board is ECM_5410 \n");
+	printf("this is chendebug \n");
 	board_id = GP_BOARD;
 	profile = 1;	/* profile 0 is internally considered as 1 */
 	daughter_board_connected = 1;

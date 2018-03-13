@@ -1,0 +1,716 @@
+cfi_mtd.c:	flash_info_t *fi = mtd->priv;
+cfi_mtd.c:	flash_info_t *fi = mtd->priv;
+cfi_mtd.c:	flash_info_t *fi = mtd->priv;
+cfi_mtd.c:	flash_info_t *fi = mtd->priv;
+cfi_mtd.c:	flash_info_t *fi = mtd->priv;
+cfi_mtd.c:		mtd->numeraseregions = 0;
+cfi_mtd.c:		mtd->erasesize = sect_size_old;
+cfi_mtd.c:	mtd->numeraseregions = regions;
+cfi_mtd.c:	mtd->eraseregions = malloc(sizeof(struct mtd_erase_region_info) * regions);
+cfi_mtd.c:			mtd->eraseregions[regions].offset = offset - base_addr;
+cfi_mtd.c:			mtd->eraseregions[regions].erasesize = sect_size_old;
+cfi_mtd.c:			mtd->eraseregions[regions].numblocks = numblocks;
+cfi_mtd.c:	mtd->eraseregions[regions].offset = offset - base_addr;
+cfi_mtd.c:	mtd->eraseregions[regions].erasesize = sect_size_old;
+cfi_mtd.c:	mtd->eraseregions[regions].numblocks = numblocks;
+cfi_mtd.c:	mtd->erasesize = sect_size;
+cfi_mtd.c:		mtd->name		= cfi_mtd_names[i];
+cfi_mtd.c:		mtd->type		= MTD_NORFLASH;
+cfi_mtd.c:		mtd->flags		= MTD_CAP_NORFLASH;
+cfi_mtd.c:		mtd->size		= fi->size;
+cfi_mtd.c:		mtd->writesize		= 1;
+cfi_mtd.c:		mtd->erase		= cfi_mtd_erase;
+cfi_mtd.c:		mtd->read		= cfi_mtd_read;
+cfi_mtd.c:		mtd->write		= cfi_mtd_write;
+cfi_mtd.c:		mtd->sync		= cfi_mtd_sync;
+cfi_mtd.c:		mtd->lock		= cfi_mtd_lock;
+cfi_mtd.c:		mtd->unlock		= cfi_mtd_unlock;
+cfi_mtd.c:		mtd->priv		= fi;
+mtdconcat.c:				mtd->ecc_stats.failed++;
+mtdconcat.c:				mtd->ecc_stats.corrected++;
+mtdconcat.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdconcat.c:				mtd->ecc_stats.failed++;
+mtdconcat.c:				mtd->ecc_stats.corrected++;
+mtdconcat.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdconcat.c:	err = mtd->erase(mtd, erase);
+mtdconcat.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdconcat.c:	if ((len + ofs) > mtd->size)
+mtdconcat.c:	if ((len + ofs) > mtd->size)
+mtdconcat.c:	if (ofs > mtd->size)
+mtdconcat.c:	if (ofs > mtd->size)
+mtdconcat.c:			mtd->ecc_stats.badblocks++;
+mtdcore.c:	BUG_ON(mtd->writesize == 0);
+mtdcore.c:			mtd->index = i;
+mtdcore.c:			mtd->usecount = 0;
+mtdcore.c:	if (mtd_table[mtd->index] != mtd) {
+mtdcore.c:	} else if (mtd->usecount) {
+mtdcore.c:				mtd->index, mtd->name, mtd->usecount);
+mtdcore.c:		mtd_table[mtd->index] = NULL;
+mtdcore.c:	mtd->usecount++;
+mtdcore.c:	c = --mtd->usecount;
+mtdcore.c:	if (!mtd->block_isbad) {
+mtdcore.c:		if (offset >= mtd->size) {
+mtdcore.c:		block_len = mtd->erasesize - (offset & (mtd->erasesize - 1));
+mtdcore.c:		if (!mtd->block_isbad(mtd, offset & ~(mtd->erasesize - 1)))
+mtdpart.c:	if (from >= mtd->size)
+mtdpart.c:	else if (from + len > mtd->size)
+mtdpart.c:		len = mtd->size - from;
+mtdpart.c:			mtd->ecc_stats.corrected += part->master->ecc_stats.corrected - stats.corrected;
+mtdpart.c:			mtd->ecc_stats.failed += part->master->ecc_stats.failed - stats.failed;
+mtdpart.c:	if (from >= mtd->size)
+mtdpart.c:	if (ops->datbuf && from + ops->len > mtd->size)
+mtdpart.c:			mtd->ecc_stats.corrected++;
+mtdpart.c:			mtd->ecc_stats.failed++;
+mtdpart.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdpart.c:	if (to >= mtd->size)
+mtdpart.c:	else if (to + len > mtd->size)
+mtdpart.c:		len = mtd->size - to;
+mtdpart.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdpart.c:	if (to >= mtd->size)
+mtdpart.c:	else if (to + len > mtd->size)
+mtdpart.c:		len = mtd->size - to;
+mtdpart.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdpart.c:	if (to >= mtd->size)
+mtdpart.c:	if (ops->datbuf && to + ops->len > mtd->size)
+mtdpart.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdpart.c:	if (instr->addr >= mtd->size)
+mtdpart.c:	if (instr->mtd->erase == part_erase) {
+mtdpart.c:	if ((len + ofs) > mtd->size)
+mtdpart.c:	if ((len + ofs) > mtd->size)
+mtdpart.c:	if (ofs >= mtd->size)
+mtdpart.c:	if (!(mtd->flags & MTD_WRITEABLE))
+mtdpart.c:	if (ofs >= mtd->size)
+mtdpart.c:		mtd->ecc_stats.badblocks++;
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	int length = mtd->oobsize;
+nand/mxc_nand.c:	chip->cmdfunc(mtd, NAND_CMD_READOOB, mtd->writesize, page);
+nand/mxc_nand.c:			mtd->writesize + chip->ecc.prepad, page);
+nand/mxc_nand.c:	length = mtd->oobsize - chip->ecc.prepad;
+nand/mxc_nand.c:		host->col_addr = mtd->writesize + n * eccpitch;
+nand/mxc_nand.c:	size = mtd->oobsize - (oob - chip->oob_poi);
+nand/mxc_nand.c:		host->col_addr = mtd->writesize + n * eccpitch;
+nand/mxc_nand.c:			mtd->ecc_stats.failed++;
+nand/mxc_nand.c:			mtd->ecc_stats.corrected += stat;
+nand/mxc_nand.c:	n = mtd->oobsize - (oob - chip->oob_poi);
+nand/mxc_nand.c:	chip->cmdfunc(mtd, NAND_CMD_READOOB, mtd->writesize, host->page_addr);
+nand/mxc_nand.c:		host->col_addr = mtd->writesize +
+nand/mxc_nand.c:	int length = mtd->oobsize;
+nand/mxc_nand.c:	chip->cmdfunc(mtd, NAND_CMD_SEQIN, mtd->writesize, page);
+nand/mxc_nand.c:		host->col_addr = mtd->writesize + n * eccpitch;
+nand/mxc_nand.c:	size = mtd->oobsize - (oob - chip->oob_poi);
+nand/mxc_nand.c:		host->col_addr = mtd->writesize + n * eccpitch;
+nand/mxc_nand.c:	i = mtd->oobsize - (oob - chip->oob_poi);
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	int subpages = mtd->writesize / nand_chip->subpagesize;
+nand/mxc_nand.c:				       mtd->writesize / nand_chip->subpagesize
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	if (col < mtd->writesize && host->spare_only)
+nand/mxc_nand.c:		col += mtd->writesize;
+nand/mxc_nand.c:	if (col < mtd->writesize) {
+nand/mxc_nand.c:				((col - mtd->writesize) >> 1));
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	if (col < mtd->writesize && host->spare_only)
+nand/mxc_nand.c:		col += mtd->writesize;
+nand/mxc_nand.c:	n = mtd->writesize + mtd->oobsize - col;
+nand/mxc_nand.c:		if (col < mtd->writesize) {
+nand/mxc_nand.c:						mtd->writesize + (col & ~3);
+nand/mxc_nand.c:			int m = mtd->writesize - col;
+nand/mxc_nand.c:			if (col >= mtd->writesize)
+nand/mxc_nand.c:				m += mtd->oobsize;
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	if (col < mtd->writesize && host->spare_only)
+nand/mxc_nand.c:		col += mtd->writesize;
+nand/mxc_nand.c:	n = mtd->writesize + mtd->oobsize - col;
+nand/mxc_nand.c:		if (col < mtd->writesize) {
+nand/mxc_nand.c:					mtd->writesize + (col & ~3);
+nand/mxc_nand.c:			int m = mtd->writesize - col;
+nand/mxc_nand.c:			if (col >= mtd->writesize)
+nand/mxc_nand.c:				m += mtd->oobsize;
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/mxc_nand.c:		if (column >= mtd->writesize) {
+nand/mxc_nand.c:			host->col_addr = column - mtd->writesize;
+nand/mxc_nand.c:	mtd->priv = this;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:		if (column >= mtd->writesize) {
+nand/diskonchip.c:			column -= mtd->writesize;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	for (offs = 0; offs < mtd->size; offs += mtd->erasesize) {
+nand/diskonchip.c:		ret = mtd->read(mtd, offs, mtd->writesize, &retlen, buf);
+nand/diskonchip.c:		if (retlen != mtd->writesize)
+nand/diskonchip.c:	ret = mtd->read(mtd, offs, mtd->writesize, &retlen, buf);
+nand/diskonchip.c:	if (retlen != mtd->writesize) {
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	buf = kmalloc(mtd->writesize, GFP_KERNEL);
+nand/diskonchip.c:	blocks = mtd->size >> this->phys_erase_shift;
+nand/diskonchip.c:	maxblocks = min(32768U, mtd->erasesize - psize);
+nand/diskonchip.c:		mtd->erasesize <<= (0xff - mh->UnitSizeFactor);
+nand/diskonchip.c:		printk(KERN_INFO "Setting virtual erase size to %d\n", mtd->erasesize);
+nand/diskonchip.c:		blocks = mtd->size >> this->bbt_erase_shift;
+nand/diskonchip.c:		maxblocks = min(32768U, mtd->erasesize - psize);
+nand/diskonchip.c:	offs += mtd->erasesize;
+nand/diskonchip.c:	if (offs < mtd->size) {
+nand/diskonchip.c:		parts[numparts].size = mtd->size - offs;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	int end = mtd->size;
+nand/diskonchip.c:	buf = kmalloc(mtd->writesize, GFP_KERNEL);
+nand/diskonchip.c:	blocks = mtd->size >> vshift;
+nand/diskonchip.c:	if (inftl_bbt_write && (blocks > mtd->erasesize)) {
+nand/diskonchip.c:			parts[0].size = mtd->erasesize * ip->firstUnit;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	mtd->name = "DiskOnChip 2000 (NFTL Model)";
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:		mtd->name = "DiskOnChip 2000 (INFTL Model)";
+nand/diskonchip.c:		mtd->name = "DiskOnChip Millennium";
+nand/diskonchip.c:	struct nand_chip *this = mtd->priv;
+nand/diskonchip.c:	mtd->name = "DiskOnChip Millennium Plus";
+nand/diskonchip.c:		nand = mtd->priv;
+nand/diskonchip.c:	mtd->priv		= nand;
+nand/diskonchip.c:	mtd->owner		= THIS_MODULE;
+nand/diskonchip.c:		nand = mtd->priv;
+nand/nomadik.c:	struct nand_chip *chip = mtd->priv;
+nand/nomadik.c:	struct nand_chip *this = mtd->priv;
+nand/nomadik.c:	struct nand_chip *chip = mtd->priv;
+nand/omap_bch_soft.c:  struct nand_chip *nand = mtd->priv;
+nand/omap_bch_soft.c:  struct nand_chip *nand = mtd->priv;
+nand/omap_bch_soft.c:  struct nand_chip *chip = mtd->priv;
+nand/omap_bch_soft.c:  struct nand_chip *chip = mtd->priv;
+nand/kb9202_nand.c:	struct nand_chip *this = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_upm.c:	struct nand_chip *chip = mtd->priv;
+nand/davinci_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/davinci_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/davinci_nand.c:	struct		nand_chip *this = mtd->priv;
+nand/davinci_nand.c:	struct nand_chip *this = mtd->priv;
+nand/nand_base.c: *	Check, if mtd->ecctype should be set to MTD_ECC_HW
+nand/nand_base.c:	struct nand_chip *this = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:		ofs += mtd->oobsize;
+nand/nand_base.c:		mtd->ecc_stats.badblocks++;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	register struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:		if (column >= mtd->writesize) {
+nand/nand_base.c:			column -= mtd->writesize;
+nand/nand_base.c:	register struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:		column += mtd->writesize;
+nand/nand_base.c:	chip->read_buf(mtd, buf, mtd->writesize);
+nand/nand_base.c:	chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:	size = mtd->oobsize - (oob - chip->oob_poi);
+nand/nand_base.c:			mtd->ecc_stats.failed++;
+nand/nand_base.c:			mtd->ecc_stats.corrected += stat;
+nand/nand_base.c:		chip->cmdfunc(mtd, NAND_CMD_RNDOUT, mtd->writesize, -1);
+nand/nand_base.c:		chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:		chip->cmdfunc(mtd, NAND_CMD_RNDOUT, mtd->writesize + aligned_pos, -1);
+nand/nand_base.c:			mtd->ecc_stats.failed++;
+nand/nand_base.c:			mtd->ecc_stats.corrected += stat;
+nand/nand_base.c:	chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:			mtd->ecc_stats.failed++;
+nand/nand_base.c:			mtd->ecc_stats.corrected += stat;
+nand/nand_base.c:	chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:			mtd->ecc_stats.failed++;
+nand/nand_base.c:			mtd->ecc_stats.corrected += stat;
+nand/nand_base.c:			mtd->ecc_stats.failed++;
+nand/nand_base.c:			mtd->ecc_stats.corrected += stat;
+nand/nand_base.c:	i = mtd->oobsize - (oob - chip->oob_poi);
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	stats = mtd->ecc_stats;
+nand/nand_base.c:	col = (int)(from & (mtd->writesize - 1));
+nand/nand_base.c:		bytes = min(mtd->writesize - col, readlen);
+nand/nand_base.c:		aligned = (bytes == mtd->writesize);
+nand/nand_base.c:						buf, ops, mtd->oobsize);
+nand/nand_base.c:	if (mtd->ecc_stats.failed - stats.failed)
+nand/nand_base.c:	return	mtd->ecc_stats.corrected - stats.corrected ? -EUCLEAN : 0;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if ((from + len) > mtd->size)
+nand/nand_base.c:	chip->read_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:	int length = mtd->oobsize;
+nand/nand_base.c:			if (mtd->writesize > 512)
+nand/nand_base.c:	int length = mtd->oobsize;
+nand/nand_base.c:	chip->cmdfunc(mtd, NAND_CMD_SEQIN, mtd->writesize, page);
+nand/nand_base.c:	int eccsize = chip->ecc.size, length = mtd->oobsize;
+nand/nand_base.c:			if (mtd->writesize <= 512) {
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:		len = mtd->oobsize;
+nand/nand_base.c:	if (unlikely(from >= mtd->size ||
+nand/nand_base.c:		     ops->ooboffs + readlen > ((mtd->size >> chip->page_shift) -
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if (ops->datbuf && (from + ops->len) > mtd->size) {
+nand/nand_base.c:	chip->write_buf(mtd, buf, mtd->writesize);
+nand/nand_base.c:	chip->write_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:	size = mtd->oobsize - (oob - chip->oob_poi);
+nand/nand_base.c:	chip->write_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/nand_base.c:	i = mtd->oobsize - (oob - chip->oob_poi);
+nand/nand_base.c:	if (chip->verify_buf(mtd, buf, mtd->writesize))
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	column = to & (mtd->writesize - 1);
+nand/nand_base.c:	subpage = column || (writelen & (mtd->writesize - 1));
+nand/nand_base.c:		memset(chip->oob_poi, 0xff, mtd->oobsize);
+nand/nand_base.c:		int bytes = mtd->writesize;
+nand/nand_base.c:		if (unlikely(column || writelen < (mtd->writesize - 1))) {
+nand/nand_base.c:			memset(chip->buffers->databuf, 0xff, mtd->writesize);
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if ((to + len) > mtd->size)
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:		len = mtd->oobsize;
+nand/nand_base.c:	if (unlikely(to >= mtd->size ||
+nand/nand_base.c:			((mtd->size >> chip->page_shift) -
+nand/nand_base.c:	memset(chip->oob_poi, 0xff, mtd->oobsize);
+nand/nand_base.c:	memset(chip->oob_poi, 0xff, mtd->oobsize);
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if (ops->datbuf && (to + ops->len) > mtd->size) {
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if ((instr->len + instr->addr) > mtd->size) {
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if (offs > mtd->size)
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	if (!mtd->name)
+nand/nand_base.c:		mtd->name = p->model;
+nand/nand_base.c:	mtd->writesize = le32_to_cpu(p->byte_per_page);
+nand/nand_base.c:	mtd->erasesize = le32_to_cpu(p->pages_per_block) * mtd->writesize;
+nand/nand_base.c:	mtd->oobsize = le16_to_cpu(p->spare_bytes_per_page);
+nand/nand_base.c:    //mtd->oobsize = 224;
+nand/nand_base.c:	chip->chipsize = (uint64_t)le32_to_cpu(p->blocks_per_lun) * mtd->erasesize;
+nand/nand_base.c:		mtd->writesize = 1024 << (extid & 0x3);
+nand/nand_base.c:		mtd->oobsize = (8 << (extid & 0x01)) * (mtd->writesize >> 9);
+nand/nand_base.c:		mtd->erasesize = (64 * 1024) << (extid & 0x03);
+nand/nand_base.c:		mtd->erasesize = type->erasesize;
+nand/nand_base.c:		mtd->writesize = type->pagesize;
+nand/nand_base.c:		mtd->oobsize = mtd->writesize / 32;
+nand/nand_base.c:	if (!mtd->name)
+nand/nand_base.c:		mtd->name = type->name;
+nand/nand_base.c:		       *dev_id, nand_manuf_ids[maf_idx].name, mtd->name);
+nand/nand_base.c:	chip->page_shift = ffs(mtd->writesize) - 1;
+nand/nand_base.c:		ffs(mtd->erasesize) - 1;
+nand/nand_base.c:	chip->badblockpos = mtd->writesize > 512 ?
+nand/nand_base.c:	if (mtd->writesize > 512 && chip->cmdfunc == nand_command)
+nand/nand_base.c: * The mtd->owner field must be set to the module of the caller.
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	mtd->size = i * chip->chipsize;
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_base.c:	chip->oob_poi = chip->buffers->databuf + mtd->writesize;
+nand/nand_base.c:		switch (mtd->oobsize) {
+nand/nand_base.c:			       "oobsize %d\n", mtd->oobsize);
+nand/nand_base.c:		if (mtd->writesize >= chip->ecc.size)
+nand/nand_base.c:		       chip->ecc.size, mtd->writesize);
+nand/nand_base.c:		chip->ecc.size = mtd->writesize;
+nand/nand_base.c:	mtd->oobavail = chip->ecc.layout->oobavail;
+nand/nand_base.c:	chip->ecc.steps = mtd->writesize / chip->ecc.size;
+nand/nand_base.c:	if(chip->ecc.steps * chip->ecc.size != mtd->writesize) {
+nand/nand_base.c:			mtd->subpage_sft = 1;
+nand/nand_base.c:			mtd->subpage_sft = 2;
+nand/nand_base.c:	chip->subpagesize = mtd->writesize >> mtd->subpage_sft;
+nand/nand_base.c:	mtd->type = MTD_NANDFLASH;
+nand/nand_base.c:	mtd->flags = MTD_CAP_NANDFLASH;
+nand/nand_base.c:	mtd->erase = nand_erase;
+nand/nand_base.c:	mtd->point = NULL;
+nand/nand_base.c:	mtd->unpoint = NULL;
+nand/nand_base.c:	mtd->read = nand_read;
+nand/nand_base.c:	mtd->write = nand_write;
+nand/nand_base.c:	mtd->read_oob = nand_read_oob;
+nand/nand_base.c:	mtd->write_oob = nand_write_oob;
+nand/nand_base.c:	mtd->sync = nand_sync;
+nand/nand_base.c:	mtd->lock = NULL;
+nand/nand_base.c:	mtd->unlock = NULL;
+nand/nand_base.c:	mtd->block_isbad = nand_block_isbad;
+nand/nand_base.c:	mtd->block_markbad = nand_block_markbad;
+nand/nand_base.c:	mtd->ecclayout = chip->ecc.layout;
+nand/nand_base.c: * The mtd->owner field must be set to the module of the caller
+nand/nand_base.c:	struct nand_chip *chip = mtd->priv;
+nand/atmel_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/atmel_nand.c:				mtd->writesize + eccpos[0], -1);
+nand/atmel_nand.c:		mtd->ecc_stats.failed++;
+nand/atmel_nand.c:		mtd->ecc_stats.corrected += stat;
+nand/atmel_nand.c:	chip->cmdfunc(mtd, NAND_CMD_RNDOUT, mtd->writesize, -1);
+nand/atmel_nand.c:	chip->read_buf(mtd, oob, mtd->oobsize);
+nand/atmel_nand.c:	struct nand_chip *nand_chip = mtd->priv;
+nand/atmel_nand.c:	struct nand_chip *this = mtd->priv;
+nand/atmel_nand.c:	mtd->priv = nand;
+nand/atmel_nand.c:		nand->ecc.size = mtd->writesize;
+nand/atmel_nand.c:		switch (mtd->writesize) {
+nand/s3c64xx.c:	struct nand_chip *chip = mtd->priv;
+nand/s3c64xx.c:	struct nand_chip *this = mtd->priv;
+nand/s3c64xx.c:	struct nand_chip *this = mtd->priv;
+nand/s3c64xx.c:	struct nand_chip *this = mtd->priv;
+nand/s3c64xx.c:	struct nand_chip *this = mtd->priv;
+nand/ndfc.c:	struct nand_chip *this = mtd->priv;
+nand/ndfc.c:	struct nand_chip *chip = mtd->priv;
+nand/kirkwood_nand.c:	struct nand_chip *nc = mtd->priv;
+nand/omap_gpmc.c:	register struct nand_chip *this = mtd->priv;
+nand/omap_gpmc.c:	struct nand_chip *chip = mtd->priv;
+nand/omap_gpmc.c:	nand = mtd->priv;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:		ctrl->read_bytes = mtd->writesize + mtd->oobsize;
+nand/fsl_elbc_nand.c:		out_be32(&lbc->fbcr, mtd->oobsize - column);
+nand/fsl_elbc_nand.c:		ctrl->read_bytes = mtd->writesize + mtd->oobsize;
+nand/fsl_elbc_nand.c:			if (column >= mtd->writesize) {
+nand/fsl_elbc_nand.c:				column -= mtd->writesize;
+nand/fsl_elbc_nand.c:		    ctrl->index != mtd->writesize + mtd->oobsize) {
+nand/fsl_elbc_nand.c:			ctrl->read_bytes = mtd->writesize + 9;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:	unsigned int bufsize = mtd->writesize + mtd->oobsize;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/fsl_elbc_nand.c:	fsl_elbc_read_buf(mtd, buf, mtd->writesize);
+nand/fsl_elbc_nand.c:	fsl_elbc_read_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/fsl_elbc_nand.c:		mtd->ecc_stats.failed++;
+nand/fsl_elbc_nand.c:	fsl_elbc_write_buf(mtd, buf, mtd->writesize);
+nand/fsl_elbc_nand.c:	fsl_elbc_write_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/mpc5121_nfc.c:	struct nand_chip *chip = mtd->priv;
+nand/mpc5121_nfc.c:	struct nand_chip *chip = mtd->priv;
+nand/mpc5121_nfc.c:	struct nand_chip *chip = mtd->priv;
+nand/mpc5121_nfc.c:		if (mtd->writesize > 512)
+nand/mpc5121_nfc.c:	struct nand_chip *chip = mtd->priv;
+nand/mpc5121_nfc.c:		if (mtd->writesize > 512)
+nand/mpc5121_nfc.c:	struct nand_chip *nand = mtd->priv;
+nand/mpc5121_nfc.c:	sbsize = (mtd->oobsize / (mtd->writesize / 512)) & ~1;
+nand/mpc5121_nfc.c:	struct nand_chip *chip = mtd->priv;
+nand/mpc5121_nfc.c:	if (prv->spareonly || c >= mtd->writesize) {
+nand/mpc5121_nfc.c:		if (c >= mtd->writesize)
+nand/mpc5121_nfc.c:			c -= mtd->writesize;
+nand/mpc5121_nfc.c:	l = min((uint) len, mtd->writesize - c);
+nand/mpc5121_nfc.c:	struct nand_chip *chip = mtd->priv;
+nand/mpc5121_nfc.c:	mtd->writesize = rcw_pagesize;
+nand/mpc5121_nfc.c:	mtd->oobsize = rcw_sparesize;
+nand/mpc5121_nfc.c:	mtd->priv = chip;
+nand/mpc5121_nfc.c:	nfc_write(mtd, NFC_SPAS, mtd->oobsize >> 1);
+nand/mpc5121_nfc.c:	switch (mtd->erasesize / mtd->writesize) {
+nand/nand.c:	mtd->priv = nand;
+nand/nand.c:			if (!mtd->name)
+nand/nand.c:				mtd->name = (char *)default_nand_name;
+nand/nand.c:				mtd->name += gd->reloc_off;
+nand/nand.c:			mtd->name = dev_name[i++];
+nand/nand.c:			mtd->name = NULL;
+nand/nand.c:		mtd->name = NULL;
+nand/nand.c:		mtd->size = 0;
+nand/s3c2410_nand.c:	struct nand_chip *this = mtd->priv;
+nand/s3c2410_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:		res = mtd->read(mtd, from, len, &retlen, buf);
+nand/nand_bbt.c:					mtd->ecc_stats.bbtblocks++;
+nand/nand_bbt.c:				mtd->ecc_stats.badblocks++;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:		res = read_bbt (mtd, buf, td->pages[0], mtd->size >> this->bbt_erase_shift, bits, 0, td->reserved_block_code);
+nand/nand_bbt.c:	ops.ooblen = mtd->oobsize;
+nand/nand_bbt.c:	return mtd->read_oob(mtd, offs, &ops);
+nand/nand_bbt.c:	ops.ooblen = mtd->oobsize;
+nand/nand_bbt.c:	return mtd->write_oob(mtd, offs, &ops);
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:				this->page_shift, mtd->writesize);
+nand/nand_bbt.c:		td->version[0] = buf[mtd->writesize + td->veroffs];
+nand/nand_bbt.c:				this->page_shift, mtd->writesize);
+nand/nand_bbt.c:		md->version[0] = buf[mtd->writesize + md->veroffs];
+nand/nand_bbt.c:		if (check_pattern(buf, scanlen, mtd->writesize, bd))
+nand/nand_bbt.c:	ops.ooblen = mtd->oobsize;
+nand/nand_bbt.c:		ret = mtd->read_oob(mtd, offs, &ops);
+nand/nand_bbt.c:		offs += mtd->writesize;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:		scanlen = mtd->writesize + mtd->oobsize;
+nand/nand_bbt.c:		readlen = len * mtd->writesize;
+nand/nand_bbt.c:		numblocks = mtd->size >> (this->bbt_erase_shift - 1);
+nand/nand_bbt.c:			mtd->ecc_stats.badblocks++;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:	int scanlen = mtd->writesize + mtd->oobsize;
+nand/nand_bbt.c:		startblock = (mtd->size >> this->bbt_erase_shift) - 1;
+nand/nand_bbt.c:		bbtblocks = mtd->size >> this->bbt_erase_shift;
+nand/nand_bbt.c:			scan_read_raw(mtd, buf, offs, mtd->writesize);
+nand/nand_bbt.c:			if (!check_pattern(buf, scanlen, mtd->writesize, td)) {
+nand/nand_bbt.c:					td->version[i] = buf[mtd->writesize + td->veroffs];
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:	ops.ooblen = mtd->oobsize;
+nand/nand_bbt.c:		numblocks = (int)(mtd->size >> this->bbt_erase_shift);
+nand/nand_bbt.c:			res = mtd->read(mtd, to, len, &retlen, buf);
+nand/nand_bbt.c:			ops.ooblen = (len >> this->page_shift) * mtd->oobsize;
+nand/nand_bbt.c:			res = mtd->read_oob(mtd, to + mtd->writesize, &ops);
+nand/nand_bbt.c:			ooboffs = len + (pageoffs * mtd->oobsize);
+nand/nand_bbt.c:			len = (len + (mtd->writesize - 1)) &
+nand/nand_bbt.c:				~(mtd->writesize - 1);
+nand/nand_bbt.c:			       (len >> this->page_shift)* mtd->oobsize);
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:		nrblocks = (int)(mtd->size >> this->bbt_erase_shift);
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:	len = mtd->size >> (this->bbt_erase_shift + 2);
+nand/nand_bbt.c:	len += (len >> this->page_shift) * mtd->oobsize;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:	len += (len >> this->page_shift) * mtd->oobsize;
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/nand_bbt.c:			this->badblock_pattern = (mtd->writesize > 512) ? &largepage_flashbased : &smallpage_flashbased;
+nand/nand_bbt.c:			this->badblock_pattern = (mtd->writesize > 512) ?
+nand/nand_bbt.c:	struct nand_chip *this = mtd->priv;
+nand/ti81xx_nand.c:	register struct nand_chip *this = mtd->priv;
+nand/ti81xx_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/ti81xx_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/ti81xx_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/ti81xx_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/ti81xx_nand.c:	chip->write_buf(mtd, chip->oob_poi, mtd->oobsize);
+nand/ti81xx_nand.c:			mtd->ecc_stats.failed++;
+nand/ti81xx_nand.c:			mtd->ecc_stats.corrected += stat;
+nand/ti81xx_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/ti81xx_nand.c:	struct nand_chip *chip = mtd->priv;
+nand/ti81xx_nand.c:	nand = mtd->priv;
+nand/nand_util.c: * @references: borrowed heavily from Linux mtd-utils code:
+nand/nand_util.c: * Artem Bityutskiy <dedekind1@gmail.com> from mtd-utils
+nand/nand_util.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_util.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_util.c:	if ((offset & (mtd->writesize - 1)) != 0) {
+nand/nand_util.c:	struct nand_chip *chip = mtd->priv;
+nand/nand_util.c:	if ((start & (mtd->erasesize - 1)) != 0) {
+nand/nand_util.c:	if (length == 0 || (length & (mtd->erasesize - 1)) != 0) {
+nand/nand_util.c:			"size %08x!\n", mtd->erasesize);
+nand/nand_util.c:	length -= mtd->erasesize;
+nand/spr_nand.c:	struct nand_chip *this = mtd->priv;
+nand/nand_plat.c:	struct nand_chip *this = mtd->priv;
+nand/nand_plat.c:	return NAND_PLAT_DEV_READY((struct nand_chip *)mtd->priv);
+onenand/onenand_bbt.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_bbt.c:					     from + j * mtd->writesize +
+onenand/onenand_bbt.c:			    (&buf[j * scanlen], scanlen, mtd->writesize, bd)) {
+onenand/onenand_bbt.c:			from += mtd->eraseregions[rgn].erasesize;
+onenand/onenand_bbt.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_bbt.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_bbt.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	for (i = 0; i < mtd->numeraseregions; i++)
+onenand/onenand_base.c:		if (addr < mtd->eraseregions[i].offset)
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:			return mtd->writesize;
+onenand/onenand_base.c:			return mtd->oobsize;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	this->read_bufferram(mtd, 0, ONENAND_SPARERAM, oob_buf, 0, mtd->oobsize);
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	if (mtd->eraseregions[i].erasesize < (1 << this->erase_shift))
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:		oobsize = mtd->oobsize;
+onenand/onenand_base.c:	oobcolumn = from & (mtd->oobsize - 1);
+onenand/onenand_base.c:	if ((from + len) > mtd->size) {
+onenand/onenand_base.c:	stats = mtd->ecc_stats;
+onenand/onenand_base.c:	if (mtd->ecc_stats.failed - stats.failed)
+onenand/onenand_base.c:	return mtd->ecc_stats.corrected - stats.corrected ? -EUCLEAN : 0;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:		oobsize = mtd->oobsize;
+onenand/onenand_base.c:	column = from & (mtd->oobsize - 1);
+onenand/onenand_base.c:	if (unlikely(from >= mtd->size ||
+onenand/onenand_base.c:		column + len > ((mtd->size >> this->page_shift) -
+onenand/onenand_base.c:	stats = mtd->ecc_stats;
+onenand/onenand_base.c:		this->command(mtd, readcmd, from, mtd->oobsize);
+onenand/onenand_base.c:			from += mtd->writesize;
+onenand/onenand_base.c:	if (mtd->ecc_stats.failed - stats.failed)
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	if (unlikely((from + len) > mtd->size)) {
+onenand/onenand_base.c:	column = from & (mtd->oobsize - 1);
+onenand/onenand_base.c:		thislen = mtd->oobsize - column;
+onenand/onenand_base.c:		this->command(mtd, readcmd, from, mtd->oobsize);
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	this->command(mtd, readcmd, to, mtd->oobsize);
+onenand/onenand_base.c:	this->read_bufferram(mtd, 0, ONENAND_SPARERAM, oob_buf, 0, mtd->oobsize);
+onenand/onenand_base.c:	for (i = 0; i < mtd->oobsize; i++)
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	if (unlikely((to + len) > mtd->size)) {
+onenand/onenand_base.c:		oobsize = mtd->oobsize;
+onenand/onenand_base.c:	oobcolumn = to & (mtd->oobsize - 1);
+onenand/onenand_base.c:	column = to & (mtd->writesize - 1);
+onenand/onenand_base.c:		thislen = min_t(int, mtd->writesize - column, len - written);
+onenand/onenand_base.c:		subpage = thislen < mtd->writesize;
+onenand/onenand_base.c:			memset(this->page_buf, 0xff, mtd->writesize);
+onenand/onenand_base.c:		this->write_bufferram(mtd, to, ONENAND_DATARAM, wbuf, 0, mtd->writesize);
+onenand/onenand_base.c:			memset(oobbuf, 0xff, mtd->oobsize);
+onenand/onenand_base.c:		this->write_bufferram(mtd, 0, ONENAND_SPARERAM, oobbuf, 0, mtd->oobsize);
+onenand/onenand_base.c:		this->command(mtd, ONENAND_CMD_PROG, to, mtd->writesize);
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:		oobsize = mtd->oobsize;
+onenand/onenand_base.c:	column = to & (mtd->oobsize - 1);
+onenand/onenand_base.c:	if (unlikely(to >= mtd->size ||
+onenand/onenand_base.c:				column + len > ((mtd->size >> this->page_shift) -
+onenand/onenand_base.c:		this->command(mtd, ONENAND_CMD_BUFFERRAM, to, mtd->oobsize);
+onenand/onenand_base.c:		memset(oobbuf, 0xff, mtd->oobsize);
+onenand/onenand_base.c:		this->write_bufferram(mtd, 0, ONENAND_SPARERAM, oobbuf, 0, mtd->oobsize);
+onenand/onenand_base.c:			memset(this->page_buf, 0xff, mtd->writesize);
+onenand/onenand_base.c:				this->page_buf,	0, mtd->writesize);
+onenand/onenand_base.c:		this->command(mtd, oobcmd, to, mtd->oobsize);
+onenand/onenand_base.c:		to += mtd->writesize;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	if (unlikely((len + addr) > mtd->size)) {
+onenand/onenand_base.c:		region = &mtd->eraseregions[i];
+onenand/onenand_base.c:	if (ofs > mtd->size)
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	ofs += mtd->oobsize + (bbm->badblockpos & ~0x01);
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	size_t len = mtd->size;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c: * 			  boundary[], diesize[], mtd->size, mtd->erasesize,
+onenand/onenand_base.c: * 			  mtd->eraseregions
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	mtd->numeraseregions = this->dies << 1;
+onenand/onenand_base.c:			mtd->eraseregions[i].offset = ofs;
+onenand/onenand_base.c:			mtd->eraseregions[i].erasesize = 1 << eraseshift;
+onenand/onenand_base.c:			mtd->eraseregions[i].numblocks =
+onenand/onenand_base.c:			ofs += mtd->eraseregions[i].numblocks << eraseshift;
+onenand/onenand_base.c:			mtd->numeraseregions -= 1;
+onenand/onenand_base.c:			mtd->eraseregions[i].numblocks +=
+onenand/onenand_base.c:			mtd->eraseregions[i].offset = ofs;
+onenand/onenand_base.c:			mtd->eraseregions[i].erasesize = 1 << eraseshift;
+onenand/onenand_base.c:			mtd->eraseregions[i].numblocks = maxbdry ^
+onenand/onenand_base.c:			ofs += mtd->eraseregions[i].numblocks << eraseshift;
+onenand/onenand_base.c:			mtd->numeraseregions -= 1;
+onenand/onenand_base.c:	mtd->erasesize = 1 << this->erase_shift;
+onenand/onenand_base.c:	if (mtd->numeraseregions == 1)
+onenand/onenand_base.c:		mtd->erasesize >>= 1;
+onenand/onenand_base.c:	printk(KERN_INFO "Device has %d eraseregions\n", mtd->numeraseregions);
+onenand/onenand_base.c:	for (i = 0; i < mtd->numeraseregions; i++)
+onenand/onenand_base.c:			" numblocks: %04u]\n", mtd->eraseregions[i].offset,
+onenand/onenand_base.c:			mtd->eraseregions[i].erasesize,
+onenand/onenand_base.c:			mtd->eraseregions[i].numblocks);
+onenand/onenand_base.c:	for (die = 0, mtd->size = 0; die < this->dies; die++) {
+onenand/onenand_base.c:		mtd->size += this->diesize[die];
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:		.ooblen	= mtd->oobsize,
+onenand/onenand_base.c:		for (i = 0; i < mtd->oobsize; i++)
+onenand/onenand_base.c:		if (i != mtd->oobsize) {
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:	mtd->name = onenand_print_device_info(dev_id, ver_id);
+onenand/onenand_base.c:		mtd->numeraseregions = this->dies << 1;
+onenand/onenand_base.c:		mtd->eraseregions = malloc(sizeof(struct mtd_erase_region_info)
+onenand/onenand_base.c:		if (!mtd->eraseregions)
+onenand/onenand_base.c:	 * mtd->size represents the actual device size.
+onenand/onenand_base.c:	mtd->writesize =
+onenand/onenand_base.c:		mtd->writesize <<= 1;
+onenand/onenand_base.c:	mtd->oobsize = mtd->writesize >> 5;
+onenand/onenand_base.c:	mtd->erasesize = mtd->writesize << 6;
+onenand/onenand_base.c:		mtd->erasesize <<= 1;
+onenand/onenand_base.c:	this->erase_shift = ffs(mtd->erasesize) - 1;
+onenand/onenand_base.c:	this->page_shift = ffs(mtd->writesize) - 1;
+onenand/onenand_base.c:	this->page_mask = (mtd->erasesize / mtd->writesize) - 1;
+onenand/onenand_base.c:	this->writesize = mtd->writesize;
+onenand/onenand_base.c:		mtd->size = this->chipsize;
+onenand/onenand_base.c:	mtd->flags = MTD_CAP_NANDFLASH;
+onenand/onenand_base.c:	mtd->erase = onenand_erase;
+onenand/onenand_base.c:	mtd->read = onenand_read;
+onenand/onenand_base.c:	mtd->write = onenand_write;
+onenand/onenand_base.c:	mtd->read_oob = onenand_read_oob;
+onenand/onenand_base.c:	mtd->write_oob = onenand_write_oob;
+onenand/onenand_base.c:	mtd->sync = onenand_sync;
+onenand/onenand_base.c:	mtd->block_isbad = onenand_block_isbad;
+onenand/onenand_base.c:	mtd->block_markbad = onenand_block_markbad;
+onenand/onenand_base.c:	struct onenand_chip *this = mtd->priv;
+onenand/onenand_base.c:		this->page_buf = kzalloc(mtd->writesize, GFP_KERNEL);
+onenand/onenand_base.c:		this->oob_buf = kzalloc(mtd->oobsize, GFP_KERNEL);
+onenand/onenand_base.c:	switch (mtd->oobsize) {
+onenand/onenand_base.c:		mtd->subpage_sft = 0;
+onenand/onenand_base.c:		mtd->subpage_sft = 2;
+onenand/onenand_base.c:		mtd->subpage_sft = 1;
+onenand/onenand_base.c:			mtd->oobsize);
+onenand/onenand_base.c:		mtd->subpage_sft = 0;
+onenand/onenand_base.c:	this->subpagesize = mtd->writesize >> mtd->subpage_sft;
+onenand/onenand_base.c:	mtd->oobavail = this->ecclayout->oobavail;
+onenand/onenand_base.c:	mtd->ecclayout = this->ecclayout;
+onenand/samsung.c:	struct onenand_chip *this = onenand->mtd->priv;
+onenand/samsung.c:	struct onenand_chip *this = onenand->mtd->priv;
+onenand/samsung.c:			mtd->ecc_stats.failed++;
+onenand/samsung.c:	struct onenand_chip *this = mtd->priv;
+onenand/samsung.c:		s += (mtd->oobsize >> 2);
+onenand/samsung.c:	mcount = mtd->writesize >> 2;
+onenand/samsung.c:	scount = mtd->oobsize >> 2;
+onenand/samsung.c:	struct onenand_chip *this = mtd->priv;
+onenand/samsung.c:			p += mtd->oobsize;
+onenand/samsung.c:	struct onenand_chip *this = mtd->priv;
+onenand/samsung.c:	struct onenand_chip *this = mtd->priv;
+onenand/samsung.c:	struct onenand_chip *this = mtd->priv;
+onenand/samsung.c:	this->subpagesize = mtd->writesize;
+onenand/samsung.c:	mtd->subpage_sft = 0;
+onenand/samsung.c:	struct onenand_chip *this = mtd->priv;
+ubi/io.c: * @ubi->mtd->writesize field. But as an exception, UBI admits of using another
+ubi/io.c:	err = ubi->mtd->read(ubi->mtd, addr, len, &read, buf);
+ubi/io.c:	err = ubi->mtd->write(ubi->mtd, addr, len, &written, buf);
+ubi/io.c:	err = ubi->mtd->erase(ubi->mtd, &ei);
+ubi/io.c:		ret = mtd->block_isbad(mtd, (loff_t)pnum * ubi->peb_size);
+ubi/io.c:	err = mtd->block_markbad(mtd, (loff_t)pnum * ubi->peb_size);
+ubi/io.c:	err = ubi->mtd->read(ubi->mtd, addr, len, &read, ubi->dbg_peb_buf);
+ubi/build.c:		ret = sprintf(buf, "%d\n", ubi->mtd->index);
+ubi/build.c:	if (ubi->mtd->numeraseregions != 0) {
+ubi/build.c:	ubi->peb_size   = ubi->mtd->erasesize;
+ubi/build.c:	ubi->peb_count  = mtd_div_by_eb(ubi->mtd->size, ubi->mtd);
+ubi/build.c:	ubi->flash_size = ubi->mtd->size;
+ubi/build.c:	if (ubi->mtd->block_isbad && ubi->mtd->block_markbad)
+ubi/build.c:	ubi->min_io_size = ubi->mtd->writesize;
+ubi/build.c:	ubi->hdrs_min_io_size = ubi->mtd->writesize >> ubi->mtd->subpage_sft;
+ubi/build.c:	if (!(ubi->mtd->flags & MTD_WRITEABLE)) {
+ubi/build.c:			"read-only mode", ubi->mtd->index);
+ubi/build.c:	 * over all physical eraseblocks and invoke mtd->block_is_bad() for
+ubi/build.c:		if (ubi && mtd->index == ubi->mtd->index) {
+ubi/build.c:				mtd->index, i);
+ubi/build.c:	if (mtd->type == MTD_UBIVOLUME) {
+ubi/build.c:			"top of UBI", mtd->index);
+ubi/build.c:	ubi_msg("attaching mtd%d to ubi%d", mtd->index, ubi_num);
+ubi/build.c:	ubi_msg("attached mtd%d to ubi%d", mtd->index, ubi_num);
+ubi/build.c:	ubi_msg("MTD device name:            \"%s\"", mtd->name);
+ubi/build.c:	dbg_msg("detaching mtd%d from ubi%d", ubi->mtd->index, ubi_num);
+ubi/build.c:	ubi_msg("mtd%d is detached from ubi%d", ubi->mtd->index, ubi->ubi_num);
+ubi/build.c:			ubi_err("cannot attach mtd%d", mtd->index);
