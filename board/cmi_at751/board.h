@@ -20,6 +20,10 @@
 #define HDR_ETH_ALEN		6
 #define HDR_NAME_LEN		8
 
+//#define EMIF_OCP_CONFIG_CMI_AT751                     0x003d3d3d
+#define EMIF_OCP_CONFIG_CMI_AT751               0x00141414
+
+
 struct am335x_baseboard_id {
 	unsigned int  magic;
 	char name[HDR_NAME_LEN];
