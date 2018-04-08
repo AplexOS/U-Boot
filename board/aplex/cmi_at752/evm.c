@@ -39,7 +39,6 @@
 #include <i2c.h>
 #include <serial.h>
 
-
 DECLARE_GLOBAL_DATA_PTR;
 
 
@@ -440,8 +439,7 @@ int board_init(void)
 
 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-	printf("this board is ECM_5410 \n");
-	printf("this is chendebug \n");
+	printf("this board is CMI_AT752 \n");
 	board_id = GP_BOARD;
 	profile = 1;	/* profile 0 is internally considered as 1 */
 	daughter_board_connected = 1;
@@ -486,6 +484,7 @@ int misc_init_r(void)
 	/*sd启动才自动更新系统*/
 	if(*((int *)0x80000000) == 8)
         run_command("run auto_update_nand", 0);
+
 #endif
 
 	if(*((int *)0x80000000) == 8)

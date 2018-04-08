@@ -247,8 +247,10 @@
 #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */
 #define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
 
+
+
 #if 1
-#define PHYS_DRAM_1_SIZE		0x20000000	/* 512 MiB  DDR3 */
+#define PHYS_DRAM_1_SIZE		0x10000000	/* 256 MiB  DDR3 */
 #else
 #define PHYS_DRAM_1_SIZE		0x40000000	/* 1024 MiB  DDR3 */
 #endif

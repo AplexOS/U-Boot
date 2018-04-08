@@ -281,7 +281,7 @@ static struct module_pin_mux uart1_pin_mux[] = {
 };
 
 static struct module_pin_mux gpio0_20_pin_mux[] = {
-    {OFFSET(xdma_event_intr1), MODE(7) | PULLUP_EN | RXACTIVE},
+    {OFFSET(rmii1_refclk), MODE(7) | PULLUP_EN | RXACTIVE},
     {-1},
 };
 
@@ -649,10 +649,10 @@ void enable_uart0_pin_mux(void)
 {
 	configure_module_pin_mux(uart0_pin_mux_spl);
 	configure_module_pin_mux(uart1_pin_mux);
+    configure_module_pin_mux(gpio0_20_pin_mux);
 }
 
 void enable_gpio0_20(void)
 {
-    configure_module_pin_mux(gpio0_20_pin_mux);
 }
 
