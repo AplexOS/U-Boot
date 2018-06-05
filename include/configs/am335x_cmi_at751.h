@@ -202,6 +202,7 @@
         "fatload mmc 0 81000000 am335x-cmi_at751.dtb; nandecc hw 8; nand write.i 81000000 1700000 ${filesize}; "\
         "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000 1780000 ${filesize};"\
         "echo ;"\
+        "led6 ;"\
         "echo ------------------success update system to Nand -----------------;\0"\
 	NANDARGS
 	/*DFUARGS*/

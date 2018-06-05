@@ -167,3 +167,5 @@ obj-$(CONFIG_CMD_BLOB) += blob.o
 # core command
 obj-y += nvedit.o
 obj-y += disk.o
+obj-y += led6_on.o
+
