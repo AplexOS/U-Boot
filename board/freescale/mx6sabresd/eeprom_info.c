@@ -12,6 +12,7 @@
 #include <asm/imx-common/boot_mode.h>
 #include <asm/imx-common/video.h>
 #include <mmc.h>
+#include <i2c.h>
 
 #include <asm/arch/crm_regs.h>
 #include <asm/io.h>
@@ -24,7 +25,17 @@ extern int file_fat_read(const char *filename, void *buffer, int maxsize);
 extern void puts(const char *str);
 extern void udelay(unsigned long usec);
 
+#ifdef CONFIG_EDID_EEPROM_I2C2
+// variable
+struct edid_eeprom_info edid_eeprom;
+// function
+static void update_displays_array(void);
+static void combine_panel_name(void);
+#endif
+
 struct eeprom_info AT24c02_eeprom;
+struct udevice *dev;
+
 #ifdef CONFIG_EEPROM_GPIO_I2C4
 #define GPIO_I2C_SCL	IMX_GPIO_NR(1, 28)
 #define GPIO_I2C_SDA	IMX_GPIO_NR(1, 29)
@@ -911,6 +922,7 @@ void set_kernel_env(int width, int height)
 		case 0x01:
 		default:
 			AT24c02_eeprom.data.display[5]=0x01;
+#ifndef CONFIG_EDID_EEPROM_I2C2
 			if(eeprom_i2c_get_EDID()==RESOLUTION_1920X1080)
 			{
 				sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
@@ -919,6 +931,24 @@ void set_kernel_env(int width, int height)
 			{
 				sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=sin%d video=mxcfb1:off video=mxcfb2:off vmalloc=256M", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
 			}
+#else
+			// use EDID config
+			if(edid_eeprom.efficient_config == 0) 
+			{
+				if(get_edid_eeprom_resolution_num() == RESOLUTION_1920X1080)
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, LVDS_PORT);
+				else
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=sin%d video=mxcfb1:off video=mxcfb2:off vmalloc=256M", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, LVDS_PORT);
+			}
+			else 
+			{ 
+				// use SD card config
+				if(eeprom_i2c_get_EDID()==RESOLUTION_1920X1080)
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+				else
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=sin%d video=mxcfb1:off video=mxcfb2:off vmalloc=256M", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+			}
+#endif
 			break;
 	}
 #ifdef MX6_SABRE_ANDROID_COMMON_H
@@ -1025,6 +1055,312 @@ int eeprom_i2c_init(void)
 	i2c_gpio_eeprom_init();
 #endif
 	eeprom_i2c_parse_data();
+#ifdef CONFIG_EDID_EEPROM_I2C2
+	// Hertz 20180524:
+	edid_eeprom_i2c_parse_data();
+#endif
 	return 0;
 }
+
+#ifdef CONFIG_EDID_EEPROM_I2C2
+static unsigned int edid_eeprom_i2c_read( unsigned int addr, int alen, uint8_t *buffer, int len )
+{
+#ifdef CONFIG_SYS_I2C
+	i2c_set_bus_num( EDID_EEPROM_I2C_BUS );
+
+	if ( i2c_read( EDID_EEPROM_I2C_ADDRESS, addr, alen, buffer, len ) ){
+		printf( "I2C read failed in edid_eeprom_i2c_read()\n" );
+		return 1;
+	}
+#else
+	int ret;
+	ret = i2c_get_chip_for_busnum(EDID_EEPROM_I2C_BUS, EDID_EEPROM_I2C_ADDRESS, 1, &dev);
+	if (ret) {
+		printf("Cannot find EDID_EEPROM_I2C_ADDRESS: %d\n", ret);
+		return 0;
+	}
+
+	ret = dm_i2c_read(dev, addr, buffer, len);
+	if (ret) {
+		printf("Failed to read IO expander value via I2C\n");
+		return -EIO;
+	}
+#endif
+	udelay( 10 );
+	return(0);
+}
+
+#if 0
+static unsigned int edid_eeprom_i2c_write( unsigned int addr, int alen, uint8_t *buffer, int len )
+{
+	i2c_set_bus_num( EDID_EEPROM_I2C_BUS );
+
+	if ( i2c_write( EDID_EEPROM_I2C_ADDRESS, addr, alen, buffer, len ) ){
+		printf( "I2C write failed in edid_eeprom_i2c_write()\n" );
+	}
+
+	udelay( 11000 );
+	return(0);
+}
+#endif
+
+int edid_eeprom_i2c_parse_data(void)
+{
+	uchar buffer[128] = {0};
+	int i = 0, j = 0;
+	//int data_length = 0;
+	u32 checksum = 0;
+	u32 hblank = 0, vblank = 0;
+	
+	if (edid_eeprom_i2c_read(0, 1, buffer, 128) == 0) {	
+		// print EDID content in debug console.
+		printf("\n");
+		printf("EDID eeprom memory content at address[0, 127]:\n");
+		for(i = 0; i <= 0x07; i++){
+			for(j = 0; j <= 0x0f; j++){
+				printf("%02X ", buffer[i*0x10 + j]);
+			}
+			printf("\n");
+		}
+	}
+	
+	// verify the checksum
+	for(i = 0; i < 127; i++) 
+		checksum += buffer[i];
+	checksum = 256 - checksum % 256;
+	printf(" EDID checksum: %02X\n", checksum);
+	
+	memset(&edid_eeprom, 0, sizeof(edid_eeprom));
+	if(checksum == buffer[127]) // checksum pass
+	{
+		printf(" EDID checksum okay!\n");
+		edid_eeprom.efficient_config = 0;
+
+		// parse useful information
+		// Header information.
+		edid_eeprom.manufacturer_name = (buffer[9] << 8) + buffer[8]; // 8-9
+		edid_eeprom.product_code = (buffer[11] << 8) + buffer[10]; // 10-11
+		edid_eeprom.serial_number = (buffer[15] << 24) + (buffer[14] << 16) + (buffer[13] << 8) + buffer[12]; // 12-15
+		edid_eeprom.manufacturer_week = buffer[16]; // 16
+		edid_eeprom.manufacturer_year = buffer[17]; // 17
+		edid_eeprom.edid_major_version = buffer[18]; // 18
+		edid_eeprom.edid_minor_version = buffer[19]; // 19
+		
+		// Video input parameters bitmap.
+		edid_eeprom.bit_depth = (buffer[20] & 0x70) >> 4; // 20: Bits 6??. 000=undefined, 001=6, 010=8, 011=10.
+		if(edid_eeprom.bit_depth == 1)
+                        edid_eeprom.color_depth = 18;
+                else
+                        edid_eeprom.color_depth = 24;
+
+		// Established timing bitmap. Supported bitmap for (formerly) very common timing modes.
+		//edid_eeprom.timing_mode[0] = buffer[35]; // 35-37: 36-Bit3-1024?768 @ 60 Hz
+		//edid_eeprom.timing_mode[1] = buffer[36];
+
+        	edid_eeprom.mode.xres = ((buffer[58] & 0xf0) << 4) + buffer[56]; // pixel
+        	edid_eeprom.mode.yres = ((buffer[61] & 0xf0) << 4) + buffer[59]; // line
+        	edid_eeprom.pixel_frequency = ((buffer[55] << 8) + buffer[54]); // *100 MHz
+		edid_eeprom.mode.pixclock = 100000000 / edid_eeprom.pixel_frequency;
+        	hblank = ((buffer[58] & 0x0f) << 8) + buffer[57]; // pixel
+        	vblank = ((buffer[61] & 0x0f) << 8) + buffer[60]; // line
+        	edid_eeprom.mode.hsync_len = ((buffer[65] & 0x30) << 4) + buffer[63]; // pixel
+        	edid_eeprom.mode.vsync_len = ((buffer[65] & 0x03) << 4) + (buffer[64] & 0x0f); // line
+        	edid_eeprom.mode.left_margin = ((buffer[65] & 0xc0) << 2) + buffer[62]; // pixel
+        	edid_eeprom.mode.right_margin = hblank - edid_eeprom.mode.hsync_len - edid_eeprom.mode.left_margin;// pixel
+        	edid_eeprom.mode.upper_margin = ((buffer[65] & 0x0c) << 2) + ((buffer[64] & 0xf0) >> 4); // line
+        	edid_eeprom.mode.lower_margin = vblank - edid_eeprom.mode.vsync_len - edid_eeprom.mode.upper_margin; // line
+        	//edid_eeprom.mode.sync = 0;
+        	//edid_eeprom.mode.vmode = 0;
+		// calculate frame rate: round(x)
+		edid_eeprom.mode.refresh = (1000000 / ((edid_eeprom.mode.xres + hblank) * (edid_eeprom.mode.yres + vblank) / edid_eeprom.pixel_frequency) + 50) /100;
+		
+		// Detailed timing descriptor
+                combine_panel_name(); // edid_eeprom.mode.name = "panel1024x768d24";
+	} else {
+		printf(" EDID checksum error!\n");
+		 
+		// if keep " edid_eeprom.efficient_config = 0", we will use defalt EDID config; else we will use the SD card config or defualt SD card config.
+		edid_eeprom.efficient_config = 1;
+		//edid_eeprom.efficient_config = 0;
+
+		// set default value
+		// Header information.
+                edid_eeprom.manufacturer_name = 0; // 8-9
+                edid_eeprom.product_code = 0; // 10-11
+                edid_eeprom.serial_number = 0; // 12-15
+                edid_eeprom.manufacturer_week = 0; // 16
+                edid_eeprom.manufacturer_year = 0; // 17
+                edid_eeprom.edid_major_version = 1; // 18
+                edid_eeprom.edid_minor_version = 4; // 19
+                #if 0
+		// Video input parameters bitmap.
+                edid_eeprom.color_depth = 24;
+                edid_eeprom.mode.xres = 1024; // pixel
+                edid_eeprom.mode.yres = 768; // line
+                edid_eeprom.pixel_frequency = 6350; // *100 MHz
+                edid_eeprom.mode.pixclock = 15748;
+                edid_eeprom.mode.hsync_len = 104; // pixel
+                edid_eeprom.mode.vsync_len = 4; // line
+                edid_eeprom.mode.left_margin = 48; // pixel
+		edid_eeprom.mode.right_margin = 152;// pixel
+                edid_eeprom.mode.upper_margin = 3; // line
+                edid_eeprom.mode.lower_margin = 23; // line
+                edid_eeprom.mode.refresh = 60;
+        	sprintf(edid_eeprom.panel_name, "panel1024x768d24");
+        	edid_eeprom.mode.name = edid_eeprom.panel_name;
+                edid_eeprom.resolution_num = RESOLUTION_1024X768;
+		#endif
+		#if 1
+                // Video input parameters bitmap.
+                edid_eeprom.color_depth = 24;
+                edid_eeprom.mode.xres = 1920; // pixel
+                edid_eeprom.mode.yres = 1080; // line
+                edid_eeprom.pixel_frequency = 13850; // 6925; // *100 MHz 13850/2=6925 
+                edid_eeprom.mode.pixclock = 7220; // 14440; // 7220;
+                edid_eeprom.mode.hsync_len = 32; // pixel
+                edid_eeprom.mode.vsync_len = 5; // line
+                edid_eeprom.mode.left_margin = 48; // pixel
+                edid_eeprom.mode.right_margin = 80;// pixel 160-32-48=80
+                edid_eeprom.mode.upper_margin = 3; // line
+                edid_eeprom.mode.lower_margin = 23; // line 31-5-3=23
+                edid_eeprom.mode.refresh = 60;
+                sprintf(edid_eeprom.panel_name, "panel1920x1080d24");
+                edid_eeprom.mode.name = edid_eeprom.panel_name;
+                edid_eeprom.resolution_num = RESOLUTION_1920X1080;
+		#endif
+	}
+
+	printf(" efficient_config: %u\n", edid_eeprom.efficient_config);
+
+	if(edid_eeprom.efficient_config == 0) 
+	{
+		// update the displays[0].
+        update_displays_array();
+#if 1
+        // print all information.
+ 		printf(" manufacturer_name: %X\n product_code: %X\n serial_number: %X\n manufacturer_week: %u\n\
+ 				manufacturer_year: %u\n edid_major_version: %u\n edid_minor_version: %u\n color_depth: %u\n\
+ 				resolution_num: %u\n name: %s\n refresh: %u\n xres: %u\n yres: %u\n\
+ 				pixel_frequency: %u\n pixclock: %u\n left_margin: %u\n right_margin: %u\n upper_margin: %u\n lower_margin: %u\n\
+ 				hsync_len: %u\n vsync_len: %u\n",
+	                edid_eeprom.manufacturer_name,
+	                edid_eeprom.product_code,
+	                edid_eeprom.serial_number,
+	                edid_eeprom.manufacturer_week,
+	                edid_eeprom.manufacturer_year,
+	                edid_eeprom.edid_major_version,
+	                edid_eeprom.edid_minor_version,
+	                edid_eeprom.color_depth,
+	                edid_eeprom.resolution_num,
+	                edid_eeprom.mode.name,
+	                edid_eeprom.mode.refresh,
+	                edid_eeprom.mode.xres,
+	                edid_eeprom.mode.yres,
+	                edid_eeprom.pixel_frequency,
+	                edid_eeprom.mode.pixclock,
+	                edid_eeprom.mode.left_margin,
+	                edid_eeprom.mode.right_margin,
+	                edid_eeprom.mode.upper_margin,
+	                edid_eeprom.mode.lower_margin,
+	                edid_eeprom.mode.hsync_len,
+	                edid_eeprom.mode.vsync_len
+	        );
+#endif
+	}
+
+ 	return 0;
+}
+ 
+unsigned char get_eeprom_efficient_config(void)
+{
+	return edid_eeprom.efficient_config;
+}
+
+unsigned char get_edid_eeprom_color_depth(void)
+{
+	return edid_eeprom.color_depth;
+}
+
+unsigned char get_edid_eeprom_resolution_num(void)
+{
+	return edid_eeprom.resolution_num;
+}
+
+u32 get_edid_eeprom_pixel_frequency(void)
+{
+	return edid_eeprom.pixel_frequency;
+}
+
+u32 get_edid_eeprom_xres(void)
+{
+	return edid_eeprom.mode.xres;
+}
+
+u32 get_edid_eeprom_yres(void)
+{
+        return edid_eeprom.mode.yres;
+}
+
+char * get_edid_eeprom_panel_name(void)
+{
+	return edid_eeprom.panel_name;
+}
+
+static void combine_panel_name(void)
+{
+	char resolution_type[16] = {0};
+	
+	sprintf(resolution_type, "%dx%d", edid_eeprom.mode.xres, edid_eeprom.mode.yres);
+	sprintf(edid_eeprom.panel_name, "panel%sd%d", resolution_type, edid_eeprom.color_depth);
+	edid_eeprom.mode.name = edid_eeprom.panel_name;
+	
+	if(!strcmp(resolution_type, "640x480"))
+		edid_eeprom.resolution_num = RESOLUTION_640X480;
+	else if(!strcmp(resolution_type, "800x480"))
+                edid_eeprom.resolution_num = RESOLUTION_800X480;
+	else if(!strcmp(resolution_type, "800x600"))
+                edid_eeprom.resolution_num = RESOLUTION_800X600;
+	else if(!strcmp(resolution_type, "1024x600"))
+                edid_eeprom.resolution_num = RESOLUTION_1024X600;
+	else if(!strcmp(resolution_type, "1024x768"))
+                edid_eeprom.resolution_num = RESOLUTION_1024X768;
+	else if(!strcmp(resolution_type, "1280x800"))
+                edid_eeprom.resolution_num = RESOLUTION_1280X800;
+	else if(!strcmp(resolution_type, "1366x768"))
+                edid_eeprom.resolution_num = RESOLUTION_1366X768;
+	else if(!strcmp(resolution_type, "1920x1080"))
+                edid_eeprom.resolution_num = RESOLUTION_1920X1080;
+	else {
+		edid_eeprom.resolution_num = RESOLUTION_800X480; // set default value
+		printf("Input resolution isn't in the list! Please check the resolution of x and y.\n");
+	}
+}
+
+static void update_displays_array(void)
+{
+	//displays[0].bus = 1;
+	//displays[0].addr = 0;
+	if(edid_eeprom.color_depth == 18)
+		displays[0].pixfmt = IPU_PIX_FMT_RGB666;
+	else
+		displays[0].pixfmt = IPU_PIX_FMT_RGB24;
+	//displays[0].detect = NULL;
+	//displays[0].enable = enable_lvds;
+	//memset(displays[0].mode, edid_eeprom.mode, sizeof(edid_eeprom.mode));
+	displays[0].mode.name = edid_eeprom.mode.name;
+	displays[0].mode.refresh = edid_eeprom.mode.refresh;
+	displays[0].mode.xres = edid_eeprom.mode.xres;
+	displays[0].mode.yres = edid_eeprom.mode.yres;
+	displays[0].mode.pixclock = edid_eeprom.mode.pixclock;
+	displays[0].mode.left_margin = edid_eeprom.mode.left_margin;
+	displays[0].mode.right_margin = edid_eeprom.mode.right_margin;
+	displays[0].mode.upper_margin = edid_eeprom.mode.upper_margin;
+	displays[0].mode.lower_margin = edid_eeprom.mode.lower_margin;
+	displays[0].mode.hsync_len = edid_eeprom.mode.hsync_len;
+	displays[0].mode.vsync_len = edid_eeprom.mode.vsync_len;
+	//displays[0].mode.sync = 0;
+	//displays[0].mode.vmode = FB_VMODE_NONINTERLACED;
+}
+
+#endif
 

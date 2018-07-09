@@ -11,7 +11,13 @@
 #define EEPROM_ADDRESS_LENGTH			1
 #define MMC_DEVICE_BUS					1
 
+#ifdef CONFIG_EDID_EEPROM_I2C2
+#define EDID_EEPROM_I2C_BUS				1		// I2C2
+#define EDID_EEPROM_I2C_ADDRESS			0x50
+#endif
+
 #include <linux/string.h>
+#include <linux/fb.h>
 #include <i2c.h>
 #include "eeprom_display_info.h"
 #define BACKLIGHT_MAX
@@ -69,6 +75,31 @@ struct eeprom_info
 	unsigned char mServerip[16];
 };
 
+#ifdef CONFIG_EDID_EEPROM_I2C2
+struct edid_eeprom_info
+{
+	u8 efficient_config; // 0=EDID(High priority) 1=SD card(Low priority) 2=default config
+	// Header information.
+	u16 manufacturer_name; // 8-9
+	u16 product_code; // 10-11
+	u32 serial_number; // 12-15
+	u8 manufacturer_week; // 16
+	u8 manufacturer_year; // 17
+	u8 edid_major_version; // 18
+	u8 edid_minor_version; // 19
+	// Video input parameters bitmap.
+	u8 bit_depth; // 20: Bits 6??. 000=undefined, 001=6, 010=8, 011=10.
+	u8 color_depth; // 16/24 bit.
+	u8 resolution_num; // in eeprom_display_info.h
+	// Established timing bitmap. Supported bitmap for (formerly) very common timing modes.
+	//u8 timing_mode[3]; // 35-37: 36-Bit3-1024?768 @ 60 Hz
+	u32 pixel_frequency; // *100 Mhz
+	char panel_name[32]; // exp: "panel1024x768d24"
+	// Detailed timing descriptor
+	struct fb_videomode mode;
+};
+#endif
+
 unsigned int eeprom_i2c_read(unsigned int addr, int alen, uint8_t *buffer, int len);
 unsigned int eeprom_i2c_write(unsigned int addr, int alen, uint8_t *buffer, int len);
 
@@ -83,5 +114,16 @@ int eeprom_i2c_parse_data(void);
 int eeprom_i2c_synthesis_data(void);
 int Load_config_from_mmc(void);
 int eeprom_i2c_init(void);
+
+#ifdef CONFIG_EDID_EEPROM_I2C2
+int edid_eeprom_i2c_parse_data(void);
+unsigned char get_eeprom_efficient_config(void);
+unsigned char get_edid_eeprom_color_depth(void);
+unsigned char get_edid_eeprom_resolution_num(void);
+u32 get_edid_eeprom_pixel_frequency(void);
+u32 get_edid_eeprom_xres(void);
+u32 get_edid_eeprom_yres(void);
+char * get_edid_eeprom_panel_name(void);
+#endif
 
 #endif // __EEPROM_H__
