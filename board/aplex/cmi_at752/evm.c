@@ -343,10 +343,10 @@ void spl_board_init(void)
 		return;
 	/* end add */
 
-	if (!voltage_update(MPU, PMIC_OP_REG_SEL_1_2_6) &&
+	if (!voltage_update(MPU, PMIC_OP_REG_SEL_1_1_3) &&
 			!voltage_update(CORE, PMIC_OP_REG_SEL_1_1_3))
 		/* Frequency switching for OPP 120 */
- 		mpu_pll_config(MPUPLL_M_720);
+ 		mpu_pll_config(MPUPLL_M_600);
 }
 #endif
 
