@@ -13,9 +13,13 @@
 
 #define CONFIG_SBC7112	1
 #define CONFIG_EEPROM_GPIO_I2C4
-#define LVDS_PORT		1
-#if 0
+/* #define CONFIG_SBC7819 */
+
+#ifdef CONFIG_SBC7819
 #define CONFIG_EDID_EEPROM_I2C2
+#define LVDS_PORT		0
+#else
+#define LVDS_PORT		1
 #endif
 #define CONFIG_IMX_THERMAL
 

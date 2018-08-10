@@ -957,7 +957,8 @@ static void enable_lvds(struct display_info_t const *dev)
 	reg |= (3<<15);
 	writel(reg, GPIO6_BASE_ADDR+ GPIO_GDIR);
 	reg=readl(GPIO6_BASE_ADDR+ GPIO_DR);
-	reg |= (3<<15);
+	//reg |= (3<<15);
+	reg &= ~(3<<15);
 	writel(reg, GPIO6_BASE_ADDR+ GPIO_DR);
 }
 
@@ -1520,7 +1521,7 @@ int board_init(void)
 	imx_iomux_v3_setup_pad(MX6_PAD_EIM_D16__GPIO3_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL));
 	imx_iomux_v3_setup_pad(MX6_PAD_EIM_D17__GPIO3_IO17 | MUX_PAD_CTRL(NO_PAD_CTRL));
 #ifdef CONFIG_EDID_EEPROM_I2C2
-	set_panel_bicolor_led_on(2);
+	set_panel_bicolor_led_on(0);
 #endif
 	set_LVDS_VCC(0);
 #ifdef CONFIG_MXC_SPI
@@ -1569,7 +1570,7 @@ int board_init(void)
 #endif
 	set_LVDS_VCC(1);
 #ifdef CONFIG_EDID_EEPROM_I2C2
-	set_panel_bicolor_led_on(1);
+	set_panel_bicolor_led_on(2);
 #endif
 
 	return 0;
@@ -2240,10 +2241,10 @@ int board_late_init(void)
 	if(eeprom_i2c_check_logo())
 	{
 		lvds_backlight(1);
-#ifdef CONFIG_EDID_EEPROM_I2C2
-		set_panel_bicolor_led_on(1);
-#endif
 	}
+#ifdef CONFIG_EDID_EEPROM_I2C2
+	set_panel_bicolor_led_on(1);
+#endif
 	return 0;
 }
 
