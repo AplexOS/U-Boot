@@ -1521,7 +1521,7 @@ int board_init(void)
 	imx_iomux_v3_setup_pad(MX6_PAD_EIM_D16__GPIO3_IO16 | MUX_PAD_CTRL(NO_PAD_CTRL));
 	imx_iomux_v3_setup_pad(MX6_PAD_EIM_D17__GPIO3_IO17 | MUX_PAD_CTRL(NO_PAD_CTRL));
 #ifdef CONFIG_EDID_EEPROM_I2C2
-	set_panel_bicolor_led_on(0);
+	set_panel_bicolor_led_on(3);
 #endif
 	set_LVDS_VCC(0);
 #ifdef CONFIG_MXC_SPI
@@ -2243,7 +2243,7 @@ int board_late_init(void)
 		lvds_backlight(1);
 	}
 #ifdef CONFIG_EDID_EEPROM_I2C2
-	set_panel_bicolor_led_on(1);
+	set_panel_bicolor_led_on(3);
 #endif
 	return 0;
 }
