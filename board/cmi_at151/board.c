@@ -77,6 +77,48 @@ static int baltos_set_console(void)
 }
 #endif
 
+#define CONFIG_MCU_ADDR  0x66
+static int read_MCU_data(char *data)
+{
+    uchar wri_data = 0x3f, red_data;
+
+    puts("read mcu start\n");
+    if (i2c_set_bus_num(1))
+        puts("i2c set bus error\n");
+
+#if 0
+    if (i2c_write(CONFIG_MCU_ADDR, 1, 1, (uchar *)&wri_data, sizeof(int)))
+        puts("write error\n");
+
+	if (i2c_read(CONFIG_MCU_ADDR, 1, 1, (uchar *)&red_data,
+		     sizeof(int))) {
+		puts("Could not read the MCU; something fundamentally"
+			" wrong on the I2C bus.\n");
+		return -EIO;
+	}
+#endif
+
+    while ( 1 )
+    {
+	    if (!(i2c_read(CONFIG_MCU_ADDR, 1, 1, (uchar *)&red_data,
+		     sizeof(int)))) {
+            if(red_data == wri_data)
+            {
+                puts("check ok\n\n");
+                break;
+            }
+        }
+
+        puts("check again\n\n");
+
+        udelay(1000000);
+    }
+
+    printf("mcu i2c read data : 0x%x\n\n", red_data);
+
+    return 0;
+}
+
 static int read_eeprom(BSP_VS_HWPARAM *header)
 {
 	i2c_set_bus_num(0);
@@ -389,6 +431,7 @@ static struct module_pin_mux dip_pin_mux[] = {
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
+#if 0
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	BSP_VS_HWPARAM header;
 	char model[4];
@@ -407,6 +450,8 @@ int board_late_init(void)
 	setenv("board_name", model);
 	*/
 #endif
+#endif
+
 
 	return 0;
 }
@@ -543,6 +588,9 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_MISC_INIT_R
 int misc_init_r(void)
 {
+    char data[4];
+    read_MCU_data(data);
+
     //printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
 #ifdef AUTO_UPDATESYS
     if(*((int *)0x80000000) == 8)
