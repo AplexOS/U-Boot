@@ -17,6 +17,12 @@
 #ifndef _I2C_H_
 #define _I2C_H_
 
+#include <bcd.h>
+#include <rtc_def.h>
+#include <common.h>
+#include <command.h>
+#include <rtc.h>
+
 /*
  * For now there are essentially two parts to this file - driver model
  * here at the top, and the older code below (with CONFIG_SYS_I2C being
@@ -269,6 +275,9 @@ int i2c_get_chip_offset_len(struct udevice *dev);
  * @return 0 if OK, -ve on error
  */
 int i2c_deblock(struct udevice *bus);
+
+
+int rtc_get (struct rtc_time *tmp);
 
 #ifdef CONFIG_DM_I2C_COMPAT
 /**

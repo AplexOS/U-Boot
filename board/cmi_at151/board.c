@@ -34,7 +34,7 @@
 #include <watchdog.h>
 #include "board.h"
 #include <common.h>
-#include <autoboot.h>
+#include <rtc.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -80,41 +80,56 @@ static int baltos_set_console(void)
 #define CONFIG_MCU_ADDR  0x66
 static int read_MCU_data(char *data)
 {
-    uchar wri_data = 0x3f, red_data;
+    unsigned int read_data;
+    uchar rand_num = -1, read_data3, read_data4;
+    struct rtc_time ds1337_time;
+    int check_list[100] = {
+        144, 897, 957, 804,  76,  70, 458,   7, 761, 137,
+        649, 257,  95, 531, 471,   5, 118, 978, 883, 696,
+        910, 140, 178, 932, 231, 209, 581, 299, 361, 942,
+        407, 858, 192, 716, 662, 620, 786, 472, 980, 547,
+        609, 981, 157,  56, 513, 628, 413, 983, 607, 296,
+        679, 517, 789, 209, 801,  20, 771, 382, 672, 132,
+        677, 431, 342, 221, 147, 356, 841, 285, 828, 173,
+        832, 789, 155, 989, 845, 668, 970, 258,   3, 929,
+        907, 682, 798, 696, 244, 600, 716,  15, 982, 740,
+        499,  11, 171, 842, 232, 318, 198, 426, 603, 379
+    };
 
-    puts("read mcu start\n");
     if (i2c_set_bus_num(1))
         puts("i2c set bus error\n");
 
-#if 0
-    if (i2c_write(CONFIG_MCU_ADDR, 1, 1, (uchar *)&wri_data, sizeof(int)))
-        puts("write error\n");
-
-	if (i2c_read(CONFIG_MCU_ADDR, 1, 1, (uchar *)&red_data,
-		     sizeof(int))) {
-		puts("Could not read the MCU; something fundamentally"
-			" wrong on the I2C bus.\n");
-		return -EIO;
-	}
-#endif
-
     while ( 1 )
     {
-	    if (!(i2c_read(CONFIG_MCU_ADDR, 1, 1, (uchar *)&red_data,
-		     sizeof(int)))) {
-            if(red_data == wri_data)
-            {
-                puts("check ok\n\n");
-                break;
-            }
+        if (rtc_get(&ds1337_time))
+        {
+            puts("Get ds time error\n");
+            udelay(1000000);
+            continue;
+        }
+        else
+            rand_num = (ds1337_time.tm_min * 60 + ds1337_time.tm_sec) % 100;
+
+        if (i2c_write(CONFIG_MCU_ADDR, 2, 1, (uchar *)&rand_num,
+            sizeof(int)))
+        {
+            puts("write error\n");
+            udelay(100000);
+            continue;
         }
 
-        puts("check again\n\n");
+        udelay(20000);
+
+	    i2c_read(CONFIG_MCU_ADDR, 3, 1, (uchar *)&read_data3, sizeof(int));
+	    i2c_read(CONFIG_MCU_ADDR, 4, 1, (uchar *)&read_data4, sizeof(int));
+
+        read_data = (read_data3 << 8) + read_data4;
+
+        if(read_data == check_list[rand_num])
+            break;
 
         udelay(1000000);
     }
-
-    printf("mcu i2c read data : 0x%x\n\n", red_data);
 
     return 0;
 }
