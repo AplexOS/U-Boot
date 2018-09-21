@@ -1,0 +1,1 @@
+make -j2  O=out am335x_sbc7109_defconfig all

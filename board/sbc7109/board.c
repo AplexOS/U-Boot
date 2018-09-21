@@ -206,10 +206,10 @@ void am33xx_spl_board_init(void)
 	int sil_rev;
 
 	/* Get the frequency */
-	dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
-
+//	dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
+    dpll_mpu_opp100.m = MPUPLL_M_800;
 	/*
-	 * The GP EVM, IDK and EVM SK use a TPS65910 PMIC.  For all
+	 * The GP EVM, IDK and EVM SK use a TPS65911 PMIC.  For all
 	 * MPU frequencies we support we use a CORE voltage of
 	 * 1.1375V.  For MPU voltage we need to switch based on
 	 * the frequency we are running at.
@@ -259,7 +259,7 @@ const struct dpll_params *get_dpll_ddr_params(void)
 	//gpio_set_value(GPIO_TO_PIN(0,22),1);
 	//gpio_set_value(GPIO_TO_PIN(0,23),0);
 	//gpio_set_value(GPIO_TO_PIN(0,19),0);
-	gpio_direction_output(GPIO_TO_PIN(0,12),1); //LVDS_BLKT_ON=1
+	gpio_direction_output(GPIO_TO_PIN(0,12),0); //LVDS_BLKT_ON=1
 
 	return &dpll_ddr_baltos;
 }
