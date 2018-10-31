@@ -14,6 +14,12 @@
 #include "imx6_spl.h"
 #endif
 
+#define CONFIG_SECURE_BOOT
+#define CONFIG_SYS_FSL_SEC_COMPAT    4 /* HAB version */
+#define CONFIG_FSL_CAAM
+#define CONFIG_CMD_DEKBLOB
+#define CONFIG_FAT_WRITE
+
 #define CONFIG_MACH_TYPE	3980
 #define CONFIG_MXC_UART_BASE	UART1_BASE
 #define CONSOLE_DEV		"ttymxc0"

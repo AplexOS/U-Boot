@@ -89,7 +89,6 @@ dumpimage-mkimage-objs := aisimage.o \
 			lib/md5.o \
 			lpc32xximage.o \
 			mxsimage.o \
-			omapimage.o \
 			os_support.o \
 			pblimage.o \
 			pbl_crc32.o \
@@ -103,8 +102,6 @@ dumpimage-mkimage-objs := aisimage.o \
 			zynqimage.o \
 			zynqmpimage.o \
 			$(LIBFDT_OBJS) \
-			gpimage.o \
-			gpimage-common.o \
 			$(RSA_OBJS-y)
 
 dumpimage-objs := $(dumpimage-mkimage-objs) dumpimage.o
