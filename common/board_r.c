@@ -933,11 +933,11 @@ init_fnc_t init_sequence_r[] = {
 	initr_doc,
 #endif
 #ifdef CONFIG_BITBANGMII
-	initr_bbmii,
+	/* initr_bbmii, */
 #endif
 #ifdef CONFIG_CMD_NET
 	INIT_FUNC_WATCHDOG_RESET
-	initr_net,
+	/* initr_net, */
 #endif
 #ifdef CONFIG_POST
 	initr_post,

@@ -75,7 +75,7 @@
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
-	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M"\
+	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M coherent_pool=2M" \
 		"${optargs} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
@@ -200,7 +200,8 @@
         "fatload mmc 0 81000000 u-boot.img; nandecc hw 8; nand write.i 81000000 80000 $filesize; "\
         "fatload mmc 0 81000000 zImage; nandecc hw 8; nand write.i 81000000 280000 ${filesize}; "\
         "fatload mmc 0 81000000 am335x-cmi_at151.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
-        "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000 780000 ${filesize};"\
+        "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000  780000 ${filesize};"\
+        "fatload mmc 0 81000000 opt.img; nandecc  hw 8;   nand write.i 81000000 83C0000 ${filesize};"\
         "echo ;"\
         "echo ------------------success update system to Nand -----------------;\0"\
 	NANDARGS
@@ -297,9 +298,11 @@
  * add mass storage support and for gadget we add both RNDIS ethernet
  * and DFU.
  */
-#define CONFIG_USB_MUSB_DSPS
 #define CONFIG_ARCH_MISC_INIT
 #define CONFIG_MISC_INIT_R
+
+#if 0
+#define CONFIG_USB_MUSB_DSPS
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #define CONFIG_AM335X_USB0
@@ -325,16 +328,22 @@
 /*
  * Disable CPSW SPL support so we fit within the 101KiB limit.
  */
-#undef CONFIG_SPL_ETH_SUPPORT
 #endif
 
+#endif
+
+#undef CONFIG_SPL_ETH_SUPPORT
+
+
 /* Network. */
+#if 0
 #define CONFIG_PHY_GIGE
 #define CONFIG_PHYLIB
 #define CONFIG_PHY_ADDR			0
 #define CONFIG_PHY_SMSC
 #define CONFIG_MII
 #define CONFIG_PHY_ATHEROS
+#endif
 
 /* NAND support */
 #ifdef CONFIG_NAND

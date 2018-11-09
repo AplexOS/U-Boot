@@ -515,6 +515,7 @@ static struct cpsw_platform_data cpsw_data = {
 };
 #endif
 
+#if 0
 #if ((defined(CONFIG_SPL_ETH_SUPPORT) || defined(CONFIG_SPL_USBETH_SUPPORT)) \
 		&& defined(CONFIG_SPL_BUILD)) || \
 	((defined(CONFIG_DRIVER_TI_CPSW) || \
@@ -597,6 +598,7 @@ int board_eth_init(bd_t *bis)
 
 	return n;
 }
+#endif
 #endif
 
 
