@@ -968,6 +968,9 @@ void set_kernel_env(int width, int height)
 	if(AT24c02_eeprom.data.backlight[0]==0x04 && AT24c02_eeprom.data.backlight[1]==0x04)
 	{
 		int check_backlight_frequency=AT24c02_eeprom.data.backlight[4]*256+AT24c02_eeprom.data.backlight[5];
+#ifdef CONFIG_SBC7819
+		check_backlight_frequency=200;
+#endif
 #ifndef BACKLIGHT_MAX
 		sprintf(Backlightprm,"Backlight_polarity=%d,Backlight_min=%d,Backlight_frequency=%d",AT24c02_eeprom.data.backlight[2]?1:0,AT24c02_eeprom.data.backlight[3],check_backlight_frequency);
 #else
@@ -985,6 +988,9 @@ void set_kernel_env(int width, int height)
 	if(AT24c02_eeprom.data.backlight[0]==0x04 && AT24c02_eeprom.data.backlight[1]>=0x04)
 	{
 		int check_backlight_frequency=AT24c02_eeprom.data.backlight[4]*256+AT24c02_eeprom.data.backlight[5];
+#ifdef CONFIG_SBC7819
+		check_backlight_frequency=200;
+#endif
 #ifndef BACKLIGHT_MAX
 		sprintf(Backlightprm,"Backlight_polarity=%d,Backlight_min=%d,Backlight_frequency=%d",AT24c02_eeprom.data.backlight[2]?1:0,AT24c02_eeprom.data.backlight[3],check_backlight_frequency);
 #else
