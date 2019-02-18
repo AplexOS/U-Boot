@@ -201,7 +201,6 @@
         "fatload mmc 0 81000000 zImage; nandecc hw 8; nand write.i 81000000 280000 ${filesize}; "\
         "fatload mmc 0 81000000 am335x-cmi_at151.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
         "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000  780000 ${filesize};"\
-        "fatload mmc 0 81000000 opt.img; nandecc  hw 8;   nand write.i 81000000 83C0000 ${filesize};"\
         "echo ;"\
         "echo ------------------success update system to Nand -----------------;\0"\
 	NANDARGS
