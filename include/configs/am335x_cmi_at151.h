@@ -89,7 +89,7 @@
         "nandecc hw 8; "\
         "nand read ${loadaddr} 0x280000 0x500000; "\
         "nandecc hw 8; "\
-        "nand read ${fdtaddr} 0x700000 0x20000; "\
+        "nand read ${fdtaddr} 0x1700000 0x20000; "\
 		"bootz ${loadaddr} - ${fdtaddr} ;\0"
 #else
 #define NANDARGS ""
@@ -193,14 +193,14 @@
 	"ramboot=echo Booting from ramdisk ...; " \
 		"run ramargs; " \
 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
-	"findfdt=setenv fdtfile am335x-cmi_at151.dtb\0" \
+	"findfdt=setenv fdtfile am335x-cmi_at153.dtb\0" \
     "auto_update_nand= echo ------------------Begin update system to Nand -----------------;"\
         "nand erase.chip ;mmc rescan;"\
         "fatload mmc 0 81000000 MLO; nandecc hw 8; nand write.i 81000000 0 $filesize; "\
         "fatload mmc 0 81000000 u-boot.img; nandecc hw 8; nand write.i 81000000 80000 $filesize; "\
         "fatload mmc 0 81000000 zImage; nandecc hw 8; nand write.i 81000000 280000 ${filesize}; "\
-        "fatload mmc 0 81000000 am335x-cmi_at151.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
-        "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000  780000 ${filesize};"\
+        "fatload mmc 0 81000000 am335x-cmi_at153.dtb; nandecc hw 8; nand write.i 81000000 1700000 ${filesize}; "\
+        "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000  1780000 ${filesize};"\
         "echo ;"\
         "echo ------------------success update system to Nand -----------------;\0"\
 	NANDARGS
