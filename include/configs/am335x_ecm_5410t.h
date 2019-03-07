@@ -75,7 +75,7 @@
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
-	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M coherent_pool=2M" \
+	"nandargs=setenv bootargs console=ttyAP0,115200n8 init=/sbin/init mem=512M vram=50M coherent_pool=2M" \
 		"${optargs} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
@@ -105,7 +105,7 @@
 	"bootdir=/boot\0" \
 	"bootfile=zImage\0" \
 	"fdtfile=undefined\0" \
-	"console=ttyO0,115200n8\0" \
+	"console=ttyAP0,115200n8\0" \
 	"partitions=" \
 		"uuid_disk=${uuid_gpt_disk};" \
 		"name=rootfs,start=2MiB,size=-,uuid=${uuid_gpt_rootfs}\0" \
