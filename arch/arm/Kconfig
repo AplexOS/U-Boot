@@ -389,6 +389,14 @@ config TARGET_AM335X_CMI_AT151
     select DM_SERIAL
     select DM_GPIO
 
+config TARGET_AM335X_ECM_5410T
+    bool "Support am335x_ecm_5410t"
+    select CPU_V7
+    select SUPPORT_SPL
+    select DM
+    select DM_SERIAL
+    select DM_GPIO
+
 config TARGET_AM335X_EVM
 	bool "Support am335x_evm"
 	select CPU_V7
@@ -910,6 +918,7 @@ source "board/zipitz2/Kconfig"
 source "board/sbc7109/Kconfig"
 source "board/sbc_7109_455/Kconfig"
 source "board/cmi_at151/Kconfig"
+source "board/ecm_5410t/Kconfig"
 
 source "arch/arm/Kconfig.debug"
 
