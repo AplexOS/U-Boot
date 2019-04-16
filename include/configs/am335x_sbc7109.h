@@ -198,12 +198,14 @@
 #endif
 
 #define CONFIG_BOOTCOMMAND \
-	"run mmcboot;" \
-	"setenv mmcdev 1; " \
-	"setenv bootpart 1:2; " \
-	"run mmcboot;"
+    "if test $bootdev = SD; then "\
+        "setenv mmcdev 0;"\
+    "else "\
+        "setenv mmcdev 1;"\
+    "fi;" \
+    "run mmcboot"
 
-#define CONFIG_BOOTDELAY        0
+#define CONFIG_BOOTDELAY        3
 
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
@@ -275,9 +277,12 @@
  * add mass storage support and for gadget we add both RNDIS ethernet
  * and DFU.
  */
+
+#define CONFIG_ARCH_MISC_INIT
+#define CONFIG_MISC_INIT_R
+
 #if 0
 #define CONFIG_USB_MUSB_DSPS
-#define CONFIG_ARCH_MISC_INIT
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #define CONFIG_AM335X_USB0

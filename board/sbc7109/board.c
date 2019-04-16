@@ -206,8 +206,8 @@ void am33xx_spl_board_init(void)
 	int sil_rev;
 
 	/* Get the frequency */
-//	dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
-    dpll_mpu_opp100.m = MPUPLL_M_800;
+    dpll_mpu_opp100.m = am335x_get_efuse_mpu_max_freq(cdev);
+    // dpll_mpu_opp100.m = MPUPLL_M_600;
 	/*
 	 * The GP EVM, IDK and EVM SK use a TPS65911 PMIC.  For all
 	 * MPU frequencies we support we use a CORE voltage of
@@ -253,13 +253,8 @@ const struct dpll_params *get_dpll_ddr_params(void)
 {
 	enable_i2c0_pin_mux();
 	i2c_set_bus_num(0);
-	gpio_direction_output(GPIO_TO_PIN(0,22),1); //COM0_MODE_0=1
-	gpio_direction_output(GPIO_TO_PIN(0,23),0); //COM0_MODE_1=0
-	gpio_direction_output(GPIO_TO_PIN(0,19),0); //COM0_TERM=0
-	//gpio_set_value(GPIO_TO_PIN(0,22),1);
-	//gpio_set_value(GPIO_TO_PIN(0,23),0);
-	//gpio_set_value(GPIO_TO_PIN(0,19),0);
-	gpio_direction_output(GPIO_TO_PIN(0,12),0); //LVDS_BLKT_ON=1
+
+	gpio_direction_output(GPIO_TO_PIN(3,17),0); //LVDS_BLKT_ON=1
 
 	return &dpll_ddr_baltos;
 }
@@ -539,3 +534,20 @@ int board_eth_init(bd_t *bis)
 	return n;
 }
 #endif
+
+#ifdef CONFIG_MISC_INIT_R
+int misc_init_r(void)
+{
+    //printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
+
+    if(*((int *)0x80000000) == 8)
+        setenv("bootdev", "SD");
+    else if(*((int *)0x80000000) == 9)
+        setenv("bootdev", "EMMC");
+    else
+        printf("Boot device don't exist\n");
+
+    return 0;
+}
+#endif
+

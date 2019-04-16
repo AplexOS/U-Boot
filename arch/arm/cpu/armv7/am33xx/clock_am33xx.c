@@ -52,7 +52,7 @@ const struct dpll_regs dpll_ddr_regs = {
 };
 
 struct dpll_params dpll_mpu_opp100 = {
-		MPUPLL_M_550, OSC-1, 1, -1, -1, -1, -1};
+        CONFIG_SYS_MPUCLK, OSC-1, 1, -1, -1, -1, -1};
 const struct dpll_params dpll_core_opp100 = {
 		1000, OSC-1, -1, -1, 10, 8, 4};
 const struct dpll_params dpll_mpu = {

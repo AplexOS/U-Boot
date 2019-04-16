@@ -223,6 +223,9 @@ void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
 
 	u32 boot_params = *((u32 *)OMAP_SRAM_SCRATCH_BOOT_PARAMS);
 
+    int *p = (int *)0x80000000;
+    *p = gd->arch.omap_boot_device;
+
 	debug("image entry point: 0x%X\n", spl_image->entry_point);
 	/* Pass the saved boot_params from rom code */
 	image_entry((u32 *)boot_params);
