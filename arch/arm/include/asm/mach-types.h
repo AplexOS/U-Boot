@@ -3318,6 +3318,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_APLEX_CMI_AT101           3689
 #define MACH_APLEX_ECM_5410           3690
 #define MACH_APLEX_ECM_5206           3693
+#define MACH_APLEX_ECM_5206L           3694
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type
