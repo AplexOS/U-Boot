@@ -196,7 +196,7 @@
 	NANDARGS
 	/*DFUARGS*/
 #endif
-
+#if 0
 #define CONFIG_BOOTCOMMAND \
     "if test $bootdev = SD; then "\
         "setenv mmcdev 0;"\
@@ -206,6 +206,15 @@
     "run mmcboot"
 
 #define CONFIG_BOOTDELAY        3
+#else
+#define CONFIG_BOOTCOMMAND \
+    "run mmcboot;" \
+    "setenv mmcdev 1; " \
+    "setenv bootpart 1:2; " \
+    "run mmcboot;" 
+
+#define CONFIG_BOOTDELAY        1
+#endif
 
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
@@ -278,10 +287,10 @@
  * and DFU.
  */
 
+#if 0
 #define CONFIG_ARCH_MISC_INIT
 #define CONFIG_MISC_INIT_R
 
-#if 0
 #define CONFIG_USB_MUSB_DSPS
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT

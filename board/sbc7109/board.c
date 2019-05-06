@@ -539,13 +539,19 @@ int board_eth_init(bd_t *bis)
 int misc_init_r(void)
 {
     //printf("-------------------------------0x80000000: %d\n", *((int *)0x80000000));
-
+#if 1
+	if(current_dev==0)
+		setenv("bootdev", "SD");
+	else if(current_dev==1)
+		setenv("bootdev", "EMMC");
+#else		
     if(*((int *)0x80000000) == 8)
         setenv("bootdev", "SD");
     else if(*((int *)0x80000000) == 9)
         setenv("bootdev", "EMMC");
+#endif
     else
-        printf("Boot device don't exist\n");
+        puts("Boot device don't exist\n");
 
     return 0;
 }
