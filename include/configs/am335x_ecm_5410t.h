@@ -75,7 +75,7 @@
 #define NANDARGS \
 	"mtdids=" MTDIDS_DEFAULT "\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
-	"nandargs=setenv bootargs console=ttyAP0,115200n8 init=/sbin/init mem=512M vram=50M coherent_pool=2M" \
+	"nandargs=setenv bootargs console=ttyO0,115200n8 init=/sbin/init mem=512M vram=50M coherent_pool=2M" \
 		"${optargs} " \
 		"root=${nandroot} " \
 		"rootfstype=${nandrootfstype}\0" \
@@ -193,13 +193,13 @@
 	"ramboot=echo Booting from ramdisk ...; " \
 		"run ramargs; " \
 		"bootz ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
-	"findfdt=setenv fdtfile am335x-ecm_5410t.dtb\0" \
+	"findfdt=setenv fdtfile am335x-ecm_5410.dtb\0" \
     "auto_update_nand= echo ------------------Begin update system to Nand -----------------;"\
         "nand erase.chip ;mmc rescan;"\
         "fatload mmc 0 81000000 MLO; nandecc hw 8; nand write.i 81000000 0 $filesize; "\
         "fatload mmc 0 81000000 u-boot.img; nandecc hw 8; nand write.i 81000000 80000 $filesize; "\
         "fatload mmc 0 81000000 zImage; nandecc hw 8; nand write.i 81000000 280000 ${filesize}; "\
-        "fatload mmc 0 81000000 am335x-ecm_5410t.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
+        "fatload mmc 0 81000000 am335x-ecm_5410.dtb; nandecc hw 8; nand write.i 81000000 700000 ${filesize}; "\
         "fatload mmc 0 81000000 ubi.img; nandecc  hw 8;   nand write.i 81000000  780000 ${filesize};"\
         "echo ;"\
         "echo ------------------success update system to Nand -----------------;\0"\
