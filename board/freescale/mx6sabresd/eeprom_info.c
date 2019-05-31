@@ -670,7 +670,7 @@ int Load_config_from_mmc(void)
 		{
 			if (fat_register_device((struct blk_desc *)dev_desc,1)==0) 
 			{
-				size = file_fat_read ("aplex.cfg", (void *) tbuffer, sizeof(tbuffer));
+				size = file_fat_read ("jo6wu06.cfg", (void *) tbuffer, sizeof(tbuffer));
 				if(size<=0)return -1;
 				puts((char *)tbuffer);
 				puts("\n");
