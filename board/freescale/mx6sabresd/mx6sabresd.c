@@ -258,6 +258,8 @@ void copy_bmp_screen(char * destaddr,char * srcaddr, int width,int high)
 //	char tmp[128]={0};
 
 	memset((char *)destaddr, 0x0, (width+2)*high+0x436);
+	if(eeprom_i2c_check_logo()==0)
+		return;
 	if(eeprom_i2c_pass_logo()==0)
 	{
 		bmpwidth=get_bmp_4byte((char *) srcaddr+18);

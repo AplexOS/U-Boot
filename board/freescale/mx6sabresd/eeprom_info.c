@@ -931,9 +931,11 @@ void set_kernel_env(int width, int height)
 			if(eeprom_i2c_get_EDID()==RESOLUTION_1920X1080)
 			{
 	#ifdef CONFIG_GALCORE_VIVANTE
-				sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+				//sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+				sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, 0);
 	#else
-				sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+				//sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+				sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, 0);
 	#endif
 			}
 			else
@@ -950,9 +952,11 @@ void set_kernel_env(int width, int height)
 			{
 				if(get_edid_eeprom_resolution_num() == RESOLUTION_1920X1080)
 	#ifdef CONFIG_GALCORE_VIVANTE
-					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, LVDS_PORT);
+					//sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, LVDS_PORT);
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, 0);
 	#else
-					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, LVDS_PORT);
+					//sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, LVDS_PORT);
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, edid_eeprom.mode.refresh, edid_eeprom.color_depth == 18 ? 666 : 24, 0);
 	#endif
 				else
 	#ifdef CONFIG_GALCORE_VIVANTE
@@ -966,9 +970,11 @@ void set_kernel_env(int width, int height)
 				// use SD card config
 				if(eeprom_i2c_get_EDID()==RESOLUTION_1920X1080)
 	#ifdef CONFIG_GALCORE_VIVANTE
-					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+					//sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M galcore.gpuProfiler=1 ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, 0);
 	#else
-					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+					//sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, LVDS_PORT);
+					sprintf(videoprm,"video=mxcfb0:dev=ldb,%dx%dM@%u,if=RGB%d,bpp=32 ldb=spl%d video=mxcfb1:off video=mxcfb2:off vmalloc=384M ", width, height, AT24c02_eeprom.data.display[4], AT24c02_eeprom.data.display[3]==18?666:24, 0);
 	#endif
 				else
 	#ifdef CONFIG_GALCORE_VIVANTE
