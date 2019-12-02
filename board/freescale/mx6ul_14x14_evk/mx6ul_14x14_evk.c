@@ -173,6 +173,19 @@ static void iox74lv_init(void)
 	gpio_direction_output(IOX_STCP, 1);
 };
 #endif
+#define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
+static struct i2c_pads_info i2c_pad_info2 = {
+        .scl = {
+                .i2c_mode =  MX6_PAD_UART5_TX_DATA__I2C2_SCL | PC,
+                .gpio_mode = MX6_PAD_UART5_TX_DATA__GPIO1_IO30 | PC,
+                .gp = IMX_GPIO_NR(1, 30),
+        },
+        .sda = {
+                .i2c_mode = MX6_PAD_UART5_RX_DATA__I2C2_SDA | PC,
+                .gpio_mode = MX6_PAD_UART5_RX_DATA__GPIO1_IO31 | PC,
+                .gp = IMX_GPIO_NR(1, 31),
+        },
+};
 
 #ifdef CONFIG_SYS_I2C
 #define PC MUX_PAD_CTRL(I2C_PAD_CTRL)
@@ -803,6 +816,10 @@ static iomux_v3_cfg_t const lcd_pads[] = {
 
 void do_enable_parallel_lcd(struct display_info_t const *dev)
 {
+	
+	int ret;
+        unsigned int gpio;
+
 	enable_lcdif_clock(dev->bus, 1);
 
 	imx_iomux_v3_setup_multiple_pads(lcd_pads, ARRAY_SIZE(lcd_pads));
@@ -816,6 +833,18 @@ void do_enable_parallel_lcd(struct display_info_t const *dev)
 	/* Set Brightness to high */
 	gpio_request(IMX_GPIO_NR(1, 8), "backlight");
 	gpio_direction_output(IMX_GPIO_NR(1, 8) , 1);
+	
+        ret = gpio_lookup_name("gpio_spi@0_7", NULL, NULL, &gpio);
+        if (ret) {
+                printf("GPIO: 'gpio_spi@0_7' not found\n");
+        }
+
+        ret = gpio_request(gpio, "lcd_enable");
+        if (ret && ret != -EBUSY) {
+                printf("gpio: requesting pin %u failed\n", gpio);
+        }
+        gpio_direction_output(gpio, 1);
+	
 }
 
 struct display_info_t const displays[] = {{
@@ -829,10 +858,10 @@ struct display_info_t const displays[] = {{
 		.xres           = 480,
 		.yres           = 272,
 		.pixclock       = 108695,
-		.left_margin    = 8,
-		.right_margin   = 4,
+		.left_margin    = 2,
+		.right_margin   = 2,
 		.upper_margin   = 2,
-		.lower_margin   = 4,
+		.lower_margin   = 2,
 		.hsync_len      = 41,
 		.vsync_len      = 10,
 		.sync           = 0,
@@ -850,6 +879,7 @@ int board_early_init_f(void)
 
 int board_init(void)
 {
+
 	/* Address of boot parameters */
 	gd->bd->bi_boot_params = PHYS_SDRAM + 0x100;
 
@@ -859,9 +889,9 @@ int board_init(void)
 	iox74lv_init();
 #endif
 
-#ifdef CONFIG_SYS_I2C
-	setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
-#endif
+//#ifdef CONFIG_SYS_I2C
+	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info2);
+//#endif
 
 #ifdef	CONFIG_FEC_MXC
 	setup_fec(CONFIG_FEC_ENET_DEV);
@@ -880,7 +910,6 @@ int board_init(void)
 #ifdef CONFIG_NAND_MXS
 	setup_gpmi_nand();
 #endif
-
 	return 0;
 }
 
@@ -917,9 +946,11 @@ int board_late_init(void)
 #ifdef CONFIG_ENV_IS_IN_MMC
 	board_late_mmc_env_init();
 #endif
-
 	set_wdog_reset((struct wdog_regs *)WDOG1_BASE_ADDR);
-
+	udelay(1000000);	
+	gpio_request(IMX_GPIO_NR(1, 8), "backlight");
+        gpio_direction_output(IMX_GPIO_NR(1, 8) , 0);
+	
 	return 0;
 }
 
@@ -1115,7 +1146,7 @@ void board_init_f(ulong dummy)
 
 	/* Clear the BSS. */
 	memset(__bss_start, 0, __bss_end - __bss_start);
-
+	
 	/* load/boot image from boot device */
 	board_init_r(NULL, 0);
 }

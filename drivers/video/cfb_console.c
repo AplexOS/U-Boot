@@ -1914,7 +1914,7 @@ static void *video_logo(void)
 #ifndef CONFIG_HIDE_LOGO_VERSION
 	space = (VIDEO_COLS - VIDEO_INFO_X) / VIDEO_FONT_WIDTH;
 	len = strlen(info);
-
+#if 0
 	if (len > space) {
 		int xx = VIDEO_INFO_X, yy = VIDEO_INFO_Y;
 		uchar *p = (uchar *) info;
@@ -1939,7 +1939,7 @@ static void *video_logo(void)
 		}
 	} else
 		video_drawstring(VIDEO_INFO_X, VIDEO_INFO_Y, (uchar *) info);
-
+#endif
 #ifdef CONFIG_CONSOLE_EXTRA_INFO
 	{
 		int i, n =
