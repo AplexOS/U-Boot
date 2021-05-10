@@ -1214,6 +1214,7 @@ struct display_info_t displays[] = {{
 	.detect = NULL,
 	.enable = enable_lvds,
 	.mode	= {
+#if 0
 		.name			= "panel1280x800d24",
 		.refresh		= 60,
 		.xres			= 1280,	//1280+400=1680
@@ -1227,7 +1228,20 @@ struct display_info_t displays[] = {{
 		.vsync_len		= 10,
 		.sync			= 0,
 		.vmode			= FB_VMODE_NONINTERLACED
-} }, {
+#endif
+		.name			= "panel1280x800d24",
+		.refresh		= 60,
+		.xres			= 1280, //1280+400=1680
+		.yres			= 800,  //800+42=842
+		.pixclock		= 11900,//11784
+		.left_margin	= 200,  //200+72+128=400 //30
+		.right_margin	= 72,   // 72
+		.upper_margin	= 22,   //22+10+10=42 //22
+		.lower_margin	= 10,   // 10
+		.hsync_len		= 128, //128
+		.vsync_len		= 10,  //10
+		.sync			= 0,
+		.vmode			= FB_VMODE_NONINTERLACED} }, {
 	.bus	= 1,
 	.addr	= 0,
 	.pixfmt = IPU_PIX_FMT_RGB666,
