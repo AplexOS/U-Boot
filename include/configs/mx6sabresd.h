@@ -30,7 +30,7 @@
 #elif defined(CONFIG_MX6Q)
 #define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
 #elif defined(CONFIG_MX6DL)
-#define PHYS_SDRAM_SIZE		(1u * 1024 * 1024 * 1024)
+#define PHYS_SDRAM_SIZE		(2u * 1024 * 1024 * 1024)
 #elif defined(CONFIG_MX6SOLO)
 #define PHYS_SDRAM_SIZE		(512u * 1024 * 1024)
 #endif
