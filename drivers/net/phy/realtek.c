@@ -28,6 +28,12 @@
 #define MIIM_RTL8211x_PHYSTAT_DUPLEX   0x2000
 #define MIIM_RTL8211x_PHYSTAT_SPDDONE  0x0800
 #define MIIM_RTL8211x_PHYSTAT_LINK     0x0400
+#define MIIM_RTL8211E_CONFREG        0x1c
+#define MIIM_RTL8211E_TX_DELAY       0x1000
+#define MIIM_RTL8211E_RX_DELAY       0x0800
+#define MIIM_RTL8211E_CONFREG_MAGIC  0x2000
+#define MIIM_RTL821x_PAGE_SELECT     0x1f
+#define MIIM_RTL8211E_EXT_PAGE_SELECT  0x1e
 
 /* RTL8211x PHY Interrupt Enable Register */
 #define MIIM_RTL8211x_PHY_INER         0x12
@@ -63,28 +69,26 @@ static int rtl8211b_probe(struct phy_device *phydev)
 /* RealTek RTL8211x */
 static int rtl8211x_config(struct phy_device *phydev)
 {
+	u16 reg;
+
 	phy_write(phydev, MDIO_DEVAD_NONE, MII_BMCR, BMCR_RESET);
 
-	/* mask interrupt at init; if the interrupt is
-	 * needed indeed, it should be explicitly enabled
-	 */
-	phy_write(phydev, MDIO_DEVAD_NONE, MIIM_RTL8211x_PHY_INER,
-		  MIIM_RTL8211x_PHY_INTR_DIS);
-
-	if (phydev->flags & PHY_RTL8211x_FORCE_MASTER) {
-		unsigned int reg;
-
-		reg = phy_read(phydev, MDIO_DEVAD_NONE, MII_CTRL1000);
-		/* force manual master/slave configuration */
-		reg |= MIIM_RTL8211x_CTRL1000T_MSCE;
-		/* force master mode */
-		reg |= MIIM_RTL8211x_CTRL1000T_MASTER;
-		phy_write(phydev, MDIO_DEVAD_NONE, MII_CTRL1000, reg);
-	}
-	/* read interrupt status just to clear it */
-	phy_read(phydev, MDIO_DEVAD_NONE, MIIM_RTL8211x_PHY_INER);
-
 	genphy_config_aneg(phydev);
+	
+	phy_write(phydev, MDIO_DEVAD_NONE, MIIM_RTL821x_PAGE_SELECT, 7);
+
+        phy_write(phydev, MDIO_DEVAD_NONE, MIIM_RTL8211E_EXT_PAGE_SELECT, 0xa4);
+
+        reg = phy_read(phydev, MDIO_DEVAD_NONE, MIIM_RTL8211E_CONFREG);
+
+        reg &= ~(MIIM_RTL8211E_TX_DELAY | MIIM_RTL8211E_RX_DELAY | MIIM_RTL8211E_CONFREG_MAGIC );
+        //reg &= ~(MIIM_RTL8211E_RX_DELAY);
+
+        reg |= (MIIM_RTL8211E_CONFREG_MAGIC | MIIM_RTL8211E_RX_DELAY | MIIM_RTL8211E_TX_DELAY );
+
+        phy_write(phydev, MDIO_DEVAD_NONE, MIIM_RTL8211E_CONFREG, reg);       //MIIM_RTL8211E_CONFREG 0x1c
+
+        phy_write(phydev, MDIO_DEVAD_NONE, MIIM_RTL821x_PAGE_SELECT, 0x0);
 
 	return 0;
 }

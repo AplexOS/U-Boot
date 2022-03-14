@@ -654,6 +654,8 @@ int __weak get_phy_id(struct mii_dev *bus, int addr, int devad, u32 *phy_id)
 {
 	int phy_reg;
 
+	mdelay(10);
+
 	/* Grab the bits from PHYIR1, and put them
 	 * in the upper half */
 	phy_reg = bus->read(bus, addr, devad, MII_PHYSID1);
